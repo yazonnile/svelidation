@@ -1,0 +1,5 @@
+.idea
+/node_modules
+/dev
+/dist/demo.js
+/dist/demo.js.map

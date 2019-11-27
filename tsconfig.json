@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "baseUrl": "./src",
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "types": ["@pyoner/svelte-types"],
+    "lib": [ "es2015", "dom" ]
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}

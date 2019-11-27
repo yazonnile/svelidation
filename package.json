@@ -1,0 +1,41 @@
+{
+  "name": "svelidation",
+  "version": "0.0.1",
+  "description": "Validate your svelte application easy",
+  "keywords": [
+    "svelte",
+    "validation",
+    "svelidation"
+  ],
+  "homepage": "https://github.com/yazonnile/svelidation#readme",
+  "bugs": {
+    "url": "https://github.com/yazonnile/svelidation/issues"
+  },
+  "license": "MIT",
+  "author": "yazonnile",
+  "main": "build/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yazonnile/svelidation.git"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w"
+  },
+  "dependencies": {
+    "svelte": "^3.13.0"
+  },
+  "devDependencies": {
+    "@pyoner/svelte-types": "^3.4.4-2",
+    "@rollup/plugin-alias": "^2.2.0",
+    "@rollup/plugin-replace": "^2.2.1",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-livereload": "^1.0.4",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-serve": "^1.0.1",
+    "rollup-plugin-svelte": "^5.1.1",
+    "rollup-plugin-typescript2": "^0.25.2",
+    "typescript": "^3.7.2",
+    "yargs": "^15.0.2"
+  }
+}
