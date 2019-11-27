@@ -246,19 +246,7 @@ import Validation, { StringType, BaseType, addValidator } from 'src/index';
 </form>
 ```
 
-
-
-
-
-
-
-
 # TODO
 - unit tests
 - e2e tests
-- eslint
-
-
-git remote add origin remote https://github.com/yazonnile/svelidation.git
-git remote -v
-git push -u origin master
+- eslints
