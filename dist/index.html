@@ -99,7 +99,7 @@
   <script>
     const url = new URL(location.href);
     const testName = url.searchParams.get('test') || 'demo';
-    const scriptUrl = `/${testName}.js`;
+    const scriptUrl = `${testName}.js`;
     const script = document.createElement('script');
 
     // load script immediately after this embed code is executed
