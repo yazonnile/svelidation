@@ -9,9 +9,10 @@ const moduleAlias = require('module-alias');
 const getRollupConfig = require('./rollup');
 const { production = false } = require('yargs').argv;
 
-const rootDist = path.resolve(process.cwd(), 'dist');
-const rootDocs = path.resolve(process.cwd(), 'docs');
-const e2eFolder = path.resolve(process.cwd(), 'test/e2e');
+const root = path.resolve(__dirname, '../../');
+const rootDist = path.resolve(root, 'dist');
+const rootDocs = path.resolve(root, 'docs');
+const e2eFolder = path.resolve(root, 'test/e2e');
 const e2eDist = path.resolve(e2eFolder, 'dist');
 const staticServerPort = 4411;
 
@@ -19,7 +20,7 @@ const log = (msg) => console.log(`>>> ${msg}`);
 const exit = (status) => process.exit(status);
 
 moduleAlias.addAliases({
-  page: path.resolve(__dirname, 'page')
+  page: path.resolve(__dirname, 'helpers/page')
 });
 
 (async() => {
