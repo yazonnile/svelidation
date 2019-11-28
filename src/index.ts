@@ -1,6 +1,6 @@
 import { writable, get } from 'svelte/store';
 import validateValueByParams from 'lib/validation/validation';
-import updateStore from 'lib/update-store/update-store';
+import updateStoreErrors from 'lib/update-store-errors/update-store-errors';
 import Input from 'lib/input/input';
 import isFunction from 'lib/is-function/is-function';
 import {
@@ -23,7 +23,7 @@ export default class Validation {
     this.entries = [];
     this.options = Object.assign({
       validateOn: ['input'],
-      clearOn: [],
+      clearOn: ['reset'],
       inputValidationPhase: PhaseEnum.afterFirstValidation
     }, options);
 
@@ -37,11 +37,12 @@ export default class Validation {
     const useInput: UseInputFunctionInterface = (inputNode, useOptions) => {
       const inputOptions = Object.assign({}, this.options, useOptions, {
         onClear: () => {
-          updateStore(store, { errors: [] });
+          updateStoreErrors(store, []);
         },
         onValidate: () => {
           this.validateStore(store);
-        }
+        },
+        clearOn: this.options.clearOn.filter(event => event !== 'reset')
       });
 
       entry.input = new Input(inputNode, inputOptions);
@@ -78,8 +79,9 @@ export default class Validation {
 
   createForm(formNode: HTMLFormElement, events: FormEventsInterface = {}): UseFunctionReturn {
     const { onFail: fail, onSubmit: submit, onSuccess: success } = events;
+    const onReset = () => this.clearErrors();
     const onSubmit = e => {
-      const errors = this.validateAll();
+      const errors = this.validate();
       isFunction(submit) && submit(e, errors);
       if (errors.length) {
         isFunction(fail) && fail(errors);
@@ -89,10 +91,14 @@ export default class Validation {
     };
 
     formNode.addEventListener('submit', onSubmit);
+    if (this.options.clearOn.indexOf('reset') > -1) {
+      formNode.addEventListener('reset', onReset);
+    }
 
     return {
       destroy: () => {
         formNode.removeEventListener('submit', onSubmit);
+        formNode.removeEventListener('reset', onReset);
       }
     };
   }
@@ -102,16 +108,16 @@ export default class Validation {
     if (entry) {
       const { value } = get(store);
       const errors = validateValueByParams(value, entry.params);
-      updateStore(store, { errors });
+      updateStoreErrors(store, errors);
       return errors;
     }
 
     return [];
   }
 
-  validateAll(): ErrorsType[] {
+  validate(includeNoInputs = false): ErrorsType[] {
     const errors = this.entries.reduce((errors, entry) => {
-      if (entry.input) {
+      if (entry.input || includeNoInputs) {
         const storeErrors = this.validateStore(entry.store);
         if (storeErrors.length) {
           errors.push({ [entry.params.type]: storeErrors });
@@ -136,9 +142,11 @@ export default class Validation {
     });
   }
 
-  clearErrors() {
+  clearErrors(includeNoInputs = false) {
     this.entries.forEach(entry => {
-      updateStore(entry.store, { errors: [] });
+      if (entry.input || includeNoInputs) {
+        updateStoreErrors(entry.store, []);
+      }
     });
   }
 }

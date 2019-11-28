@@ -10,15 +10,15 @@ export default ({
   }
 
   const validation = new Validation(options);
-  let { createForm, validateAll, clearErrors, validateStore, createEntry } = validation;
+  let { createForm, validate, clearErrors, validateStore, createEntry } = validation;
 
-  validateAll = validateAll.bind(validation);
+  validate = validate.bind(validation);
   clearErrors = clearErrors.bind(validation);
   validateStore = validateStore.bind(validation);
   createEntry = createEntry.bind(validation);
 
   return {
     entries: validation.createEntries(entries),
-    createForm, validateAll, clearErrors, validateStore, createEntry
+    createForm, validate, clearErrors, validateStore, createEntry
   }
 }

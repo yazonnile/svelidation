@@ -16,9 +16,9 @@
   } = getValidation(getConfig({ clearOn: ['focus'] }));
 
   const {
-    entries: [[ focusChangeStore, focusChangeInput ]],
-    createForm: focusChangeCreateForm
-  } = getValidation(getConfig({ clearOn: ['focus', 'change'] }));
+    entries: [[ focusChangeResetStore, focusChangeResetInput ]],
+    createForm: focusChangeResetCreateForm
+  } = getValidation(getConfig({ clearOn: ['focus', 'change', 'reset'] }));
 
   let activeId = 'default';
 </script>
@@ -35,8 +35,8 @@
   </Form>
 </Slide>
 
-<Slide id="focus-change" bind:activeId>
-  <Form createForm={focusChangeCreateForm}>
-    <Entry store={focusChangeStore} input={focusChangeInput} />
+<Slide id="focus-change-reset" bind:activeId>
+  <Form createForm={focusChangeResetCreateForm}>
+    <Entry store={focusChangeResetStore} input={focusChangeResetInput} />
   </Form>
 </Slide>

@@ -14,4 +14,4 @@
 </script>
 
 <Entry store={visibleSecondStore} />
-<button id="main-action" on:click={() => validateStore(visibleSecondStore)}></button>
+<button id="primary" on:click={() => validateStore(visibleSecondStore)}></button>

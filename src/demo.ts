@@ -10,7 +10,7 @@ new Demo({
     defaultSettings: true,
     options: {
       validateOn: ['input'],
-      clearOn: [],
+      clearOn: ['reset'],
       inputValidationPhase: PhaseEnum.afterFirstValidation
     }
   }

@@ -114,12 +114,9 @@ var validateValueByParams = (value, params) => {
     }
 };
 
-var updateStore = (store, newObj) => {
+var updateStoreErrors = (store, errors) => {
     store.update(value => {
-        return {
-            ...value,
-            ...newObj
-        };
+        return { ...value, errors };
     });
 };
 
@@ -176,7 +173,7 @@ class Validation {
         this.entries = [];
         this.options = Object.assign({
             validateOn: ['input'],
-            clearOn: [],
+            clearOn: ['reset'],
             inputValidationPhase: PhaseEnum.afterFirstValidation
         }, options);
         this.phase = PhaseEnum.never;
@@ -188,11 +185,12 @@ class Validation {
         const useInput = (inputNode, useOptions) => {
             const inputOptions = Object.assign({}, this.options, useOptions, {
                 onClear: () => {
-                    updateStore(store, { errors: [] });
+                    updateStoreErrors(store, []);
                 },
                 onValidate: () => {
                     this.validateStore(store);
-                }
+                },
+                clearOn: this.options.clearOn.filter(event => event !== 'reset')
             });
             entry.input = new Input(inputNode, inputOptions);
             entry.input.setPhase(this.phase);
@@ -223,8 +221,9 @@ class Validation {
     }
     createForm(formNode, events = {}) {
         const { onFail: fail, onSubmit: submit, onSuccess: success } = events;
+        const onReset = () => this.clearErrors();
         const onSubmit = e => {
-            const errors = this.validateAll();
+            const errors = this.validate();
             isFunction(submit) && submit(e, errors);
             if (errors.length) {
                 isFunction(fail) && fail(errors);
@@ -234,9 +233,13 @@ class Validation {
             }
         };
         formNode.addEventListener('submit', onSubmit);
+        if (this.options.clearOn.indexOf('reset') > -1) {
+            formNode.addEventListener('reset', onReset);
+        }
         return {
             destroy: () => {
                 formNode.removeEventListener('submit', onSubmit);
+                formNode.removeEventListener('reset', onReset);
             }
         };
     }
@@ -245,14 +248,14 @@ class Validation {
         if (entry) {
             const { value } = get(store);
             const errors = validateValueByParams(value, entry.params);
-            updateStore(store, { errors });
+            updateStoreErrors(store, errors);
             return errors;
         }
         return [];
     }
-    validateAll() {
+    validate(includeNoInputs = false) {
         const errors = this.entries.reduce((errors, entry) => {
-            if (entry.input) {
+            if (entry.input || includeNoInputs) {
                 const storeErrors = this.validateStore(entry.store);
                 if (storeErrors.length) {
                     errors.push({ [entry.params.type]: storeErrors });
@@ -271,9 +274,11 @@ class Validation {
             }
         });
     }
-    clearErrors() {
+    clearErrors(includeNoInputs = false) {
         this.entries.forEach(entry => {
-            updateStore(entry.store, { errors: [] });
+            if (entry.input || includeNoInputs) {
+                updateStoreErrors(entry.store, []);
+            }
         });
     }
 }

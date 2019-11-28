@@ -10,9 +10,12 @@
       [ visibleFirstStore, visibleFirstInput ],
       [ visibleSecondStore, visibleSecondInput ],
       [ visibleThirdStore ],
+      [ forthStore ],
     ],
-    createForm, clearErrors
-  } = getValidation(getConfig(3));
+    createForm, clearErrors, validateStore
+  } = getValidation(getConfig(4));
+
+  validateStore(forthStore);
 </script>
 
 <Form {createForm}>
@@ -20,4 +23,8 @@
   <Entry store={visibleSecondStore} input={visibleSecondInput} />
   <Entry store={visibleThirdStore} />
 </Form>
-<button id="main-action" on:click={clearErrors}></button>
+{#if $forthStore.errors.length}
+  <p id="forth-error"></p>
+{/if}
+<button id="primary" on:click={() => clearErrors()}></button>
+<button id="secondary" on:click={() => clearErrors(true)}></button>

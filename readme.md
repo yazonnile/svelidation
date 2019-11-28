@@ -48,7 +48,7 @@ new Svelidation({
 ```
 `validateOn (string[]: ['input'])`: array of input events to validate input value
 
-`clearOn (string[]: [])`: array of input events to clear input errors
+`clearOn (string[]: ['reset'])`: array of input and form events to clear input errors. All events except `reset` will be applied to input. `reset` to form 
 
 `inputValidationPhase (number: 0)`: specific option for control input events
   - `0`: dont allow input events
@@ -56,7 +56,7 @@ new Svelidation({
   - `2`: allow input events after first form validation
     
 #### Example #1
-Inputs will remove errors on focus and validate value on blur only after first form validation 
+Inputs will remove errors on focus and validate value on blur only after first form validation. Form `reset` has no effect to errors
 ```js
 new Svelidation({
   validateOn: ['blur'],
@@ -65,7 +65,7 @@ new Svelidation({
 ```
     
 #### Example #2
-Inputs events will not affect validation
+Inputs events will not affect validation, but `reset` form event will
 ```js
 new Svelidation({
   inputValidationPhase: 0
@@ -173,18 +173,20 @@ Callbacks for form validation on submit
 
 `onSuccess()`
 
-### `this.validateAll`
-Manually validate all (binded to inputs) entries
+### `this.validate`
+Manually validate stores
 ```js
 const instance = new Svelidation();
-instance.validateAll();
+instance.validate(); // just input used stores
+instance.validate(true); // all stores
 ```
 
 ### `this.clearErrors`
-Clear all errors
+Clear errors in stores
 ```js
 const instance = new Svelidation();
-instance.clearErrors();
+instance.clearErrors(); // just input based stores
+instance.clearErrors(true); // all stores
 ```
 
 ### `this.validateStore`

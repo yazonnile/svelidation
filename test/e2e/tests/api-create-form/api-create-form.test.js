@@ -25,3 +25,15 @@ test(`should invoke onFail and onSuccess events`, async t => {
     .typeText(page.inputs, '1234')
     .expect(page.log.withExactText('fail,success,')).ok();
 });
+
+test(`should reset errors on used inputs`, async t => {
+  await t
+    .click(page.slideButton.withExactText('reset'))
+    .expect(page.forms.exists).ok()
+    .expect(page.inputs.count).eql(2)
+    .expect(page.errors.count).eql(1)
+    .click(page.submitButton)
+    .expect(page.errors.count).eql(2)
+    .click(page.resetButton)
+    .expect(page.errors.count).eql(1)
+});

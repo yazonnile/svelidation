@@ -62,6 +62,9 @@
   </label>
 
   <button type="submit">Submit</button>
+  {#if options && options.clearOn && options.clearOn.indexOf('reset') > -1}
+    <button type="reset">Reset</button>
+  {/if}
 </form>
 
 <style>

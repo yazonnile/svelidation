@@ -2,7 +2,7 @@
   import { getValidation, Form, Slide, Entry } from 'helpers/helpers';
 
   const getConfig = () => {
-    return { entries: [{ type: 'string', minLength: 4 }] }
+    return { entries: [{ type: 'string', minLength: 4 }, { type: 'string', minLength: 4 }] }
   };
 
   const {
@@ -14,6 +14,14 @@
     entries: [[ successFailStore, successFailInput ]],
     createForm: successFailCreateForm
   } = getValidation(getConfig());
+
+  const {
+    entries: [[ reset1Store, reset1Input ], [ reset2Store ]],
+    createForm: resetCreateForm,
+    validateStore
+  } = getValidation(getConfig());
+
+  validateStore(reset2Store);
 
   let activeId = 'submit';
   $: log = activeId && [];
@@ -33,5 +41,12 @@
   <Form createForm={successFailCreateForm} createFormParams={{ onFail, onSuccess}}>
     <Entry store={successFailStore} input={successFailInput} />
     <div class="log">{#each log as item}{item},{/each}</div>
+  </Form>
+</Slide>
+
+<Slide id="reset" bind:activeId>
+  <Form createForm={resetCreateForm}>
+    <Entry store={reset1Store} input={reset1Input} />
+    <Entry store={reset2Store} />
   </Form>
 </Slide>

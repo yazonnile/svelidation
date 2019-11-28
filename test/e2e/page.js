@@ -7,8 +7,10 @@ export default class Page {
     this.inputs = this.labels.find('input');
     this.errors = this.labels.find('p.error');
     this.submitButton = this.forms.find('[type="submit"]');
+    this.resetButton = this.forms.find('[type="reset"]');
     this.slideButton = Selector('button.slide-button');
-    this.mainActionButton = Selector('#main-action');
+    this.primaryButton = Selector('#primary');
+    this.secondaryButton = Selector('#secondary');
     this.log = Selector('.log');
   }
 }

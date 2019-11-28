@@ -11,7 +11,7 @@
       [ visibleSecondStore, visibleSecondInput ],
       [ visibleThirdStore ],
     ],
-    validateAll, createEntry
+    validate, createEntry
   } = getValidation(getConfig(3));
 
   const [ forthStore ] = createEntry({ type: 'string', minLength: 4 });
@@ -21,4 +21,5 @@
 <Entry store={visibleSecondStore} input={visibleSecondInput} />
 <Entry store={visibleThirdStore} />
 <Entry store={forthStore} />
-<button id="main-action" on:click={validateAll}></button>
+<button id="primary" on:click={() => validate()}></button>
+<button id="secondary" on:click={() => validate(true)}></button>

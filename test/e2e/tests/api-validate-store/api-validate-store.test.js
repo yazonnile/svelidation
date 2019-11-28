@@ -7,6 +7,6 @@ fixture `api validateStore`
 test('should validate store without submit', async t => {
   await t
     .expect(page.errors.exists).notOk()
-    .click(page.mainActionButton)
+    .click(page.primaryButton)
     .expect(page.errors.count).eql(1);
 });
