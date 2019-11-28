@@ -1,5 +1,6 @@
 <script>
   import { getValidation, Form, Slide, Entry } from 'helpers/helpers';
+  import { PhaseEnum } from 'svelidation';
 
   const getConfig = (options) => {
     return { entries: [{ type: 'string', minLength: 4 }], options }

@@ -93,7 +93,7 @@ new Svelidation({
 ### `this.createEntry`
 ```js
 const instance = new Svelidation();
-instance.createEntry({
+const [ store, inputFunctionForUse ] = instance.createEntry({
   type, // required
   
   minLength,
@@ -201,29 +201,29 @@ Add custom or modify current validators
 ```js
 import Validation, { StringType, BaseType, addValidator } from 'src/index';
 
-  addValidator('newTypeByRule', class extends StringType {
-    newTypeParamRule() {
-      return this.getValue() === this.params.newTypeParam;
-    }
-  });
+addValidator('newTypeByRule', class extends StringType {
+  newTypeParamRule() {
+    return this.getValue() === this.params.newTypeParam;
+  }
+});
 
-  addValidator('newTypeByType', class extends BaseType {
-    typeValidation() {
-      return super.typeValidation(/AAA/);
-    }
-  });
+addValidator('newTypeByType', class extends BaseType {
+  typeValidation() {
+    return super.typeValidation(/AAA/);
+  }
+});
 
-  const validation = new Validation();
-  const { createForm } = validation;
+const validation = new Validation();
+const { createForm } = validation;
 
-  const [ firstStore, firstInput ] = validation.createEntry({
-    type: 'newTypeByRule',
-    newTypeParam: 'AAA'
-  });
+const [ firstStore, firstInput ] = validation.createEntry({
+  type: 'newTypeByRule',
+  newTypeParam: 'AAA'
+});
 
-  const [ secondStore, secondInput ] = validation.createEntry({
-    type: 'newTypeByType'
-  });
+const [ secondStore, secondInput ] = validation.createEntry({
+  type: 'newTypeByType'
+});
 ```
 ```html
 <form use:createForm>
@@ -247,6 +247,5 @@ import Validation, { StringType, BaseType, addValidator } from 'src/index';
 ```
 
 # TODO
-- e2e tests
 - unit tests
 - eslints

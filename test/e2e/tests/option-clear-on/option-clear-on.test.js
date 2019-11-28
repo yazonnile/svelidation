@@ -1,8 +1,8 @@
 import Page, { focus, blur } from 'page';
 const page = new Page();
 
-fixture `clearOn`
-  .page `http://localhost:4411/?test=clear-on`;
+fixture `option clearOn`
+  .page `http://localhost:4411/?test=option-clear-on`;
 
 test('shouldn\'t work by default', async t => {
   await t

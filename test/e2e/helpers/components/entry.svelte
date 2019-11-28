@@ -1,6 +1,6 @@
 <script>
   export let store;
-  export let input;
+  export let input = () => {};
   export let type = 'text';
 </script>
 

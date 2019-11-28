@@ -1,8 +1,8 @@
-import Page, { focus, blur } from 'page';
+import Page from 'page';
 const page = new Page();
 
-fixture `inputValidationPhase`
-  .page `http://localhost:4411/?test=input-validation-phase`;
+fixture `option inputValidationPhase`
+  .page `http://localhost:4411/?test=option-input-validation-phase`;
 
 test('should validate after submit', async t => {
   await t

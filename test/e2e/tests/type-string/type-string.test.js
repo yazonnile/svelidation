@@ -1,7 +1,7 @@
 import Page from 'page';
 const page = new Page();
 
-fixture `string type`
+fixture `type string`
   .page `http://localhost:4411/?test=type-string`;
 
 test('minLength rule', async t => {

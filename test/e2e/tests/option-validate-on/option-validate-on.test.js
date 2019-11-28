@@ -1,8 +1,8 @@
 import Page, { blur } from 'page';
 const page = new Page();
 
-fixture `validateOn`
-  .page `http://localhost:4411/?test=validate-on`;
+fixture `option validateOn`
+  .page `http://localhost:4411/?test=option-validate-on`;
 
 test('should work on input by default', async t => {
   await t
