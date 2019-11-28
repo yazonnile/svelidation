@@ -124,7 +124,7 @@ instance.createEntry({
 
 `value (string)`: initial value of input
 
-####`this.createEntries`
+### `this.createEntries`
 Additional way to create a few entries at the time
 ```js
 const instance = new Svelidation();
