@@ -3,3 +3,4 @@
 /dev
 /dist/demo.js
 /dist/demo.js.map
+/test/e2e/dist

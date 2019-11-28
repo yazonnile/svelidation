@@ -68,7 +68,7 @@ new Svelidation({
 Inputs events will not affect validation
 ```js
 new Svelidation({
-  inputValidationPhase: 2
+  inputValidationPhase: 0
 });
 ```
 
@@ -247,6 +247,6 @@ import Validation, { StringType, BaseType, addValidator } from 'src/index';
 ```
 
 # TODO
-- unit tests
 - e2e tests
+- unit tests
 - eslints

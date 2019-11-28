@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-  <title>Svelidation demo</title>
+  <title>e2e test page</title>
   <style>
     * {
       box-sizing: border-box;
@@ -52,7 +52,6 @@
     button {
       background: #fff;
       cursor: pointer;
-      text-transform: uppercase;
     }
 
     input, button {
@@ -97,15 +96,21 @@
       padding: 5px 10px;
     }
   </style>
-  <script defer src="dist/demo.js"></script>
+  <script>
+    const url = new URL(location.href);
+    const testName = url.searchParams.get('test');
+
+    if (testName) {
+      const scriptUrl = `/${testName}.js`;
+      const script = document.createElement('script');
+
+      // load script immediately after this embed code is executed
+      script.async = script.defer = true;
+      script.setAttribute('src', scriptUrl);
+      document.getElementsByTagName('head')[0].appendChild(script);
+    }
+  </script>
 </head>
 <body>
-
-<div id="default"></div>
-<div id="simple"></div>
-<div id="submit"></div>
-<div id="dynamic"></div>
-<div id="custom"></div>
-
 </body>
 </html>

@@ -125,9 +125,9 @@ var updateStore = (store, newObj) => {
 
 var PhaseEnum;
 (function (PhaseEnum) {
-    PhaseEnum[PhaseEnum["afterFirstValidation"] = 0] = "afterFirstValidation";
+    PhaseEnum[PhaseEnum["never"] = 0] = "never";
     PhaseEnum[PhaseEnum["always"] = 1] = "always";
-    PhaseEnum[PhaseEnum["never"] = 2] = "never";
+    PhaseEnum[PhaseEnum["afterFirstValidation"] = 2] = "afterFirstValidation";
 })(PhaseEnum || (PhaseEnum = {}));
 
 class Input {

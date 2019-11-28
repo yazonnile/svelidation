@@ -1,12 +1,12 @@
-import path from 'path';
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import svelte from 'rollup-plugin-svelte';
-import livereload from 'rollup-plugin-livereload';
-import serve from 'rollup-plugin-serve';
-import typescript from 'rollup-plugin-typescript2';
-import replace from '@rollup/plugin-replace';
-import alias from '@rollup/plugin-alias';
+const path = require('path');
+const resolve = require('rollup-plugin-node-resolve');
+const commonjs = require('rollup-plugin-commonjs');
+const svelte = require('rollup-plugin-svelte');
+const livereload = require('rollup-plugin-livereload');
+const serve = require('rollup-plugin-serve');
+const typescript = require('rollup-plugin-typescript2');
+const replace = require('@rollup/plugin-replace');
+const alias = require('@rollup/plugin-alias');
 
 const production = !process.env.ROLLUP_WATCH;
 const devServerOptions = {
@@ -81,4 +81,4 @@ demoConfig.plugins.push(
   })
 );
 
-export default production ? [ libConfig, demoConfig ] : demoConfig;
+module.exports = production ? [ libConfig, demoConfig ] : demoConfig;

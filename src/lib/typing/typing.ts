@@ -1,9 +1,9 @@
 import { Writable } from "svelte/store";
 
 export enum PhaseEnum {
-  afterFirstValidation,
-  always,
   never,
+  always,
+  afterFirstValidation,
 }
 
 export type PhaseEnumType = PhaseEnum.afterFirstValidation | PhaseEnum.always | PhaseEnum.never;

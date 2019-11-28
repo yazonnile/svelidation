@@ -1,11 +1,16 @@
 {
   "name": "svelidation",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Validate your svelte application easy",
   "keywords": [
     "svelte",
+    "form",
     "validation",
-    "svelidation"
+    "svelidation",
+    "plugins",
+    "forms",
+    "validator",
+    "svelte form validation"
   ],
   "homepage": "https://github.com/yazonnile/svelidation#readme",
   "bugs": {
@@ -20,7 +25,9 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w"
+    "dev": "rollup -c -w",
+    "test:e2e": "node ./test/e2e/e2e.js --production --inspect-brk",
+    "test:e2e:dev": "node ./test/e2e/e2e.js"
   },
   "dependencies": {
     "svelte": "^3.13.0"
@@ -29,12 +36,20 @@
     "@pyoner/svelte-types": "^3.4.4-2",
     "@rollup/plugin-alias": "^2.2.0",
     "@rollup/plugin-replace": "^2.2.1",
+    "fs-extra": "^8.1.0",
+    "globby": "^10.0.1",
+    "module-alias": "^2.2.2",
+    "puppeteer": "^2.0.0",
+    "rollup": "^1.27.5",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-livereload": "^1.0.4",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-serve": "^1.0.1",
     "rollup-plugin-svelte": "^5.1.1",
     "rollup-plugin-typescript2": "^0.25.2",
+    "static-server": "^2.2.1",
+    "testcafe": "^1.7.0",
+    "testcafe-browser-provider-puppeteer": "^1.4.0",
     "typescript": "^3.7.2",
     "yargs": "^15.0.2"
   }

@@ -24,7 +24,7 @@
   });
 
   let success = false;
-  const onSuccess = () => { success = true; }
+  const onSuccess = () => { success = true; };
   const onFail = () => { success = false; };
 </script>
 
