@@ -48,7 +48,7 @@ new Svelidation({
 ```
 `validateOn (string[]: ['input'])`: array of input events to validate input value
 
-`clearOn (string[]: ['reset'])`: array of input and form events to clear input errors. All events except `reset` will be applied to input. `reset` to form 
+`clearOn (string[]: ['reset'])`: array of input and form events to clear errors. All events except `reset` will be applied to input. `reset` to form 
 
 `inputValidationPhase (number: 0)`: specific option for control input events
   - `0`: dont allow input events
@@ -247,6 +247,12 @@ const [ secondStore, secondInput ] = validation.createEntry({
   <button type="submit">submit</button>
 </form>
 ```
+
+## `npm scripts`
+- `npm run build` - build demo and library files into `dist`
+- `npm run dev` - run dev server from dist folder with demo page by default
+- `npm run test:e2e` - e2e testing of lib file from `dist`
+- `npm run test:e2e:dev` - dev server from `e2e/dist` folder with tests name in params
 
 # TODO
 - unit tests
