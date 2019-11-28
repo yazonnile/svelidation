@@ -72,10 +72,10 @@ demoConfig.plugins.push(
   svelte({
     dev: !production
   }),
-  !production && livereload('./'),
+  !production && livereload('./dist'),
   !production && serve({
     open: true,
-    contentBase: './',
+    contentBase: './dist',
     host: devServerOptions.host,
     port: devServerOptions.port,
   })

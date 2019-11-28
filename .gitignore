@@ -1,6 +1,7 @@
 .idea
 /node_modules
 /dev
-/dist/demo.js
-/dist/demo.js.map
+/dist
+!/dist/index.js
+!/dist/index.html
 /test/e2e/dist

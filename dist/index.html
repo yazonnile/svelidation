@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-  <title>e2e test page</title>
+  <title>svelidation demo</title>
   <style>
     * {
       box-sizing: border-box;
@@ -85,7 +85,7 @@
 
     mark, pre {
       background: #ddd;
-      border: 1px solid #ccc;
+      border: 1px solid #333;
       border-radius: 3px;
       font-weight: normal;
       font-family: monospace;
@@ -98,19 +98,15 @@
   </style>
   <script>
     const url = new URL(location.href);
-    const testName = url.searchParams.get('test');
+    const testName = url.searchParams.get('test') || 'demo';
+    const scriptUrl = `/${testName}.js`;
+    const script = document.createElement('script');
 
-    if (testName) {
-      const scriptUrl = `/${testName}.js`;
-      const script = document.createElement('script');
-
-      // load script immediately after this embed code is executed
-      script.async = script.defer = true;
-      script.setAttribute('src', scriptUrl);
-      document.getElementsByTagName('head')[0].appendChild(script);
-    }
+    // load script immediately after this embed code is executed
+    script.async = script.defer = true;
+    script.setAttribute('src', scriptUrl);
+    document.getElementsByTagName('head')[0].appendChild(script);
   </script>
 </head>
-<body>
-</body>
+<body></body>
 </html>

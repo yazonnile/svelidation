@@ -12,20 +12,7 @@ const devServerOptions = {
   port: '8040'
 };
 
-let rollupServe = [];
-module.exports = ({ rootDist, e2eDist, input, production }) => {
-  if (!production && !rollupServe.length) {
-    rollupServe = [
-      serve({
-        contentBase: e2eDist,
-        host: devServerOptions.host,
-        port: devServerOptions.port,
-        open: true
-      }),
-      livereload(e2eDist)
-    ];
-  }
-
+module.exports = ({ rootDist, e2eDist, input, production, initServe }) => {
   return [{
     input,
     plugins: [
@@ -48,7 +35,15 @@ module.exports = ({ rootDist, e2eDist, input, production }) => {
 
       commonjs(),
 
-      ...rollupServe
+      !production && initServe && serve({
+        open: true,
+        contentBase: e2eDist,
+        host: devServerOptions.host,
+        port: devServerOptions.port,
+        openPage: '?test=default',
+      }),
+
+      !production && initServe && livereload(e2eDist)
     ]
   }, {
     format: 'es',

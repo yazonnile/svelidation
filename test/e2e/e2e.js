@@ -26,12 +26,17 @@ moduleAlias.addAliases({
   await fs.remove(e2eDist);
 
   log('copy new files');
-  await fs.copy(`${e2eFolder}/index.html`, `${e2eDist}/index.html`);
+  await fs.copy(`${rootDist}/index.html`, `${e2eDist}/index.html`);
 
   log('build test bundles');
   const entryPoints = globby.sync([`${e2eFolder}/tests/**/*.js`]).filter(item => !item.match(/\.test\.js$/));
   for (let i = 0; i < entryPoints.length; i++) {
-    const [ input, output ] = getRollupConfig({ rootDist, e2eDist, input: entryPoints[i], production });
+    const [ input, output ] = getRollupConfig({
+      rootDist, e2eDist, production,
+      input: entryPoints[i],
+      initServe: i === entryPoints.length - 1
+    });
+
     const bundle = await rollup.rollup(input);
     await bundle.write(output);
 

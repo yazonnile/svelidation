@@ -4,7 +4,7 @@ import Custom from './demo/custom.svelte';
 import { PhaseEnum } from 'lib/typing/typing';
 
 new Demo({
-  target: document.getElementById('default'),
+  target: document.body,
   props: {
     title: '<mark>input</mark> event after form <mark>submit</mark>',
     defaultSettings: true,
@@ -17,7 +17,7 @@ new Demo({
 });
 
 new Demo({
-  target: document.getElementById('simple'),
+  target: document.body,
   props: {
     title: '<mark>blur</mark> / <mark>focus</mark> events <mark>always</mark>',
     options: {
@@ -29,7 +29,7 @@ new Demo({
 });
 
 new Demo({
-  target: document.getElementById('submit'),
+  target: document.body,
   props: {
     title: '<mark>submit</mark> only validation',
     options: {
@@ -39,9 +39,9 @@ new Demo({
 });
 
 new Dynamic({
-  target: document.getElementById('dynamic')
+  target: document.body,
 });
 
 new Custom({
-  target: document.getElementById('custom')
+  target: document.body,
 });
