@@ -10,6 +10,7 @@ const getRollupConfig = require('./rollup');
 const { production = false } = require('yargs').argv;
 
 const rootDist = path.resolve(process.cwd(), 'dist');
+const rootDocs = path.resolve(process.cwd(), 'docs');
 const e2eFolder = path.resolve(process.cwd(), 'test/e2e');
 const e2eDist = path.resolve(e2eFolder, 'dist');
 const staticServerPort = 4411;
@@ -26,7 +27,7 @@ moduleAlias.addAliases({
   await fs.remove(e2eDist);
 
   log('copy new files');
-  await fs.copy(`${rootDist}/index.html`, `${e2eDist}/index.html`);
+  await fs.copy(`${rootDocs}/index.html`, `${e2eDist}/index.html`);
 
   log('build test bundles');
   const entryPoints = globby.sync([`${e2eFolder}/tests/**/*.js`]).filter(item => !item.match(/\.test\.js$/));

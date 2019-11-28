@@ -61,7 +61,7 @@ const demoConfig = Object.assign({ ...config }, {
   output: {
     sourcemap: !production,
     format: 'es',
-    dir: 'dist'
+    dir: 'docs'
   },
   watch: {
     clearScreen: false
@@ -72,10 +72,10 @@ demoConfig.plugins.push(
   svelte({
     dev: !production
   }),
-  !production && livereload('./dist'),
+  !production && livereload('./docs'),
   !production && serve({
     open: true,
-    contentBase: './dist',
+    contentBase: './docs',
     host: devServerOptions.host,
     port: devServerOptions.port,
   })
