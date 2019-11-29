@@ -1,4 +1,4 @@
-import Page from 'page';
+import Page, { blur } from 'page';
 const page = new Page();
 
 fixture `type email`
@@ -11,8 +11,12 @@ test('type rule', async t => {
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
     .expect(page.errors.exists).ok()
-    .typeText(page.inputs, 'aaaa')
+    .typeText(page.inputs, 'aaaa');
+  await blur();
+  await t
     .expect(page.errors.exists).ok()
-    .typeText(page.inputs, '@ascc.com')
+    .typeText(page.inputs, '@ascc.com');
+  await blur();
+  await t
     .expect(page.errors.exists).notOk();
 });

@@ -1,4 +1,4 @@
-import Page from 'page';
+import Page, { blur } from 'page';
 const page = new Page();
 
 fixture `type base`
@@ -11,9 +11,13 @@ test('optional rule', async t => {
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
     .expect(page.errors.exists).notOk()
-    .typeText(page.inputs, '1')
+    .typeText(page.inputs, '1');
+  await blur();
+  await t
     .expect(page.errors.exists).ok()
-    .typeText(page.inputs, '23')
+    .typeText(page.inputs, '23');
+  await blur();
+  await t
     .expect(page.errors.exists).notOk();
 });
 
@@ -24,9 +28,13 @@ test('match rule', async t => {
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
     .expect(page.errors.exists).ok()
-    .typeText(page.inputs, 'testma')
+    .typeText(page.inputs, 'testma');
+  await blur();
+  await t
     .expect(page.errors.exists).ok()
-    .typeText(page.inputs, 'tch')
+    .typeText(page.inputs, 'tch');
+  await blur();
+  await t
     .expect(page.errors.exists).notOk();
 });
 
@@ -37,8 +45,12 @@ test('equal rule', async t => {
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
     .expect(page.errors.exists).ok()
-    .typeText(page.inputs, 'hel')
+    .typeText(page.inputs, 'hel');
+  await blur();
+  await t
     .expect(page.errors.exists).ok()
-    .typeText(page.inputs, 'lo')
+    .typeText(page.inputs, 'lo');
+  await blur();
+  await t
     .expect(page.errors.exists).notOk();
 });

@@ -22,7 +22,7 @@ export default class Validation {
   constructor(options?: OptionsInterface) {
     this.entries = [];
     this.options = Object.assign({
-      validateOn: ['input'],
+      validateOn: ['change'],
       clearOn: ['reset'],
       inputValidationPhase: PhaseEnum.afterFirstValidation
     }, options);
@@ -136,12 +136,12 @@ export default class Validation {
       return errors;
     }, []);
 
-    this.updatePhase(PhaseEnum.afterFirstValidation);
+    this.setValidationPhase(PhaseEnum.afterFirstValidation);
 
     return errors;
   }
 
-  updatePhase(phase: PhaseEnumType) {
+  setValidationPhase(phase: PhaseEnumType) {
     this.phase = phase;
 
     this.entries.forEach(({ input }) => {
@@ -155,6 +155,14 @@ export default class Validation {
     this.entries.forEach(entry => {
       if (entry.input || includeNoInputs) {
         updateStoreErrors(entry.store, []);
+      }
+    });
+  }
+
+  destroy() {
+    this.entries.forEach(entry => {
+      if (entry.input) {
+        entry.input.destroy();
       }
     });
   }

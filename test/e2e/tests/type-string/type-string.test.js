@@ -1,4 +1,4 @@
-import Page from 'page';
+import Page, { blur } from 'page';
 const page = new Page();
 
 fixture `type string`
@@ -11,7 +11,9 @@ test('minLength rule', async t => {
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
     .expect(page.errors.exists).ok()
-    .typeText(page.inputs, '122')
+    .typeText(page.inputs, '122');
+  await blur();
+  await t
     .expect(page.errors.exists).notOk();
 });
 
@@ -22,6 +24,8 @@ test('maxLength rule', async t => {
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
     .expect(page.errors.exists).notOk()
-    .typeText(page.inputs, '1234567')
+    .typeText(page.inputs, '1234567');
+  await blur();
+  await t
     .expect(page.errors.exists).ok();
 });

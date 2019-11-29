@@ -11,7 +11,9 @@ test('should work on input by default', async t => {
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
     .expect(page.errors.exists).ok()
-    .typeText(page.inputs, '12345')
+    .typeText(page.inputs, '12345');
+  await blur();
+  await t
     .expect(page.errors.exists).notOk();
 });
 

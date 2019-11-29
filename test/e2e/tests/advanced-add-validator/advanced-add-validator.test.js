@@ -1,4 +1,4 @@
-import Page from 'page';
+import Page, { blur } from 'page';
 const page = new Page();
 
 fixture `advanced addValidator`
@@ -10,8 +10,12 @@ test('should validate by type of new validator', async t => {
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
     .expect(page.errors.count).eql(1)
-    .typeText(page.inputs, 'AAA')
+    .typeText(page.inputs, 'AAA');
+  await blur();
+  await t
     .expect(page.errors.count).eql(0)
-    .typeText(page.inputs, 'AAA')
+    .typeText(page.inputs, 'AAA');
+  await blur();
+  await t
     .expect(page.errors.count).eql(1);
 });

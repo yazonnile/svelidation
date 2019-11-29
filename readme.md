@@ -46,7 +46,7 @@ new Svelidation({
   inputValidationPhase
 });
 ```
-`validateOn (string[]: ['input'])`: array of input events to validate input value
+`validateOn (string[]: ['change'])`: array of input events to validate input value
 
 `clearOn (string[]: ['reset'])`: array of input and form events to clear errors. All events except `reset` will be applied to input. `reset` to form 
 

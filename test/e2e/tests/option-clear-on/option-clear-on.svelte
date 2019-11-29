@@ -18,7 +18,7 @@
   const {
     entries: [[ focusChangeResetStore, focusChangeResetInput ]],
     createForm: focusChangeResetCreateForm
-  } = getValidation(getConfig({ clearOn: ['focus', 'change', 'reset'] }));
+  } = getValidation(getConfig({ clearOn: ['focus', 'change', 'reset'], validateOn: [] }));
 
   let activeId = 'default';
 </script>

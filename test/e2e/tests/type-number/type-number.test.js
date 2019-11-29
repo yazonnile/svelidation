@@ -1,4 +1,4 @@
-import Page from 'page';
+import Page, { blur } from 'page';
 const page = new Page();
 
 fixture `type number`
@@ -11,7 +11,9 @@ test('type rule', async t => {
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
     .expect(page.errors.exists).ok()
-    .typeText(page.inputs, '1')
+    .typeText(page.inputs, '1');
+  await blur();
+  await t
     .expect(page.errors.exists).notOk();
 });
 
@@ -22,9 +24,13 @@ test('minValue rule', async t => {
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
     .expect(page.errors.exists).ok()
-    .typeText(page.inputs, '2')
+    .typeText(page.inputs, '2');
+  await blur();
+  await t
     .expect(page.errors.exists).ok()
-    .typeText(page.inputs, '2')
+    .typeText(page.inputs, '2');
+  await blur();
+  await t
     .expect(page.errors.exists).notOk();
 });
 
@@ -35,8 +41,12 @@ test('maxValue rule', async t => {
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
     .expect(page.errors.exists).ok()
-    .typeText(page.inputs, '2')
+    .typeText(page.inputs, '2');
+  await blur();
+  await t
     .expect(page.errors.exists).notOk()
-    .typeText(page.inputs, '3')
+    .typeText(page.inputs, '3');
+  await blur();
+  await t
     .expect(page.errors.exists).ok();
 });
