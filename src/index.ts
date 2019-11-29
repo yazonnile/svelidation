@@ -27,6 +27,15 @@ export default class Validation {
       inputValidationPhase: PhaseEnum.afterFirstValidation
     }, options);
 
+    // ensure options as array
+    if (!this.options.clearOn) {
+      this.options.clearOn = [];
+    }
+
+    if (!this.options.validateOn) {
+      this.options.validateOn = [];
+    }
+
     this.phase = PhaseEnum.never;
     this.createForm = this.createForm.bind(this);
   }

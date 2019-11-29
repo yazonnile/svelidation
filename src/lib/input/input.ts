@@ -42,7 +42,7 @@ export default class Input implements InputInterface {
       return false;
     }
 
-    return this.currentPhase !== initialPhase;
+    return this.currentPhase < initialPhase;
   }
 
   destroy() {

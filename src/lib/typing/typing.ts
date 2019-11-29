@@ -24,9 +24,9 @@ export interface EntryParamsInterface {
 }
 
 export interface OptionsInterface {
-  validateOn?: string[];
-  clearOn?: string[];
-  inputValidationPhase?: PhaseEnumType;
+  validateOn: string[];
+  clearOn: string[];
+  inputValidationPhase: PhaseEnumType;
 }
 
 export interface InputInterface {

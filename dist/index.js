@@ -156,7 +156,7 @@ class Input {
         if (initialPhase === PhaseEnum.always) {
             return false;
         }
-        return this.currentPhase !== initialPhase;
+        return this.currentPhase < initialPhase;
     }
     destroy() {
         this.options.clearOn.forEach(eventName => this.node.removeEventListener(eventName, this.onClear));
@@ -176,6 +176,13 @@ class Validation {
             clearOn: ['reset'],
             inputValidationPhase: PhaseEnum.afterFirstValidation
         }, options);
+        // ensure options as array
+        if (!this.options.clearOn) {
+            this.options.clearOn = [];
+        }
+        if (!this.options.validateOn) {
+            this.options.validateOn = [];
+        }
         this.phase = PhaseEnum.never;
         this.createForm = this.createForm.bind(this);
     }
