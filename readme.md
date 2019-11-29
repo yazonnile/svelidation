@@ -1,4 +1,4 @@
-![Svelidation](https://yazonnile.github.io/svelidation/logo.svg)
+![Svelidation](docs/logo.svg)
 
 Easily customizable library for `validation` scenarios in `svelte` components 
 
