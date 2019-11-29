@@ -11,7 +11,7 @@ const validators = {
   email: EmailType
 };
 
-const getRuleKeys = (params: EntryParamsInterface): string[] => {
+export const getRuleKeys = (params: EntryParamsInterface): string[] => {
   const { type, value, trim, optional, ...rest } = params;
   return Object.keys(rest);
 };

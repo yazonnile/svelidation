@@ -15,6 +15,7 @@ const paths = {
   e2e: buildPath('test/e2e'),
   e2eDist: buildPath('test/e2e/dist'),
   unit: buildPath('test/unit'),
+  unitDist: buildPath('test/unit/dist'),
   docs: buildPath('docs'),
   demo: buildPath('src/demo'),
 };
@@ -30,8 +31,8 @@ module.exports = {
         return {
           ...opts(type, production),
           plugins: plugins([
-            'resolve',
             'alias',
+            'resolve',
             'commonjs',
             'typescript'
           ], { type, production })
@@ -41,8 +42,8 @@ module.exports = {
         return  {
           ...opts(type, production),
           plugins: plugins([
-            'resolve',
             'alias',
+            'resolve',
             'commonjs',
             'typescript',
             'svelte',
@@ -55,12 +56,25 @@ module.exports = {
         return {
           ...opts(type, production),
           plugins: plugins([
-            'svelte',
-            'resolve',
             'alias',
+            'resolve',
             'commonjs',
+            'svelte',
             initServe && 'serve',
             initServe && 'liveReload',
+          ], { type, production })
+        };
+
+      case types.unit:
+        return {
+          ...opts(type, production),
+          plugins: plugins([
+            'alias',
+            'resolve',
+            'commonjs',
+            'typescript',
+            'liveReload',
+            'globFiles'
           ], { type, production })
         };
     }

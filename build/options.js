@@ -30,5 +30,16 @@ module.exports = ({ paths, types }) => (type, production) => {
         format: 'es'
       }
     };
+
+    case types.unit:
+    return {
+      input: 'src/unit.ts',
+      output: {
+        file: `${paths.unitDist}/specs.js`,
+        sourcemap: !production,
+        format: 'iife',
+      },
+      watch: { clearScreen: false }
+    };
   }
 };

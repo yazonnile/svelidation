@@ -28,7 +28,8 @@
     "dev": "rollup -c -w",
     "test:e2e": "node ./test/e2e/e2e.js --production",
     "test:e2e:dev": "node ./test/e2e/e2e.js",
-    "test:unit": "node ./test/unit/unit.js"
+    "test:unit": "node ./test/unit/unit.js --production",
+    "test:unit:dev": "node ./test/unit/unit.js"
   },
   "dependencies": {
     "svelte": "^3.13.0"
@@ -37,6 +38,7 @@
     "@pyoner/svelte-types": "^3.4.4-2",
     "@rollup/plugin-alias": "^2.2.0",
     "@rollup/plugin-replace": "^2.2.1",
+    "@types/jasmine": "^3.5.0",
     "fs-extra": "^8.1.0",
     "globby": "^10.0.1",
     "jasmine": "^3.5.0",
@@ -44,10 +46,12 @@
     "karma": "^4.4.1",
     "karma-chrome-launcher": "^3.1.0",
     "karma-jasmine": "^2.0.1",
+    "karma-jasmine-html-reporter": "^1.4.2",
     "module-alias": "^2.2.2",
     "puppeteer": "^2.0.0",
     "rollup": "^1.27.5",
     "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-glob-files": "^1.0.2",
     "rollup-plugin-livereload": "^1.0.4",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-serve": "^1.0.1",

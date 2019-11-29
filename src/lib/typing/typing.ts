@@ -46,7 +46,7 @@ export interface InputOptionsInterface extends OptionsInterface {
 }
 
 export interface StoreObjectInterface {
-  value: string;
+  value: any;
   errors: ErrorsType;
 }
 

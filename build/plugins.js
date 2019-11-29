@@ -14,6 +14,7 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
       switch (type) {
         case types.lib:
         case types.demo:
+        case types.unit:
           opts.entries = {
             lib: paths.lib,
             demo: paths.demo,
@@ -61,6 +62,10 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
         case types.e2e:
           src = paths.e2eDist;
           break;
+
+        case types.unit:
+          src = paths.unitDist;
+          break;
       }
 
       return !production && require('rollup-plugin-livereload')(src);
@@ -90,6 +95,13 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
 
       return !production && require('rollup-plugin-serve')(opts);
     },
+    globFiles: () => {
+      return require('rollup-plugin-glob-files').default([{
+        file: 'src/unit.ts',
+        include: [`**/*.spec.js`],
+        justImport: true
+      }]);
+    }
   };
 
   return pluginsNames.reduce((list, name) => {

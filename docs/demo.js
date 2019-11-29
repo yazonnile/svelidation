@@ -459,7 +459,7 @@ var validateValueByParams = (value, params) => {
     }
 };
 
-var updateStoreErrors = (store, errors) => {
+var updateStoreErrors = (store, errors = []) => {
     store.update(value => {
         return { ...value, errors };
     });

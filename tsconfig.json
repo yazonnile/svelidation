@@ -8,10 +8,10 @@
     "target": "esnext",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "types": ["@pyoner/svelte-types"],
+    "types": ["@pyoner/svelte-types", "@types/jasmine"],
     "lib": [ "es2015", "dom" ]
   },
   "include": [
-    "./**/*"
+    "./src/**/*"
   ]
 }
