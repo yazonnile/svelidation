@@ -1893,10 +1893,10 @@ const target = document.getElementById('app');
 new Demo({
     target,
     props: {
-        title: '<mark>input</mark> event after form <mark>submit</mark>',
+        title: 'Validation by <mark>change</mark> event after form <mark>submit</mark>',
         defaultSettings: true,
         options: {
-            validateOn: ['input'],
+            validateOn: ['change'],
             clearOn: ['reset'],
             inputValidationPhase: PhaseEnum.afterFirstValidation
         }
@@ -1905,7 +1905,7 @@ new Demo({
 new Demo({
     target,
     props: {
-        title: '<mark>blur</mark> / <mark>focus</mark> events <mark>always</mark>',
+        title: 'Validation by <mark>blur</mark> / <mark>focus</mark> events <mark>always</mark>',
         options: {
             validateOn: ['blur'],
             clearOn: ['focus'],
