@@ -5,15 +5,9 @@ const createTestCafe = require('testcafe');
 const globby = require('globby');
 const rollup = require('rollup');
 const moduleAlias = require('module-alias');
-
-const getRollupConfig = require('./rollup');
 const { production = false } = require('yargs').argv;
+const { buildConfig, types, paths } = require('../../build');
 
-const root = path.resolve(__dirname, '../../');
-const rootDist = path.resolve(root, 'dist');
-const rootDocs = path.resolve(root, 'docs');
-const e2eFolder = path.resolve(root, 'test/e2e');
-const e2eDist = path.resolve(e2eFolder, 'dist');
 const staticServerPort = 4411;
 
 const log = (msg) => console.log(`>>> ${msg}`);
@@ -25,20 +19,21 @@ moduleAlias.addAliases({
 
 (async() => {
   log('remove old files');
-  await fs.remove(e2eDist);
+  await fs.remove(paths.e2eDist);
 
   log('copy new files');
-  await fs.copy(`${rootDocs}/index.html`, `${e2eDist}/index.html`);
+  await fs.copy(`${paths.docs}/index.html`, `${paths.e2eDist}/index.html`);
 
   log('build test bundles');
-  const entryPoints = globby.sync([`${e2eFolder}/tests/**/*.js`]).filter(item => !item.match(/\.test\.js$/));
+  const entryPoints = globby.sync([`${paths.e2e}/tests/**/*.js`]).filter(item => !item.match(/\.test\.js$/));
   for (let i = 0; i < entryPoints.length; i++) {
-    const [ input, output ] = getRollupConfig({
-      rootDist, e2eDist, production,
-      input: entryPoints[i],
+    const config = buildConfig(types.e2e, {
+      production,
       initServe: i === entryPoints.length - 1
     });
 
+    const input = { input: entryPoints[i], plugins: config.plugins };
+    const { output } = config;
     const bundle = await rollup.rollup(input);
     await bundle.write(output);
 
@@ -59,7 +54,7 @@ moduleAlias.addAliases({
   log('start static server');
   await new Promise(resolve => {
     new StaticServer({
-      rootPath: e2eDist,
+      rootPath: paths.e2eDist,
       port: staticServerPort
     }).start(resolve);
   });
@@ -67,7 +62,7 @@ moduleAlias.addAliases({
   log(`Server listening to http://localhost:${staticServerPort}`);
   log('starting E2E/UI tests...');
 
-  const testFiles = await globby(`${e2eFolder}/tests/**/*.test.js`);
+  const testFiles = await globby(`${paths.e2e}/tests/**/*.test.js`);
 
   if (!testFiles.length) {
     log('no E2E test files found. Skipping E2E tests.');

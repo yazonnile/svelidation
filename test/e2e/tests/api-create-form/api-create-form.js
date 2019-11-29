@@ -1,3 +1,3 @@
 import ApiCreateForm from './api-create-form.svelte';
 
-new ApiCreateForm({ target: document.body });
+new ApiCreateForm({ target: document.getElementById('app') });

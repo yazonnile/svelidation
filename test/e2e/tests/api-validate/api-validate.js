@@ -1,3 +1,3 @@
 import ApiValidate from './api-validate.svelte';
 
-new ApiValidate({ target: document.body });
+new ApiValidate({ target: document.getElementById('app') });
