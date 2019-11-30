@@ -46,5 +46,3 @@ const fs = require('fs-extra');
 
   await server.start();
 })();
-
-
