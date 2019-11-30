@@ -14,7 +14,7 @@ const log = (msg) => console.log(`>>> ${msg}`);
 const exit = (status) => process.exit(status);
 
 moduleAlias.addAliases({
-  page: path.resolve(__dirname, 'helpers/page')
+  helpers: path.resolve(__dirname, 'helpers')
 });
 
 (async() => {

@@ -201,7 +201,7 @@ instance.validateStore(emailStore);
 Add custom or modify current validators
 ### `addValidator`
 ```js
-import Validation, { StringType, BaseType, addValidator } from 'src/index';
+import Validation, { StringType, BaseType, addValidator } from 'svelidation';
 
 addValidator('newTypeByRule', class extends StringType {
   newTypeParamRule() {

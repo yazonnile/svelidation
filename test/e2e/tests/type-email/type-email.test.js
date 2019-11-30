@@ -1,4 +1,4 @@
-import Page, { blur } from 'page';
+import Page, { blur } from 'helpers/page';
 const page = new Page();
 
 fixture `type email`

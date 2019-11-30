@@ -1,4 +1,4 @@
-import Page from 'page';
+import Page from 'helpers/page';
 const page = new Page();
 
 fixture `api createEntries`

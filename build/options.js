@@ -2,9 +2,9 @@ module.exports = ({ paths, types }) => (type, production) => {
   switch (type) {
     case types.lib:
     return {
-      input: 'src/index.ts',
+      input: 'src/lib/lib.ts',
       output: {
-        dir: paths.dist,
+        file: `${paths.dist}/index.js`,
         sourcemap: !production,
         format: 'es',
       },
@@ -13,7 +13,7 @@ module.exports = ({ paths, types }) => (type, production) => {
 
     case types.demo:
     return {
-      input: 'src/demo.ts',
+      input: 'src/demo/demo.ts',
       output: {
         dir: paths.docs,
         sourcemap: !production,
@@ -33,7 +33,7 @@ module.exports = ({ paths, types }) => (type, production) => {
 
     case types.unit:
     return {
-      input: 'src/unit.ts',
+      input: 'test/unit/unit.ts',
       output: {
         file: `${paths.unitDist}/specs.js`,
         sourcemap: !production,

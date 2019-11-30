@@ -1,5 +1,5 @@
 <script>
-  import Validation, { StringType, BaseType, addValidator } from 'src/index';
+  import Validation, { StringType, BaseType, addValidator } from 'lib/lib';
 
   addValidator('newTypeByRule', class extends StringType {
     newTypeParamRule() {

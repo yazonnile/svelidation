@@ -1,4 +1,4 @@
-import Validation, { PhaseEnum } from './index';
+import Validation, { PhaseEnum } from './lib';
 import { get } from 'svelte/store';
 
 describe('lib', () => {

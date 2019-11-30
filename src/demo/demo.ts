@@ -1,6 +1,6 @@
-import Demo from './demo/demo.svelte';
-import Dynamic from './demo/dynamic.svelte';
-import Custom from './demo/custom.svelte';
+import Demo from './demo.svelte';
+import Dynamic from './dynamic.svelte';
+import Custom from './custom.svelte';
 import { PhaseEnum } from 'lib/typing/typing';
 
 const target = document.getElementById('app');

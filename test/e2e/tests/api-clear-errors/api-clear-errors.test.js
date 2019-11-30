@@ -1,4 +1,4 @@
-import Page from 'page';
+import Page from 'helpers/page';
 import { Selector } from 'testcafe';
 const page = new Page();
 

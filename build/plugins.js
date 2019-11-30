@@ -8,29 +8,16 @@ const devServerOptions = {
 
 module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
   const plugins = {
-    alias: (type) => {
-      let opts = {resolve: ['.ts', '.js', '.svelte']};
-
-      switch (type) {
-        case types.lib:
-        case types.demo:
-        case types.unit:
-          opts.entries = {
-            lib: paths.lib,
-            demo: paths.demo,
-            src: paths.src
-          };
-          break;
-
-        case types.e2e:
-          opts.entries = {
-            svelidation: paths.dist,
-            helpers: path.join(paths.e2e, 'helpers')
-          };
-          break;
-      }
-
-      return require('@rollup/plugin-alias')(opts);
+    alias: () => {
+      return require('@rollup/plugin-alias')({
+        entries: {
+          lib: paths.lib,
+          demo: paths.demo,
+          dist: paths.dist,
+          helpers: `${paths.e2e}/helpers`
+        },
+        resolve: ['.ts', '.js', '.svelte']
+      });
     },
     resolve: () => {
       return require('rollup-plugin-node-resolve')({
@@ -53,22 +40,22 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
       });
     },
     liveReload: (type, production) => {
-      let src;
+      let liveReloadFolder;
       switch (type) {
         case types.demo:
-          src = paths.docs;
+          liveReloadFolder = paths.docs;
           break;
 
         case types.e2e:
-          src = paths.e2eDist;
+          liveReloadFolder = paths.e2eDist;
           break;
 
         case types.unit:
-          src = paths.unitDist;
+          liveReloadFolder = paths.unitDist;
           break;
       }
 
-      return !production && require('rollup-plugin-livereload')(src);
+      return !production && require('rollup-plugin-livereload')(liveReloadFolder);
     },
     serve: (type, production) => {
       let opts;
@@ -97,7 +84,7 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
     },
     globFiles: () => {
       return require('rollup-plugin-glob-files').default([{
-        file: 'src/unit.ts',
+        file: 'test/unit/unit.ts',
         include: [`**/*.spec.js`],
         justImport: true
       }]);

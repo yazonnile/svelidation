@@ -1,4 +1,4 @@
-import Page, { focus, blur } from 'page';
+import Page, { focus, blur } from 'helpers/page';
 const page = new Page();
 
 fixture `option clearOn`

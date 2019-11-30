@@ -1,6 +1,6 @@
 <script>
   import { Entry, Form } from 'helpers/helpers';
-  import Svelidation, { StringType } from 'svelidation';
+  import Svelidation, { StringType } from 'dist';
 
   StringType.prototype.typeValidation = function() {
     return this.getValue().length >= 4;

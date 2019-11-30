@@ -1,6 +1,6 @@
 <script>
   import { getValidation, Entry, Form } from 'helpers/helpers';
-  import { addValidator, BaseType } from 'svelidation';
+  import { addValidator, BaseType } from 'dist';
 
   addValidator('xxxType', class extends BaseType {
     typeValidation() {

@@ -1,5 +1,5 @@
 <script>
-  import Validation from 'src/index';
+  import Validation from 'lib/lib';
 
   const validation = new Validation({
     validateOn: []

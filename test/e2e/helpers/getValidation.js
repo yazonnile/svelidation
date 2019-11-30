@@ -1,4 +1,4 @@
-import Validation from 'svelidation';
+import Validation from 'dist';
 
 export default ({
   entries,
