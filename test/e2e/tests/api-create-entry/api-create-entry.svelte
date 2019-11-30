@@ -8,10 +8,11 @@
   const {
     entries: [
       [ noUseStore ],
-      [ useStore, useInput ]
+      [ useStore, useInput ],
+      [ inputOptsStore, inputOptsInput ]
     ],
     createForm: noUseCreateForm
-  } = getValidation(getConfig(2));
+  } = getValidation(getConfig(3));
 
   const {
     entries: [[ hiddenStore, hiddenInput ]],
@@ -25,6 +26,7 @@
   <Form createForm={noUseCreateForm}>
     <Entry store={noUseStore} />
     <Entry store={useStore} input={useInput} />
+    <Entry store={inputOptsStore} input={inputOptsInput} inputOpts={{ validateOn: ['input'] }} />
   </Form>
 </Slide>
 

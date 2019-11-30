@@ -20,7 +20,7 @@ export default class BaseType {
   }
 
   typeValidation(regExp: RegExp) {
-    return this.getValue().toString().match(regExp);
+    return !!this.getValue().toString().match(regExp);
   }
 
   matchRule() {
