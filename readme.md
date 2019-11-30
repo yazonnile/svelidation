@@ -253,7 +253,8 @@ const [ secondStore, secondInput ] = validation.createEntry({
 - `npm run dev` - run dev server from dist folder with demo page by default
 - `npm run test:e2e` - e2e testing of lib file from `dist`
 - `npm run test:e2e:dev` - dev server from `e2e/dist` folder with tests name in params
+- `npm run test:unit` - unit testing of `spec.js` files in `lib`
+- `npm run test:unit:dev` - dev server for unit testing
 
 # TODO
-- unit tests
 - eslints
