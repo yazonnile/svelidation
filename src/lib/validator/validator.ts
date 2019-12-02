@@ -28,8 +28,9 @@ interface SvelidationRunWithInterceptors {(
 )}
 
 interface SvelidationRunWithInterceptorsResult {
-  errors: string[],
-  stop?: boolean
+  errors?: string[],
+  stop?: boolean,
+  abort?: boolean,
 }
 
 const runRuleWithInterceptors: SvelidationRunWithInterceptors = ({ value, params: initialParams, rule, ruleName, interceptors }): SvelidationRunWithInterceptorsResult => {
@@ -38,14 +39,21 @@ const runRuleWithInterceptors: SvelidationRunWithInterceptors = ({ value, params
   let nextValue = value;
   let nextParams = initialParams;
   let stop = false;
+  let abort = false;
 
-  for (let i = 0; i < interceptors.length && !stop; i++) {
+  for (let i = 0; i < interceptors.length; i++) {
     stop = true;
     const interceptorErrors = interceptors[i](nextValue, { type, ruleName, ...nextParams }, (value, params = {}) => {
       nextValue = value;
       nextParams = { ...initialParams, ...params };
       stop = false;
+    }, () => {
+      abort = true;
     });
+
+    if (abort) {
+      return { abort };
+    }
 
     if (Array.isArray(interceptorErrors)) {
       errors.push(...interceptorErrors);
@@ -83,7 +91,7 @@ const skipValidation = (value: any, { optional, required }): boolean => {
   return valueIsAbsent && valueIsOptional;
 };
 
-const validate = (value: SvelidationValue, validateParams: SvelidationValidatorParams): string[] => {
+const validate = (value: SvelidationValue, validateParams: SvelidationValidatorParams): string[]|void => {
   const { trimValue = false, ...params } = validateParams;
 
   if (trimValue && typeof value === 'string') {
@@ -104,12 +112,16 @@ const validate = (value: SvelidationValue, validateParams: SvelidationValidatorP
     return [];
   } else {
     const typeCheckInterceptors = getInterceptors({ type, ruleName: 'typeCheck' });
-    const { stop, errors } = runRuleWithInterceptors({
+    const { stop, errors, abort } = runRuleWithInterceptors({
       value, params,
       rule: typeCheck,
       ruleName: 'typeCheck',
       interceptors: [...globalInterceptors, ...typeInterceptors, ...typeCheckInterceptors]
     });
+
+    if (abort) {
+      return;
+    }
 
     if (errors.length || stop) {
       return errors;
@@ -122,12 +134,16 @@ const validate = (value: SvelidationValue, validateParams: SvelidationValidatorP
   for (let i = 0; i < ruleNames.length; i++) {
     const typeRuleInterceptors = getInterceptors({ type, ruleName: ruleNames[i] });
     const ruleInterceptors = getInterceptors({ ruleName: ruleNames[i] });
-    const { stop, errors } = runRuleWithInterceptors({
+    const { stop, errors, abort } = runRuleWithInterceptors({
       value, params,
       rule: typeCheck,
       ruleName: ruleNames[i],
       interceptors: [...globalInterceptors, ...typeInterceptors, ...typeRuleInterceptors,  ...ruleInterceptors]
     });
+
+    if (abort) {
+      return;
+    }
 
     if (stop) {
       return errors;

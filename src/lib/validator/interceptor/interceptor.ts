@@ -8,6 +8,7 @@ interface SvelidationInterceptor<T = SvelidationValue, R = boolean> {(
     [key: string]: any
   },
   next: SvelidationRule<T, void>,
+  abort: () => void,
 ): string[] | void}
 
 interface SvelidationInterceptorStore {
