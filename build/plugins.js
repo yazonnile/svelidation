@@ -1,5 +1,3 @@
-const path = require('path');
-
 const devServerOptions = {
   protocol: 'http',
   host: 'localhost',
@@ -62,25 +60,24 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
       switch (type) {
         case types.demo:
           opts = {
-            open: true,
             contentBase: paths.docs,
-            host: devServerOptions.host,
-            port: devServerOptions.port,
           };
           break;
 
         case types.e2e:
           opts = {
-            open: true,
             contentBase: paths.e2eDist,
-            host: devServerOptions.host,
-            port: devServerOptions.port,
             openPage: '?test=default',
           };
           break;
       }
 
-      return !production && require('rollup-plugin-serve')(opts);
+      return !production && require('rollup-plugin-serve')({
+        ...opts,
+        open: true,
+        host: devServerOptions.host,
+        port: devServerOptions.port,
+      });
     },
     globFiles: () => {
       return require('rollup-plugin-glob-files').default([{
