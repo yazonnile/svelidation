@@ -5,12 +5,15 @@ interface SvelidationValidatorParams {
   type: string;
   optional?: boolean;
   required?: boolean;
+  trimValue?: boolean;
+
   minLength?: number;
   maxLength?: number;
   min?: number;
   max?: number;
   equal?: SvelidationValue;
   match?: RegExp;
+
   [key: string]: SvelidationValue;
 }
 
@@ -75,12 +78,18 @@ const getScope = ({ type, optional, ...rules }: SvelidationValidatorParams): Sve
 };
 
 const skipValidation = (value: any, { optional, required }): boolean => {
-  const valueIsAbsent = ['undefined', 'null', ''].indexOf(String(value)) > -1;
+  const valueIsAbsent = [undefined, null, ''].indexOf(value) > -1;
   const valueIsOptional = typeof optional === 'boolean' ? optional : !required;
   return valueIsAbsent && valueIsOptional;
 };
 
-const validate = (value: SvelidationValue, params: SvelidationValidatorParams): string[] => {
+const validate = (value: SvelidationValue, validateParams: SvelidationValidatorParams): string[] => {
+  const { trimValue = false, ...params } = validateParams;
+
+  if (trimValue && typeof value === 'string') {
+    value = (value as string).trim();
+  }
+
   const { required, optional, type } = params;
   if (skipValidation(value, { required, optional })) {
     return [];

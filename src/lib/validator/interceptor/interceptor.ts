@@ -17,7 +17,7 @@ interface SvelidationInterceptorStore {
 type SvelidationInterceptorParams = {
   type?: string,
   ruleName?: string,
-} | SvelidationInterceptor;
+};
 
 const globals: SvelidationInterceptor[] = [];
 const typeRules: {[key: string]: SvelidationInterceptorStore} = {};
@@ -25,11 +25,11 @@ const types: SvelidationInterceptorStore = {};
 const rules: SvelidationInterceptorStore = {};
 
 const addInterceptor = (
-  params: SvelidationInterceptorParams,
-  interceptor?: SvelidationInterceptor
+  interceptor: SvelidationInterceptor,
+  params?: SvelidationInterceptorParams,
 ): SvelidationInterceptor[] => {
-  if (typeof params === 'function') {
-    return globals.push(params) && globals;
+  if (!params) {
+    return globals.push(interceptor) && globals;
   }
 
   const { type, ruleName } = params;
@@ -46,7 +46,7 @@ const addInterceptor = (
 };
 
 const getInterceptors = (params?): SvelidationInterceptor[] => {
-  if (!params) {
+  if (!params || typeof params === 'function') {
     return globals;
   }
 
@@ -60,13 +60,13 @@ const getInterceptors = (params?): SvelidationInterceptor[] => {
       return rules[ruleName];
     }
   } catch (e) {
-    return null;
+    return;
   }
 };
 
 const removeInterceptor = (
-  params: SvelidationInterceptorParams,
-  interceptor?: SvelidationInterceptor
+  interceptor: SvelidationInterceptor,
+  params?: SvelidationInterceptorParams,
 ): boolean => {
   const list = getInterceptors(params);
 
@@ -74,12 +74,12 @@ const removeInterceptor = (
     return false;
   }
 
-  const interceptorPosition = list.indexOf(typeof params === 'function' ? params : interceptor);
+  const interceptorPosition = list.indexOf(interceptor);
   return list.splice(interceptorPosition, interceptorPosition === -1 ? 0 : 1).length > 0;
 };
 
 const clearInterceptors = (
-  params: SvelidationInterceptorParams
+  params?: SvelidationInterceptorParams
 ): boolean => {
   const list = getInterceptors(params);
 
@@ -92,19 +92,3 @@ const clearInterceptors = (
 };
 
 export { addInterceptor, removeInterceptor, clearInterceptors, getInterceptors, SvelidationInterceptor };
-
-// intercept({
-//   type: 'string'
-// }, (value, { ruleName, next }) => {
-//   return next(value, { any: 'data' });
-// });
-
-// intercept({
-//   ruleName: 'lololo'
-// }, (value, { type, next }) => {
-//   return next(value, { any: 'data' });
-// });
-
-// intercept((value, { type, ruleName, next }) => {
-//   return next(value.trim(), { any: 'data' });
-// });

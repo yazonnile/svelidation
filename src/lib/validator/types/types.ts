@@ -6,8 +6,8 @@ type SvelidationRule<Type = SvelidationValue, R = boolean> = {
   }): R
 }
 
-type SvelidationType<Type> = {
-  typeCheck: SvelidationRule<Type>;
+type SvelidationType<Type = SvelidationValue> = {
+  typeCheck?: SvelidationRule<Type>;
   [key: string]: SvelidationRule<Type>;
 }
 
@@ -19,15 +19,15 @@ type SvelidationRulesStore<Type = SvelidationValue> = {
   [key: string]: SvelidationRule<Type>
 }
 
-const types: SvelidationTypesStore | {} = {};
-const rules: SvelidationRulesStore | {} = {};
+let types: SvelidationTypesStore | {} = {};
+let rules: SvelidationRulesStore | {} = {};
 
 const ensureType = <Type = SvelidationValue>(
   typeName: string,
   typeRules: SvelidationType<Type>
 ) => {
   if (!types[typeName]) {
-    if (typeof typeRules.typeCheck !== 'function') {
+    if (typeof typeRules !== 'object' || typeof typeRules.typeCheck !== 'function') {
       console.warn('svelidation: typeCheck method is required for new types', typeName);
       return;
     }
@@ -38,33 +38,96 @@ const ensureType = <Type = SvelidationValue>(
   Object.assign(types[typeName], typeRules);
 };
 
-ensureType<string>('string', {
-  typeCheck: (value) => (typeof value === 'string'),
-  minLength: (value, { minLength }) => (value.length >= minLength),
-  maxLength: (value, { maxLength }) => (value.length >= maxLength),
-});
+const resetType = (typeName?: string) => {
+  if (!typeName) {
+    types = {};
+    Object.keys(installType).forEach(key => installType[key]());
+  } else {
+    delete types[typeName];
 
-ensureType<string>('email', {
-  typeCheck: (value) => (typeof value === 'string' && !!(String(value)).match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))
-});
+    if (installType[typeName]) {
+      installType[typeName]();
+    }
+  }
+};
 
-ensureType<number>('number', {
-  typeCheck: (value) => !!(String(value)).match(/[\d.]+/),
-  min: (value, { min }) => (value >= min),
-  max: (value, { max }) => (value <= max),
-});
+const resetRule = (ruleName?: string) => {
+  if (!ruleName) {
+    rules = {};
+    Object.keys(installRule).forEach(key => installRule[key]());
+  } else {
+    delete rules[ruleName];
+
+    if (installType[ruleName]) {
+      installType[ruleName]();
+    }
+  }
+};
+
+const installType = {
+  string: () => {
+    ensureType<string>('string', {
+      typeCheck: (value) => (typeof value === 'string'),
+      minLength: (value, { minLength }) => (value.length >= minLength),
+      maxLength: (value, { maxLength }) => (value.length <= maxLength),
+    })
+  },
+
+  email: () => {
+    ensureType<string>('email', {
+      typeCheck: (value) => (
+        typeof value === 'string'
+        && !!(String(value)).match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
+      )
+    });
+  },
+
+  number: () => {
+    ensureType<number>('number', {
+      typeCheck: (value) => (
+        typeof value === 'number' || !isNaN(parseFloat(value as any))
+      ),
+      min: (value, { min }) => (parseFloat(value as any) >= min),
+      max: (value, { max }) => (parseFloat(value as any) <= max),
+    });
+  }
+};
+
+const installRule = {
+  equal: () => {
+    ensureRule('equal', (value, { equal }) => (value === equal));
+  },
+
+  match: () => {
+    ensureRule('match', (value, { match }) => !!(String(value)).match(match));
+  },
+
+  required: () => {
+    ensureRule('required', (value) => {
+      if (value === undefined || value === null) {
+        return false;
+      }
+
+      return !isNaN(value as any) && !!String(value);
+    });
+  }
+};
 
 const ensureRule = (ruleName: string, rule: SvelidationRule) => {
+  if (typeof rule !== 'function') {
+    console.warn('svelidation: ensureRule has to have second function argument', ruleName);
+    return;
+  }
+
   Object.assign(rules, {
     [ruleName]: rule
   });
 };
 
-ensureRule('equal', (value, { equal }) => (value === equal));
-ensureRule('match', (value, { match }) => !!(String(value)).match(match));
-ensureRule('required', (value) => !!String(value));
+const getType = (typeName: string): SvelidationType|undefined => types[typeName];
+const getRule = (ruleName: string): SvelidationRule|undefined => rules[ruleName];
 
-const getType = (typeName) => types[typeName];
-const getRule = (ruleName) => rules[ruleName];
+resetType();
+resetRule();
 
-export { ensureRule, ensureType, SvelidationValue, SvelidationRule, SvelidationRulesStore, getType, getRule };
+export { ensureRule, ensureType, resetType, resetRule, SvelidationValue, SvelidationRule, SvelidationRulesStore, getType, getRule };
