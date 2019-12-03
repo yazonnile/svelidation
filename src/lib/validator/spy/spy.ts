@@ -20,15 +20,15 @@ type SvelidationSpyParams = {
   ruleName?: string,
 };
 
-const globals: SvelidationSpy[] = [];
-const typeRules: {[key: string]: SvelidationSpyStore} = {};
-const types: SvelidationSpyStore = {};
-const rules: SvelidationSpyStore = {};
+let globals: SvelidationSpy[] = [];
+let typeRules: {[key: string]: SvelidationSpyStore} = {};
+let types: SvelidationSpyStore = {};
+let rules: SvelidationSpyStore = {};
 
 const addSpy = (
   spy: SvelidationSpy,
   params?: SvelidationSpyParams,
-): SvelidationRemoveSpy => {
+): Function => {
   if (!params) {
     globals.push(spy);
   } else {
@@ -49,7 +49,7 @@ const addSpy = (
 };
 
 const getSpies = (params?): SvelidationSpy[] => {
-  if (!params || typeof params === 'function') {
+  if (!params) {
     return globals;
   }
 
@@ -83,12 +83,20 @@ const removeSpy: SvelidationRemoveSpy = (spy, params) => {
   return list.splice(spyPosition, spyPosition === -1 ? 0 : 1).length > 0;
 };
 
-const clearSpies = (
+const removeSpies = (
   params?: SvelidationSpyParams
 ): boolean => {
+  if (!params) {
+    globals.length = 0;
+    typeRules = {};
+    types = {};
+    rules = {};
+    return true;
+  }
+
   const list = getSpies(params);
 
-  if (!list || list.length === 0) {
+  if (!list) {
     return false;
   }
 
@@ -96,4 +104,4 @@ const clearSpies = (
   return true;
 };
 
-export { addSpy, clearSpies, getSpies, removeSpy, SvelidationSpy };
+export { addSpy, removeSpies, getSpies, removeSpy, SvelidationSpy };

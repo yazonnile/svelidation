@@ -1,7 +1,7 @@
 import {
   addSpy,
   removeSpy,
-  clearSpies,
+  removeSpies,
   getSpies
 } from './spy';
 
@@ -17,7 +17,7 @@ describe('spy', () => {
   const runTests = (name, params) => {
     describe(`${name}`, () => {
       afterEach(() => {
-        clearSpies(params);
+        removeSpies(params);
       });
 
       it('getSpies', () => {
@@ -68,19 +68,18 @@ describe('spy', () => {
         expect(removeSpy(() => {}, params)).toBeFalse();
       });
 
-      it('clearSpies', () => {
+      it('removeSpies', () => {
         addSpy(() => { }, params);
         addSpy(() => { }, params);
         expect(getSpies(params).length).toBe(2);
-        clearSpies(params);
+        removeSpies(params);
         expect(getSpies(params).length).toBe(0);
       });
 
-      it('clearSpies return', () => {
+      it('removeSpies return', () => {
         addSpy(() => { }, params);
         addSpy(() => { }, params);
-        expect(clearSpies(params)).toBeTrue();
-        expect(clearSpies(params)).toBeFalse();
+        expect(removeSpies(params)).toBeTrue();
       });
     });
   };

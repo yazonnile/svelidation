@@ -5,7 +5,7 @@ interface SvelidationValidatorParams {
   type: string;
   optional?: boolean;
   required?: boolean;
-  trimValue?: boolean;
+  trim?: boolean;
 
   minLength?: number;
   maxLength?: number;
@@ -73,6 +73,11 @@ const runRuleWithSpies: SvelidationRunWithSpies = ({ value, params: initialParam
 
 const getScope = ({ type, optional, ...rules }: SvelidationValidatorParams): SvelidationRulesStore => {
   const typeRules = getType(type);
+
+  if (!typeRules) {
+    return {};
+  }
+
   return [...Object.keys(rules), 'typeCheck'].reduce((rules, ruleName) => {
     const rule = typeRules[ruleName] || getRule(ruleName);
     if (rule) {
@@ -92,9 +97,9 @@ const skipValidation = (value: any, { optional, required = false }): boolean => 
 };
 
 const validate = (value: any, validateParams: SvelidationValidatorParams): string[]|void => {
-  const { trimValue = false, ...params } = validateParams;
+  const { trim = false, ...params } = validateParams;
 
-  if (trimValue && typeof value === 'string') {
+  if (trim && typeof value === 'string') {
     value = (value as string).trim();
   }
 
@@ -111,7 +116,7 @@ const validate = (value: any, validateParams: SvelidationValidatorParams): strin
     console.warn('svelidation: typeCheck method is absent for type', params.type);
     return [];
   } else {
-    const typeCheckSpies = getSpies({ type, ruleName: 'typeCheck' });
+    const typeCheckSpies = getSpies({ ruleName: 'typeCheck' });
     const { stop, errors, abort } = runRuleWithSpies({
       value, params,
       rule: typeCheck,
@@ -136,7 +141,7 @@ const validate = (value: any, validateParams: SvelidationValidatorParams): strin
     const ruleSpies = getSpies({ ruleName: ruleNames[i] });
     const { stop, errors, abort } = runRuleWithSpies({
       value, params,
-      rule: typeCheck,
+      rule: scope[ruleNames[i]],
       ruleName: ruleNames[i],
       spies: [...globalSpies, ...typeSpies, ...typeRuleSpies,  ...ruleSpies]
     });

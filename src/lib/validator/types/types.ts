@@ -22,44 +22,39 @@ let rules: SvelidationRulesStore | {} = {};
 
 const ensureType = <Type = any>(
   typeName: string,
-  typeRules: SvelidationType<Type> | {
-    typeCheck?: string;
-    [key: string]: string
-  }
+  typeRules: SvelidationType<Type>
 ) => {
-  if (!types[typeName]) {
-    if (typeof typeRules !== 'object') {
-      console.warn('svelidation: rule required for new type', typeName);
-      return;
-    }
+  if (typeof typeRules !== 'object') {
+    console.warn('svelidation: rules should be an object', typeName);
+    return;
+  }
 
-    if (typeof typeRules.typeCheck === 'string') {
-      const [ typeName, ruleName ] = typeRules.typeCheck.split('.');
-      const type = getType(typeName);
+  Object.keys(typeRules).reduce((obj, key) => {
+    const rule = typeRules[key];
 
-      if (type && type[ruleName]) {
-        typeRules.typeCheck = type[ruleName];
+    try {
+      if (typeof rule === 'string') {
+        const [ typeName, ruleName ] = (rule as string).split('.');
+        const inheritedRule = getType(typeName)[ruleName];
+
+        if (typeof inheritedRule === 'function') {
+          obj[ruleName] = inheritedRule;
+        }
+      } else if (typeof rule === 'function') {
+        obj[key] = rule;
       }
+    } catch (e) {
+      delete obj[key];
     }
 
+    return obj;
+  }, typeRules);
+
+  if (!types[typeName]) {
     if (typeof typeRules.typeCheck !== 'function') {
       console.warn('svelidation: typeCheck method is required for new types', typeName);
       return;
     }
-
-    Object.keys(typeRules).forEach(key => {
-      const rule = typeRules[key];
-      if (typeof rule === 'string') {
-        const [ typeName, ruleName ] = (rule as any).split('.');
-        const cb = getType(typeName)[ruleName];
-
-        if (typeof cb === 'function') {
-          typeRules[key] = cb;
-        } else {
-          delete typeRules[key];
-        }
-      }
-    });
 
     types[typeName] = {};
   }
