@@ -26,6 +26,7 @@ export interface SvelidationOptionsInterface {
   validateOn?: string[];
   clearOn?: string[];
   inputValidationPhase?: SvelidationPhaseEnumType;
+  presence: 'required' | 'optional'
 }
 
 export interface SvelidationInputInterface {

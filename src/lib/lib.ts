@@ -23,7 +23,8 @@ export default class Validation {
     this.options = Object.assign({
       validateOn: ['change'],
       clearOn: ['reset'],
-      inputValidationPhase: SvelidationPhaseEnum.afterFirstValidation
+      inputValidationPhase: SvelidationPhaseEnum.afterFirstValidation,
+      presence: 'optional'
     }, options);
 
     // ensure options as array
@@ -39,9 +40,21 @@ export default class Validation {
     this.createForm = this.createForm.bind(this);
   }
 
+  preparePresence(params) {
+    const { required, optional } = params;
+    if (this.options.presence === 'required'
+      && required === undefined
+      && optional === undefined
+    ) {
+      params.required = true;
+    }
+
+    return params;
+  }
+
   createEntry(params: SvelidationEntryParamsInterface): [SvelidationStoreType, SvelidationUseInputFunctionInterface] {
     const store: SvelidationStoreType = writable({ value: params.value || '', errors: [] });
-    const entry: SvelidationEntryInterface = { store, params };
+    const entry: SvelidationEntryInterface = { store, params: this.preparePresence(params) };
     const useInput: SvelidationUseInputFunctionInterface = (inputNode, useOptions) => {
       const inputOptions = Object.assign({}, this.options, useOptions, {
         onClear: () => {

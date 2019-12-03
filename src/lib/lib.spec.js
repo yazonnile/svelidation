@@ -26,6 +26,15 @@ describe('lib', () => {
     });
   });
 
+  it('preparePresence', () => {
+    instance = createInstance();
+    expect(instance.options.presence).toBe('optional');
+    expect(instance.preparePresence({ a: 1 })).toEqual({ a: 1 });
+    instance.options.presence = 'required';
+    expect(instance.preparePresence({ a: 1 })).toEqual({ a: 1, required: true });
+    expect(instance.preparePresence({ a: 1, optional: true })).toEqual({ a: 1, optional: true });
+  });
+
   it('createEntry', () => {
     instance = createInstance();
 
