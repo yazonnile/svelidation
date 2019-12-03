@@ -127,7 +127,18 @@ const installType = {
       typeCheck: (value) => typeof value === 'boolean',
       required: (value) => value,
     });
-  }
+  },
+
+  array: () => {
+    ensureType<any[]>('array', {
+      typeCheck: (value) => Array.isArray(value),
+      required: (value) => value.length > 0,
+      min: (value, { min }) => value.length >= min,
+      max: (value, { max }) => value.length <= max,
+      equal: (value, { equal }) => value.sort().toString() === equal.sort().toString(),
+      includes: (value, { includes }) => value.includes(includes)
+    });
+  },
 };
 
 const installRule = {

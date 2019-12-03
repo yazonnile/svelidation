@@ -1,9 +1,22 @@
 import Demo from './demo.svelte';
 import Dynamic from './dynamic.svelte';
 import Radios from './radios.svelte';
+import Array from './array.svelte';
 import { SvelidationPhase } from 'lib/typing/typing';
 
 const target = document.getElementById('app');
+
+new Array({
+  target,
+  props: {
+    title: 'Array example',
+    options: {
+      validateOn: ['change'],
+      clearOn: ['reset'],
+      listenInputEvents: SvelidationPhase.afterValidation
+    }
+  }
+});
 
 new Demo({
   target,

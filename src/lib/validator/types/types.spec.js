@@ -19,6 +19,7 @@ describe('validator types', () => {
       const emailType = getType('email');
       const numberType = getType('number');
       const booleanType = getType('boolean');
+      const arrayType = getType('array');
 
       expect(stringType).toBeDefined();
       expect(Object.keys(stringType).sort()).toEqual(['typeCheck', 'minLength', 'maxLength'].sort());
@@ -28,6 +29,8 @@ describe('validator types', () => {
       expect(Object.keys(numberType).sort()).toEqual(['typeCheck', 'min', 'max'].sort());
       expect(booleanType).toBeDefined();
       expect(Object.keys(booleanType).sort()).toEqual(['typeCheck', 'required'].sort());
+      expect(arrayType).toBeDefined();
+      expect(Object.keys(arrayType).sort()).toEqual(['typeCheck', 'required', 'min', 'max', 'equal', 'includes'].sort());
     });
 
     it('rules', () => {
@@ -128,6 +131,55 @@ describe('validator types', () => {
         const { required } = getType('boolean');
         expect(required(true)).toBeTrue();
         expect(required(false)).toBeFalse();
+      });
+    });
+
+    describe('array', () => {
+      it('typeCheck', () => {
+        const { typeCheck } = getType('array');
+        expect(typeCheck('')).toBeFalse();
+        expect(typeCheck(undefined)).toBeFalse();
+        expect(typeCheck(null)).toBeFalse();
+        expect(typeCheck(' ')).toBeFalse();
+        expect(typeCheck(0)).toBeFalse();
+        expect(typeCheck(true)).toBeFalse();
+        expect(typeCheck(false)).toBeFalse();
+        expect(typeCheck({})).toBeFalse();
+        expect(typeCheck([])).toBeTrue();
+      });
+
+      it('required', () => {
+        const { required } = getType('array');
+        expect(required([1])).toBeTrue();
+        expect(required([])).toBeFalse();
+      });
+
+      it('equal', () => {
+        const { equal } = getType('array');
+        expect(equal([1,5,2], { equal: [5,2,1] })).toBeTrue();
+        expect(equal([1,6,2], { equal: [5,2,1] })).toBeFalse();
+        expect(equal([1,5,2,1], { equal: [5,2,1] })).toBeFalse();
+      });
+
+      it('min', () => {
+        const { min } = getType('array');
+        expect(min([1,2,3], { min: 2 })).toBeTrue();
+        expect(min([1], { min: 2 })).toBeFalse();
+        expect(min([], { min: 2 })).toBeFalse();
+      });
+
+      it('max', () => {
+        const { max } = getType('array');
+        expect(max([1,5], { max: 2 })).toBeTrue();
+        expect(max([1,6,2], { max: 2 })).toBeFalse();
+        expect(max([1,5,2,1], { max: 2 })).toBeFalse();
+      });
+
+      it('includes', () => {
+        const { includes } = getType('array');
+        expect(includes([1,5,2], { includes: 1 })).toBeTrue();
+        expect(includes([2,6,2], { includes: 1 })).toBeFalse();
+        expect(includes([3,5,2,2], { includes: 1 })).toBeFalse();
       });
     });
   });

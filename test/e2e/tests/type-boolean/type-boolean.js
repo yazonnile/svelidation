@@ -1,3 +1,3 @@
-import BooleanNumber from './type-boolean.svelte';
+import TypeBoolean from './type-boolean.svelte';
 
-new BooleanNumber({ target: document.getElementById('app') });
+new TypeBoolean({ target: document.getElementById('app') });
