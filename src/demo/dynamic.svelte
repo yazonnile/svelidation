@@ -22,7 +22,7 @@
 
   const [ ageStore, ageInput ] = validation.createEntry({
     type: 'number',
-    minValue: 18
+    min: 18
   });
 
   let step = 1;
@@ -64,14 +64,14 @@
     <label>
       Email STEP 2
       <input type="email" use:emailInput bind:value={$emailStore.value} />
-      {#if $emailStore.errors.includes('type')}
+      {#if $emailStore.errors.includes('typeCheck')}
         <p class="error">Email should be correct</p>
       {/if}
     </label>
     <label>
       Email STEP 2
       <input type="email" use:email2Input bind:value={$email2Store.value} />
-      {#if $email2Store.errors.includes('type')}
+      {#if $email2Store.errors.includes('typeCheck')}
         <p class="error">Email should be correct</p>
       {/if}
     </label>
@@ -79,7 +79,7 @@
     <label>
       Number STEP 3
       <input type="number" use:ageInput bind:value={$ageStore.value} />
-      {#if $ageStore.errors.includes('minValue')}
+      {#if $ageStore.errors.includes('min')}
         <p class="error">For boomers only!</p>
       {/if}
     </label>

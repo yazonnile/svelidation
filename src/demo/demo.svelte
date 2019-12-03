@@ -10,7 +10,7 @@
 
   const [ loginStore, loginInput ] = validation.createEntry({
     type: 'string',
-    minLength: 3,
+    minLength: 5,
     maxLength: 15
   });
 
@@ -20,7 +20,7 @@
 
   const [ ageStore, ageInput ] = validation.createEntry({
     type: 'number',
-    minValue: 18
+    min: 18
   });
 
   let success = false;
@@ -49,14 +49,17 @@
   <label>
     Email
     <input type="email" use:emailInput bind:value={$emailStore.value} />
-    {#if $emailStore.errors.includes('type')}
+    {#if $emailStore.errors.includes('typeCheck')}
       <p class="error">Email should be correct</p>
     {/if}
   </label>
   <label>
     Number
-    <input type="number" use:ageInput bind:value={$ageStore.value} />
-    {#if $ageStore.errors.includes('minValue')}
+    <input type="text" use:ageInput bind:value={$ageStore.value} />
+    {#if $ageStore.errors.includes('typeCheck')}
+      <p class="error">Please, fill the number!</p>
+    {/if}
+    {#if $ageStore.errors.includes('min')}
       <p class="error">For boomers only!</p>
     {/if}
   </label>

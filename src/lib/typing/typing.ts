@@ -13,10 +13,11 @@ export type ErrorsType = string[];
 export interface EntryParamsInterface {
   type: string;
   optional?: boolean;
+  required?: boolean;
   minLength?: number;
   maxLength?: number;
-  minValue?: number;
-  maxValue?: number;
+  min?: number;
+  max?: number;
   value?: string;
   trim?: boolean;
   equal?: number|string;

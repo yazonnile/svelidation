@@ -47,7 +47,7 @@
   <label>
     Type 'AAA' (by type)
     <input type="email" use:secondInput bind:value={$secondStore.value} />
-    {#if $secondStore.errors.includes('type')}
+    {#if $secondStore.errors.includes('typeCheck')}
       <p class="error">OMG, you've messed up</p>
     {/if}
   </label>

@@ -17,9 +17,9 @@ test('type rule', async t => {
     .expect(page.errors.exists).notOk();
 });
 
-test('minValue rule', async t => {
+test('min rule', async t => {
   await t
-    .click(page.slideButton.withExactText('minValue'))
+    .click(page.slideButton.withExactText('min'))
     .expect(page.forms.exists).ok()
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
@@ -34,9 +34,9 @@ test('minValue rule', async t => {
     .expect(page.errors.exists).notOk();
 });
 
-test('maxValue rule', async t => {
+test('max rule', async t => {
   await t
-    .click(page.slideButton.withExactText('maxValue'))
+    .click(page.slideButton.withExactText('max'))
     .expect(page.forms.exists).ok()
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)

@@ -1,5 +1,5 @@
 import { writable, get } from 'svelte/store';
-import validateValueByParams from 'lib/validation/validation';
+import { validate as validateValueByParams } from 'lib/validator/validator';
 import updateStoreErrors from 'lib/update-store-errors/update-store-errors';
 import Input from 'lib/input/input';
 import isFunction from 'lib/is-function/is-function';
@@ -117,8 +117,11 @@ export default class Validation {
     if (entry) {
       const { value } = get(store);
       const errors = validateValueByParams(value, entry.params);
-      updateStoreErrors(store, errors);
-      return errors;
+
+      if (Array.isArray(errors)) {
+        updateStoreErrors(store, errors);
+        return errors;
+      }
     }
 
     return [];

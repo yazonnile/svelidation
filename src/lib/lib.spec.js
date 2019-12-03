@@ -99,7 +99,7 @@ describe('lib', () => {
 
   it('validateStore', () => {
     instance = createInstance();
-    const [ store ] = instance.createEntry({ type: 'email' });
+    const [ store ] = instance.createEntry({ type: 'email', required: true });
     spyOn(store, 'update').and.callThrough();
     expect(instance.validateStore(store));
     expect(get(store).errors.length).toBe(1);
@@ -110,7 +110,7 @@ describe('lib', () => {
     let store1, store2, input1, input2;
     beforeEach(() => {
       instance = createInstance();
-      const result = instance.createEntries([{ type: 'email' }, { type: 'email' }]);
+      const result = instance.createEntries([{ type: 'email', required: true }, { type: 'email', required: true }]);
       store1 = result[0][0];
       store2 = result[1][0];
       input1 = result[0][1];
@@ -158,7 +158,7 @@ describe('lib', () => {
     let store1, store2, input1, input2;
     beforeEach(() => {
       instance = createInstance();
-      const result = instance.createEntries([{ type: 'email' }, { type: 'email' }]);
+      const result = instance.createEntries([{ type: 'email', required: true }, { type: 'email', required: true }]);
       store1 = result[0][0];
       store2 = result[1][0];
       input1 = result[0][1];

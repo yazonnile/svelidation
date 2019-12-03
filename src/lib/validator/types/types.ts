@@ -132,7 +132,11 @@ const installRule = {
         return false;
       }
 
-      return !isNaN(value as any) && !!String(value);
+      if (typeof value === 'number') {
+        return !isNaN(value as any);
+      }
+
+      return !!String(value);
     });
   }
 };

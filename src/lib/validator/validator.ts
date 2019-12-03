@@ -104,13 +104,13 @@ const validate = (value: any, validateParams: SvelidationValidatorParams): strin
   }
 
   const { required, optional, type } = params;
-  if (skipValidation(value, { required, optional })) {
-    return [];
-  }
-
   const globalSpies = getSpies();
   const typeSpies = getSpies({ type });
   const { typeCheck, ...scope } = getScope(params);
+
+  if (skipValidation(value, { required, optional }) && !Object.keys(scope).length) {
+    return [];
+  }
 
   if (typeof typeCheck !== 'function') {
     console.warn('svelidation: typeCheck method is absent for type', params.type);

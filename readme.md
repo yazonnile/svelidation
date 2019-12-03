@@ -83,8 +83,8 @@ new Svelidation({
    - maxLength
  - `number` extends `base`
    - type
-   - minValue
-   - maxValue
+   - min
+   - max
  - `email` extends `base`
    - type
 
@@ -98,8 +98,8 @@ const [ store, inputFunctionForUse ] = instance.createEntry({
   
   minLength,
   maxLength,
-  minValue,
-  maxValue,
+  min,
+  max,
   match,
   equal,
 
@@ -112,7 +112,7 @@ const [ store, inputFunctionForUse ] = instance.createEntry({
 
 `maxLength | minLength (number)`: `string` specific rules for value length 
 
-`maxValue | minValue (number)`: `number` specific rules for value
+`max | min (number)`: `number` specific rules for value
 
 `match (regExp)`
 
@@ -240,7 +240,7 @@ const [ secondStore, secondInput ] = validation.createEntry({
   <label>
     Type 'AAA' (by type)
     <input type="email" use:secondInput bind:value={$secondStore.value} />
-    {#if $secondStore.errors.includes('type')}
+    {#if $secondStore.errors.includes('typeCheck')}
       <p class="error">OMG, you've messed up</p>
     {/if}
   </label>

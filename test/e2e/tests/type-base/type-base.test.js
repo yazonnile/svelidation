@@ -10,7 +10,7 @@ test('optional rule', async t => {
     .expect(page.forms.exists).ok()
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
-    .expect(page.errors.exists).notOk()
+    .expect(page.errors.exists).ok()
     .typeText(page.inputs, '1');
   await blur();
   await t
