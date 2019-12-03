@@ -1,8 +1,8 @@
 import Page, { blur } from 'helpers/page';
 const page = new Page();
 
-fixture `option inputValidationPhase`
-  .page `http://localhost:4411/?test=option-input-validation-phase`;
+fixture `option listenInputEvents`
+  .page `http://localhost:4411/?test=option-listen-input-events`;
 
 test('should validate after submit', async t => {
   await t

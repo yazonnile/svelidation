@@ -1,14 +1,14 @@
 import { Writable } from 'svelte/store';
 
-export enum SvelidationPhaseEnum {
+export enum SvelidationPhase {
   never,
   always,
-  afterFirstValidation,
+  afterValidation,
 }
 
-export type SvelidationPhaseEnumType = SvelidationPhaseEnum.afterFirstValidation | SvelidationPhaseEnum.always | SvelidationPhaseEnum.never;
+export type SvelidationPhaseType = SvelidationPhase.afterValidation | SvelidationPhase.always | SvelidationPhase.never;
 
-export interface SvelidationEntryParamsInterface {
+export interface SvelidationEntryParams {
   type: string;
   optional?: boolean;
   required?: boolean;
@@ -22,58 +22,58 @@ export interface SvelidationEntryParamsInterface {
   match?: RegExp;
 }
 
-export interface SvelidationOptionsInterface {
+export interface SvelidationOptions {
   validateOn?: string[];
   clearOn?: string[];
-  inputValidationPhase?: SvelidationPhaseEnumType;
-  presence: 'required' | 'optional',
+  listenInputEvents?: SvelidationPhaseType;
+  presence?: 'required' | 'optional',
   trim?: boolean
 }
 
-export interface SvelidationInputInterface {
+export interface SvelidationFormElement {
   node: HTMLInputElement;
-  options: SvelidationInputOptionsInterface;
-  currentPhase: SvelidationPhaseEnumType;
+  options: SvelidationFormElementOptions;
+  currentPhase: SvelidationPhaseType;
   onClear(): void;
   onValidate(): void;
-  setPhase(phase: SvelidationPhaseEnumType): void;
+  setPhase(phase: SvelidationPhaseType): void;
   preventEvents(): boolean;
   destroy(): void;
 }
 
-export interface SvelidationInputOptionsInterface extends SvelidationOptionsInterface {
+export interface SvelidationFormElementOptions extends SvelidationOptions {
   onClear: () => void;
   onValidate: () => void;
 }
 
-export interface SvelidationStoreObjectInterface {
+export interface SvelidationStoreObject {
   value: any;
   errors: any[];
 }
 
-export type SvelidationStoreType = Writable<SvelidationStoreObjectInterface>;
+export type SvelidationStoreType = Writable<SvelidationStoreObject>;
 
-export interface SvelidationEntryInterface {
+export interface SvelidationEntry {
   store: SvelidationStoreType;
-  params: SvelidationEntryParamsInterface;
-  input?: SvelidationInputInterface;
+  params: SvelidationEntryParams;
+  formElements?: SvelidationFormElement[];
 }
 
 export interface SvelidationUseFunctionReturn {
   destroy(): void;
 }
 
-export interface SvelidationUseInputFunctionInterface {
-  (node: HTMLInputElement, params?: SvelidationEntryParamsInterface): SvelidationUseFunctionReturn;
+export interface SvelidationUseInputFunction {
+  (node: HTMLInputElement, params?: SvelidationEntryParams): SvelidationUseFunctionReturn;
 }
 
 interface SvelidationCreateEntriesObject {
-  [key: string]: SvelidationEntryParamsInterface;
+  [key: string]: SvelidationEntryParams;
 }
 
-export type SvelidationCreateEntriesDataInterface = SvelidationEntryParamsInterface[] | SvelidationCreateEntriesObject;
+export type SvelidationCreateEntriesData = SvelidationEntryParams[] | SvelidationCreateEntriesObject;
 
-export interface SvelidationFormEventsInterface {
+export interface SvelidationFormEvents {
   onSubmit?(e: Event, errors: any[]): void;
   onFail?(errors: any[]): void;
   onSuccess?(): void;

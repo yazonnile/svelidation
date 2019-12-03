@@ -1,4 +1,4 @@
-import Validation, { SvelidationPhaseEnum } from './lib';
+import Validation, { SvelidationPhase } from './lib';
 import { get } from 'svelte/store';
 
 describe('lib', () => {
@@ -15,8 +15,8 @@ describe('lib', () => {
       const { options } = instance;
       expect(options.validateOn).toEqual(['change']);
       expect(options.clearOn).toEqual(['reset']);
-      expect(options.inputValidationPhase).toEqual(SvelidationPhaseEnum.afterFirstValidation);
-      expect(instance.phase).toEqual(SvelidationPhaseEnum.never);
+      expect(options.listenInputEvents).toEqual(SvelidationPhase.afterValidation);
+      expect(instance.phase).toEqual(SvelidationPhase.never);
     });
 
     it('with null on clearOn and validateOn', () => {
@@ -41,19 +41,19 @@ describe('lib', () => {
   it('createEntry', () => {
     instance = createInstance();
 
-    const [ withValueStore ] = instance.createEntry({ type: 'number', value: 10 })
+    const [ withValueStore ] = instance.createEntry({ type: 'number', value: 10 });
     expect(get(withValueStore).value).toBe(10);
 
     const [ store, email ] = instance.createEntry({ type: 'email' });
     const { destroy } = email(document.createElement('input'));
     expect(instance.entries.length).toBe(2);
-    expect(instance.entries[0].input).toBeUndefined();
-    expect(instance.entries[1].input).toBeDefined();
-    expect(instance.entries[1].input.currentPhase).toEqual(instance.phase);
+    expect(instance.entries[0].formElements).toBeUndefined();
+    expect(instance.entries[1].formElements).toBeDefined();
+    expect(instance.entries[1].formElements[0].currentPhase).toEqual(instance.phase);
 
     destroy();
 
-    expect(instance.entries[1].input).toBeUndefined();
+    expect(instance.entries[1].formElements).toBeUndefined();
   });
 
   describe('createEntries', () => {
@@ -139,7 +139,7 @@ describe('lib', () => {
       expect(instance.validateStore).toHaveBeenCalledTimes(1);
       expect(instance.validateStore).toHaveBeenCalledWith(store1);
       expect(instance.setValidationPhase).toHaveBeenCalledTimes(1);
-      expect(instance.setValidationPhase).toHaveBeenCalledWith(SvelidationPhaseEnum.afterFirstValidation);
+      expect(instance.setValidationPhase).toHaveBeenCalledWith(SvelidationPhase.afterValidation);
     });
 
     it('true', () => {
@@ -149,7 +149,7 @@ describe('lib', () => {
       expect(instance.validateStore).toHaveBeenCalledTimes(2);
       expect(instance.validateStore).toHaveBeenCalledWith(store1);
       expect(instance.setValidationPhase).toHaveBeenCalledTimes(1);
-      expect(instance.setValidationPhase).toHaveBeenCalledWith(SvelidationPhaseEnum.afterFirstValidation);
+      expect(instance.setValidationPhase).toHaveBeenCalledWith(SvelidationPhase.afterValidation);
     });
   });
 
@@ -157,13 +157,13 @@ describe('lib', () => {
     instance = createInstance();
     const [ store, input ] = instance.createEntry({ type: 'email' });
     input(document.createElement('input'));
-    spyOn(instance.entries[0].input, 'setPhase').and.callThrough();
-    instance.setValidationPhase(SvelidationPhaseEnum.afterFirstValidation);
+    spyOn(instance.entries[0].formElements[0], 'setPhase').and.callThrough();
+    instance.setValidationPhase(SvelidationPhase.afterValidation);
 
-    expect(instance.entries[0].input.currentPhase).toBe(SvelidationPhaseEnum.afterFirstValidation);
-    expect(instance.phase).toBe(SvelidationPhaseEnum.afterFirstValidation);
-    expect(instance.entries[0].input.setPhase).toHaveBeenCalledTimes(1);
-    expect(instance.entries[0].input.setPhase).toHaveBeenCalledWith(SvelidationPhaseEnum.afterFirstValidation);
+    expect(instance.entries[0].formElements[0].currentPhase).toBe(SvelidationPhase.afterValidation);
+    expect(instance.phase).toBe(SvelidationPhase.afterValidation);
+    expect(instance.entries[0].formElements[0].setPhase).toHaveBeenCalledTimes(1);
+    expect(instance.entries[0].formElements[0].setPhase).toHaveBeenCalledWith(SvelidationPhase.afterValidation);
   });
 
   describe('clearErrors', () => {
@@ -205,8 +205,8 @@ describe('lib', () => {
     instance = createInstance();
     const [ store, input ] = instance.createEntry({ type: 'email' });
     input(document.createElement('input'));
-    spyOn(instance.entries[0].input, 'destroy');
+    spyOn(instance.entries[0].formElements[0], 'destroy');
     instance.destroy();
-    expect(instance.entries[0].input.destroy).toHaveBeenCalled();
+    expect(instance.entries[0].formElements[0].destroy).toHaveBeenCalled();
   });
 });

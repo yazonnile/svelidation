@@ -43,14 +43,14 @@ Check this and more on the [demo page](http://yazonnile.github.io/svelidation/)
 new Svelidation({
   validateOn,
   clearOn,
-  inputValidationPhase
+  listenInputEvents
 });
 ```
 `validateOn (string[]: ['change'])`: array of input events to validate input value
 
 `clearOn (string[]: ['reset'])`: array of input and form events to clear errors. All events except `reset` will be applied to input. `reset` to form 
 
-`inputValidationPhase (number: 0)`: specific option for control input events
+`listenInputEvents (number: 0)`: specific option for control input events
   - `0`: dont allow input events
   - `1`: allow input events always
   - `2`: allow input events after first form validation
@@ -68,7 +68,7 @@ new Svelidation({
 Inputs events will not affect validation, but `reset` form event will
 ```js
 new Svelidation({
-  inputValidationPhase: 0
+  listenInputEvents: 0
 });
 ```
 

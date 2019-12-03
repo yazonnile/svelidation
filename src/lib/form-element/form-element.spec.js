@@ -1,14 +1,14 @@
-import Input from './input';
+import FormElement from './form-element';
 
-describe('input', () => {
+describe('form-element', () => {
   let instance;
   let node = document.createElement('input');
-  let input = (phase) => new Input(node, {
+  let formElement = (phase) => new FormElement(node, {
     onClear() {},
     onValidate() {},
     validateOn: [],
     clearOn: [],
-    inputValidationPhase: phase
+    listenInputEvents: phase
   });
 
   afterEach(() => {
@@ -16,21 +16,21 @@ describe('input', () => {
   });
 
   it('constructor', () => {
-    instance = input(0);
+    instance = formElement(0);
     expect(instance.node).toBeTruthy();
     expect(instance.options).toBeTruthy();
     expect(instance.currentPhase).toBeNull();
   });
 
   it('setPhase', () => {
-    instance = input(0);
+    instance = formElement(0);
     expect(instance.currentPhase).toBeNull();
     instance.setPhase(2);
     expect(instance.currentPhase).toBe(2);
   });
 
   it('preventEvents with initial phase === NEVER', () => {
-    instance = input(0);
+    instance = formElement(0);
     expect(instance.preventEvents()).toBeTrue();
     instance.setPhase(0);
     expect(instance.preventEvents()).toBeTrue();
@@ -41,7 +41,7 @@ describe('input', () => {
   });
 
   it('preventEvents with initial phase === ALWAYS', () => {
-    instance = input(1);
+    instance = formElement(1);
     expect(instance.preventEvents()).toBeFalse();
     instance.setPhase(0);
     expect(instance.preventEvents()).toBeFalse();
@@ -52,7 +52,7 @@ describe('input', () => {
   });
 
   it('preventEvents with initial phase = AFTER SUBMIT', () => {
-    instance = input(2);
+    instance = formElement(2);
     expect(instance.preventEvents()).toBeTrue();
     instance.setPhase(0);
     expect(instance.preventEvents()).toBeTrue();

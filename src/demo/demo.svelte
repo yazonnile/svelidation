@@ -69,9 +69,3 @@
     <button type="reset">Reset</button>
   {/if}
 </form>
-
-<style>
-  div {
-    margin-bottom: 20px;
-  }
-</style>

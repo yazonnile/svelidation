@@ -1,13 +1,13 @@
-import { SvelidationInputInterface, SvelidationInputOptionsInterface, SvelidationPhaseEnum, SvelidationPhaseEnumType } from 'lib/typing/typing';
+import { SvelidationFormElement, SvelidationFormElementOptions, SvelidationPhase, SvelidationPhaseType } from 'lib/typing/typing';
 
-export default class Input implements SvelidationInputInterface {
+export default class FormElement implements SvelidationFormElement {
   node: HTMLInputElement;
-  options: SvelidationInputOptionsInterface;
-  currentPhase: SvelidationPhaseEnumType;
+  options: SvelidationFormElementOptions;
+  currentPhase: SvelidationPhaseType;
   onClear: () => void;
   onValidate: () => void;
 
-  constructor(node: HTMLInputElement, options: SvelidationInputOptionsInterface) {
+  constructor(node: HTMLInputElement, options: SvelidationFormElementOptions) {
     this.node = node;
     this.options = options;
     this.currentPhase = null;
@@ -28,17 +28,17 @@ export default class Input implements SvelidationInputInterface {
     this.options.validateOn.forEach(eventName => node.addEventListener(eventName, this.onValidate));
   }
 
-  setPhase(phase: SvelidationPhaseEnumType) {
+  setPhase(phase: SvelidationPhaseType) {
     this.currentPhase = phase;
   }
 
   preventEvents(): boolean {
-    const { inputValidationPhase: initialPhase } = this.options;
-    if (initialPhase === SvelidationPhaseEnum.never) {
+    const { listenInputEvents: initialPhase } = this.options;
+    if (initialPhase === SvelidationPhase.never) {
       return true;
     }
 
-    if (initialPhase === SvelidationPhaseEnum.always) {
+    if (initialPhase === SvelidationPhase.always) {
       return false;
     }
 

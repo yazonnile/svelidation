@@ -1,6 +1,6 @@
 <script>
   import { getValidation, Form, Slide, Entry } from 'helpers/helpers';
-  import { SvelidationPhaseEnum } from 'dist';
+  import { SvelidationPhase } from 'dist';
 
   const getConfig = (options) => {
     return { entries: [{ type: 'string', minLength: 4 }], options }
@@ -14,12 +14,12 @@
   const {
     entries: [[ neverStore, neverInput ]],
     createForm: neverCreateForm
-  } = getValidation(getConfig({ inputValidationPhase: SvelidationPhaseEnum.never }));
+  } = getValidation(getConfig({ listenInputEvents: SvelidationPhase.never }));
 
   const {
     entries: [[ alwaysStore, alwaysInput ]],
     createForm: alwaysCreateForm
-  } = getValidation(getConfig({ inputValidationPhase: SvelidationPhaseEnum.always }));
+  } = getValidation(getConfig({ listenInputEvents: SvelidationPhase.always }));
 
   let activeId = 'default';
 </script>

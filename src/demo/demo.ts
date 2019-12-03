@@ -1,6 +1,7 @@
 import Demo from './demo.svelte';
 import Dynamic from './dynamic.svelte';
-import { SvelidationPhaseEnum } from 'lib/typing/typing';
+import Radios from './radios.svelte';
+import { SvelidationPhase } from 'lib/typing/typing';
 
 const target = document.getElementById('app');
 
@@ -12,7 +13,7 @@ new Demo({
     options: {
       validateOn: ['change'],
       clearOn: ['reset'],
-      inputValidationPhase: SvelidationPhaseEnum.afterFirstValidation
+      listenInputEvents: SvelidationPhase.afterValidation
     }
   }
 });
@@ -24,7 +25,7 @@ new Demo({
     options: {
       validateOn: ['blur'],
       clearOn: ['focus'],
-      inputValidationPhase: SvelidationPhaseEnum.always
+      listenInputEvents: SvelidationPhase.always
     }
   }
 });
@@ -34,9 +35,21 @@ new Demo({
   props: {
     title: '<mark>submit</mark> only validation',
     options: {
-      inputValidationPhase: SvelidationPhaseEnum.never
+      listenInputEvents: SvelidationPhase.never
     }
   }
 });
 
 new Dynamic({ target });
+
+new Radios({
+  target,
+  props: {
+    title: 'Radios example',
+    options: {
+      validateOn: ['change'],
+      clearOn: ['reset'],
+      listenInputEvents: SvelidationPhase.afterValidation
+    }
+  }
+});
