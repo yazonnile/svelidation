@@ -18,6 +18,7 @@ describe('validator types', () => {
       const stringType = getType('string');
       const emailType = getType('email');
       const numberType = getType('number');
+      const booleanType = getType('boolean');
 
       expect(stringType).toBeDefined();
       expect(Object.keys(stringType).sort()).toEqual(['typeCheck', 'minLength', 'maxLength'].sort());
@@ -25,6 +26,8 @@ describe('validator types', () => {
       expect(Object.keys(emailType).sort()).toEqual(['typeCheck'].sort());
       expect(numberType).toBeDefined();
       expect(Object.keys(numberType).sort()).toEqual(['typeCheck', 'min', 'max'].sort());
+      expect(booleanType).toBeDefined();
+      expect(Object.keys(booleanType).sort()).toEqual(['typeCheck', 'required'].sort());
     });
 
     it('rules', () => {
@@ -106,6 +109,25 @@ describe('validator types', () => {
         expect(max(value, { max: 2 })).toBeFalse();
         expect(max(value, { max: 15 })).toBeFalse();
         expect(max(value, { max: 16 })).toBeTrue();
+      });
+    });
+
+    describe('boolean', () => {
+      it('typeCheck', () => {
+        const { typeCheck } = getType('boolean');
+        expect(typeCheck('')).toBeFalse();
+        expect(typeCheck(undefined)).toBeFalse();
+        expect(typeCheck(null)).toBeFalse();
+        expect(typeCheck(' ')).toBeFalse();
+        expect(typeCheck(true)).toBeTrue();
+        expect(typeCheck(false)).toBeTrue();
+        expect(typeCheck({})).toBeFalse();
+      });
+
+      it('required', () => {
+        const { required } = getType('boolean');
+        expect(required(true)).toBeTrue();
+        expect(required(false)).toBeFalse();
       });
     });
   });

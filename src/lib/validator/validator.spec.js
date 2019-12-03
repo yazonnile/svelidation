@@ -16,6 +16,15 @@ describe('validator', () => {
     expect(validate('', { type: 'number' }).length).toBe(0);
     expect(validate('  0  ', { type: 'number' }).length).toBe(0);
     expect(validate('  0  ', { type: 'number', max: 5 }).length).toBe(0);
+
+    expect(validate('', { type: 'boolean' }).length).toBe(0);
+    expect(validate('', { type: 'boolean', required: true }).length).toBe(1);
+    expect(validate('1', { type: 'boolean' }).length).toBe(1);
+    expect(validate('1', { type: 'boolean', required: true }).length).toBe(1);
+    expect(validate(false, { type: 'boolean' }).length).toBe(0);
+    expect(validate(false, { type: 'boolean', required: true }).length).toBe(1);
+    expect(validate(true, { type: 'boolean' }).length).toBe(0);
+    expect(validate(true, { type: 'boolean', required: true }).length).toBe(0);
   });
 
   it('trim', () => {

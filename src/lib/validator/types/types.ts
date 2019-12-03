@@ -120,6 +120,13 @@ const installType = {
       min: (value, { min }) => (parseFloat(value as any) >= min),
       max: (value, { max }) => (parseFloat(value as any) <= max),
     });
+  },
+
+  boolean: () => {
+    ensureType<boolean>('boolean', {
+      typeCheck: (value) => typeof value === 'boolean',
+      required: (value) => value,
+    });
   }
 };
 
