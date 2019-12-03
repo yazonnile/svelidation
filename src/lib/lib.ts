@@ -11,7 +11,6 @@ import {
   CreateEntriesDataInterface, FormEventsInterface
 } from 'lib/typing/typing';
 
-export { addValidator, BaseType, StringType, NumberType, EmailType } from 'lib/validation/validation';
 export { PhaseEnum } from 'lib/typing/typing';
 
 export default class Validation {

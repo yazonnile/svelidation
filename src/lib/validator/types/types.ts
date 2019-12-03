@@ -1,3 +1,5 @@
+import isFunction from 'lib/is-function/is-function';
+
 type SvelidationRule<Type = any, R = boolean> = {
   (value: Type, params?: {
     [key: string]: any
@@ -37,10 +39,10 @@ const ensureType = <Type = any>(
         const [ typeName, ruleName ] = (rule as string).split('.');
         const inheritedRule = getType(typeName)[ruleName];
 
-        if (typeof inheritedRule === 'function') {
+        if (isFunction(inheritedRule)) {
           obj[ruleName] = inheritedRule;
         }
-      } else if (typeof rule === 'function') {
+      } else if (isFunction(rule)) {
         obj[key] = rule;
       }
     } catch (e) {
@@ -51,7 +53,7 @@ const ensureType = <Type = any>(
   }, typeRules);
 
   if (!types[typeName]) {
-    if (typeof typeRules.typeCheck !== 'function') {
+    if (!isFunction(typeRules.typeCheck)) {
       console.warn('svelidation: typeCheck method is required for new types', typeName);
       return;
     }
@@ -142,7 +144,7 @@ const installRule = {
 };
 
 const ensureRule = (ruleName: string, rule: SvelidationRule) => {
-  if (typeof rule !== 'function') {
+  if (!isFunction(rule)) {
     console.warn('svelidation: ensureRule has to have second function argument', ruleName);
     return;
   }

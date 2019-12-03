@@ -1,5 +1,6 @@
 import { getSpies, SvelidationSpy } from './spy/spy';
 import { SvelidationRule, SvelidationRulesStore, getType, getRule } from './types/types';
+import isFunction from 'lib/is-function/is-function';
 
 interface SvelidationValidatorParams {
   type: string;
@@ -78,15 +79,15 @@ const getScope = ({ type, optional, ...rules }: SvelidationValidatorParams): Sve
     return {};
   }
 
-  return [...Object.keys(rules), 'typeCheck'].reduce((rules, ruleName) => {
+  return [...Object.keys(rules), 'typeCheck'].reduce((obj, ruleName) => {
     const rule = typeRules[ruleName] || getRule(ruleName);
     if (rule) {
-      rules[ruleName] = rule;
+      obj[ruleName] = rule;
     } else {
       console.warn('svelidation: rule is not defined', ruleName);
     }
 
-    return rules;
+    return obj;
   }, {});
 };
 
@@ -112,7 +113,7 @@ const validate = (value: any, validateParams: SvelidationValidatorParams): strin
     return [];
   }
 
-  if (typeof typeCheck !== 'function') {
+  if (!isFunction(typeCheck)) {
     console.warn('svelidation: typeCheck method is absent for type', params.type);
     return [];
   } else {
