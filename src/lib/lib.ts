@@ -24,7 +24,8 @@ export default class Validation {
       validateOn: ['change'],
       clearOn: ['reset'],
       inputValidationPhase: SvelidationPhaseEnum.afterFirstValidation,
-      presence: 'optional'
+      presence: 'optional',
+      trim: false
     }, options);
 
     // ensure options as array
@@ -40,21 +41,9 @@ export default class Validation {
     this.createForm = this.createForm.bind(this);
   }
 
-  preparePresence(params) {
-    const { required, optional } = params;
-    if (this.options.presence === 'required'
-      && required === undefined
-      && optional === undefined
-    ) {
-      params.required = true;
-    }
-
-    return params;
-  }
-
   createEntry(params: SvelidationEntryParamsInterface): [SvelidationStoreType, SvelidationUseInputFunctionInterface] {
     const store: SvelidationStoreType = writable({ value: params.value || '', errors: [] });
-    const entry: SvelidationEntryInterface = { store, params: this.preparePresence(params) };
+    const entry: SvelidationEntryInterface = { store, params };
     const useInput: SvelidationUseInputFunctionInterface = (inputNode, useOptions) => {
       const inputOptions = Object.assign({}, this.options, useOptions, {
         onClear: () => {
@@ -124,11 +113,24 @@ export default class Validation {
     };
   }
 
+  prepareBaseParams(params) {
+    const { trim, required, optional } = params;
+    if (this.options.presence === 'required' && required === undefined && optional === undefined) {
+      params.required = true;
+    }
+
+    if (this.options.trim && trim === undefined) {
+      params.trim = true;
+    }
+
+    return {...params};
+  }
+
   validateStore(store: SvelidationStoreType): any[] {
     const entry = this.entries.find(entry => (entry.store === store));
     if (entry) {
       const { value } = get(store);
-      const errors = validateValueByParams(value, entry.params);
+      const errors = validateValueByParams(value, this.prepareBaseParams(entry.params));
 
       if (Array.isArray(errors)) {
         updateStoreErrors(store, errors);

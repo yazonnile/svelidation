@@ -26,13 +26,16 @@ describe('lib', () => {
     });
   });
 
-  it('preparePresence', () => {
+  it('prepareBaseParams', () => {
     instance = createInstance();
     expect(instance.options.presence).toBe('optional');
-    expect(instance.preparePresence({ a: 1 })).toEqual({ a: 1 });
+    expect(instance.options.trim).toBeFalse();
+    expect(instance.prepareBaseParams({ a: 1 })).toEqual({ a: 1 });
     instance.options.presence = 'required';
-    expect(instance.preparePresence({ a: 1 })).toEqual({ a: 1, required: true });
-    expect(instance.preparePresence({ a: 1, optional: true })).toEqual({ a: 1, optional: true });
+    instance.options.trim = true;
+    expect(instance.prepareBaseParams({ a: 1 })).toEqual({ a: 1, required: true, trim: true });
+    expect(instance.prepareBaseParams({ a: 1, optional: true })).toEqual({ a: 1, optional: true, trim: true });
+    expect(instance.prepareBaseParams({ a: true, trim: false })).toEqual({ a: true, trim: false, required: true });
   });
 
   it('createEntry', () => {
