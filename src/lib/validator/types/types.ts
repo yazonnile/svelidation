@@ -27,7 +27,9 @@ const ensureType = <Type = any>(
   typeRules: SvelidationType<Type>
 ) => {
   if (typeof typeRules !== 'object') {
-    console.warn('svelidation: rules should be an object', typeName);
+    if (process.env.DEV) {
+      console.warn('svelidation: rules should be an object', typeName);
+    }
     return;
   }
 
@@ -54,7 +56,9 @@ const ensureType = <Type = any>(
 
   if (!types[typeName]) {
     if (!isFunction(typeRules.typeCheck)) {
-      console.warn('svelidation: typeCheck method is required for new types', typeName);
+      if (process.env.DEV) {
+        console.warn('svelidation: typeCheck method is required for new types', typeName);
+      }
       return;
     }
 
@@ -145,7 +149,9 @@ const installRule = {
 
 const ensureRule = (ruleName: string, rule: SvelidationRule) => {
   if (!isFunction(rule)) {
-    console.warn('svelidation: ensureRule has to have second function argument', ruleName);
+    if (process.env.DEV) {
+      console.warn('svelidation: ensureRule has to have second function argument', ruleName);
+    }
     return;
   }
 

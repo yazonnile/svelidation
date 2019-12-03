@@ -34,7 +34,8 @@ module.exports = {
             'alias',
             'resolve',
             'commonjs',
-            'typescript'
+            'typescript',
+            'replace',
           ], { type, production })
         };
 
@@ -49,6 +50,7 @@ module.exports = {
             'svelte',
             'liveReload',
             'serve',
+            'replace',
           ], { type, production })
         };
 
@@ -60,6 +62,7 @@ module.exports = {
             'resolve',
             'commonjs',
             'svelte',
+            'replace',
             initServe && 'serve',
             initServe && 'liveReload',
           ], { type, production })
@@ -74,7 +77,8 @@ module.exports = {
             'commonjs',
             'typescript',
             'liveReload',
-            'globFiles'
+            'globFiles',
+            'replace',
           ], { type, production })
         };
     }

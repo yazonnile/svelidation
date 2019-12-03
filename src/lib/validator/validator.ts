@@ -84,7 +84,9 @@ const getScope = ({ type, optional, ...rules }: SvelidationValidatorParams): Sve
     if (rule) {
       obj[ruleName] = rule;
     } else {
-      console.warn('svelidation: rule is not defined', ruleName);
+      if (process.env.DEV) {
+        console.warn('svelidation: rule is not defined', ruleName);
+      }
     }
 
     return obj;
@@ -114,7 +116,9 @@ const validate = (value: any, validateParams: SvelidationValidatorParams): strin
   }
 
   if (!isFunction(typeCheck)) {
-    console.warn('svelidation: typeCheck method is absent for type', params.type);
+    if (process.env.DEV) {
+      console.warn('svelidation: typeCheck method is absent for type', params.type);
+    }
     return [];
   } else {
     const typeCheckSpies = getSpies({ ruleName: 'typeCheck' });

@@ -17,6 +17,11 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
         resolve: ['.ts', '.js', '.svelte']
       });
     },
+    replace: () => {
+      return require('@rollup/plugin-replace')({
+        'process.env.DEV': JSON.stringify(!production)
+      })
+    },
     resolve: () => {
       return require('rollup-plugin-node-resolve')({
         browser: true,
