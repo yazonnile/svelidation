@@ -1,4 +1,4 @@
-import Validation, { PhaseEnum } from './lib';
+import Validation, { SvelidationPhaseEnum } from './lib';
 import { get } from 'svelte/store';
 
 describe('lib', () => {
@@ -15,8 +15,8 @@ describe('lib', () => {
       const { options } = instance;
       expect(options.validateOn).toEqual(['change']);
       expect(options.clearOn).toEqual(['reset']);
-      expect(options.inputValidationPhase).toEqual(PhaseEnum.afterFirstValidation);
-      expect(instance.phase).toEqual(PhaseEnum.never);
+      expect(options.inputValidationPhase).toEqual(SvelidationPhaseEnum.afterFirstValidation);
+      expect(instance.phase).toEqual(SvelidationPhaseEnum.never);
     });
 
     it('with null on clearOn and validateOn', () => {
@@ -127,7 +127,7 @@ describe('lib', () => {
       expect(instance.validateStore).toHaveBeenCalledTimes(1);
       expect(instance.validateStore).toHaveBeenCalledWith(store1);
       expect(instance.setValidationPhase).toHaveBeenCalledTimes(1);
-      expect(instance.setValidationPhase).toHaveBeenCalledWith(PhaseEnum.afterFirstValidation);
+      expect(instance.setValidationPhase).toHaveBeenCalledWith(SvelidationPhaseEnum.afterFirstValidation);
     });
 
     it('true', () => {
@@ -137,7 +137,7 @@ describe('lib', () => {
       expect(instance.validateStore).toHaveBeenCalledTimes(2);
       expect(instance.validateStore).toHaveBeenCalledWith(store1);
       expect(instance.setValidationPhase).toHaveBeenCalledTimes(1);
-      expect(instance.setValidationPhase).toHaveBeenCalledWith(PhaseEnum.afterFirstValidation);
+      expect(instance.setValidationPhase).toHaveBeenCalledWith(SvelidationPhaseEnum.afterFirstValidation);
     });
   });
 
@@ -146,12 +146,12 @@ describe('lib', () => {
     const [ store, input ] = instance.createEntry({ type: 'email' });
     input(document.createElement('input'));
     spyOn(instance.entries[0].input, 'setPhase').and.callThrough();
-    instance.setValidationPhase(PhaseEnum.afterFirstValidation);
+    instance.setValidationPhase(SvelidationPhaseEnum.afterFirstValidation);
 
-    expect(instance.entries[0].input.currentPhase).toBe(PhaseEnum.afterFirstValidation);
-    expect(instance.phase).toBe(PhaseEnum.afterFirstValidation);
+    expect(instance.entries[0].input.currentPhase).toBe(SvelidationPhaseEnum.afterFirstValidation);
+    expect(instance.phase).toBe(SvelidationPhaseEnum.afterFirstValidation);
     expect(instance.entries[0].input.setPhase).toHaveBeenCalledTimes(1);
-    expect(instance.entries[0].input.setPhase).toHaveBeenCalledWith(PhaseEnum.afterFirstValidation);
+    expect(instance.entries[0].input.setPhase).toHaveBeenCalledWith(SvelidationPhaseEnum.afterFirstValidation);
   });
 
   describe('clearErrors', () => {

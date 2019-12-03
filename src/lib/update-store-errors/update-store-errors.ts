@@ -1,6 +1,6 @@
-import { ErrorsType, StoreType } from 'lib/typing/typing';
+import { SvelidationStoreType } from 'lib/typing/typing';
 
-export default (store: StoreType, errors: ErrorsType = []) => {
+export default (store: SvelidationStoreType, errors: any[] = []) => {
   store.update(value => {
     return { ...value, errors };
   });

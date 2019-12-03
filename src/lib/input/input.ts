@@ -1,13 +1,13 @@
-import { InputInterface, InputOptionsInterface, PhaseEnum, PhaseEnumType } from 'lib/typing/typing';
+import { SvelidationInputInterface, SvelidationInputOptionsInterface, SvelidationPhaseEnum, SvelidationPhaseEnumType } from 'lib/typing/typing';
 
-export default class Input implements InputInterface {
+export default class Input implements SvelidationInputInterface {
   node: HTMLInputElement;
-  options: InputOptionsInterface;
-  currentPhase: PhaseEnumType;
+  options: SvelidationInputOptionsInterface;
+  currentPhase: SvelidationPhaseEnumType;
   onClear: () => void;
   onValidate: () => void;
 
-  constructor(node: HTMLInputElement, options: InputOptionsInterface) {
+  constructor(node: HTMLInputElement, options: SvelidationInputOptionsInterface) {
     this.node = node;
     this.options = options;
     this.currentPhase = null;
@@ -28,17 +28,17 @@ export default class Input implements InputInterface {
     this.options.validateOn.forEach(eventName => node.addEventListener(eventName, this.onValidate));
   }
 
-  setPhase(phase: PhaseEnumType) {
+  setPhase(phase: SvelidationPhaseEnumType) {
     this.currentPhase = phase;
   }
 
   preventEvents(): boolean {
     const { inputValidationPhase: initialPhase } = this.options;
-    if (initialPhase === PhaseEnum.never) {
+    if (initialPhase === SvelidationPhaseEnum.never) {
       return true;
     }
 
-    if (initialPhase === PhaseEnum.always) {
+    if (initialPhase === SvelidationPhaseEnum.always) {
       return false;
     }
 

@@ -4,26 +4,26 @@ import updateStoreErrors from 'lib/update-store-errors/update-store-errors';
 import Input from 'lib/input/input';
 import isFunction from 'lib/is-function/is-function';
 import {
-  EntryParamsInterface, EntryInterface,
-  PhaseEnum, PhaseEnumType,
-  OptionsInterface, ErrorsType, StoreType,
-  UseInputFunctionInterface, UseFunctionReturn,
-  CreateEntriesDataInterface, FormEventsInterface
+  SvelidationEntryParamsInterface, SvelidationEntryInterface,
+  SvelidationPhaseEnum, SvelidationPhaseEnumType,
+  SvelidationOptionsInterface, SvelidationStoreType,
+  SvelidationUseInputFunctionInterface, SvelidationUseFunctionReturn,
+  SvelidationCreateEntriesDataInterface, SvelidationFormEventsInterface
 } from 'lib/typing/typing';
 
-export { PhaseEnum } from 'lib/typing/typing';
+export { SvelidationPhaseEnum } from 'lib/typing/typing';
 
 export default class Validation {
-  entries: EntryInterface[];
-  options: OptionsInterface;
-  phase: PhaseEnumType;
+  entries: SvelidationEntryInterface[];
+  options: SvelidationOptionsInterface;
+  phase: SvelidationPhaseEnumType;
 
-  constructor(options?: OptionsInterface) {
+  constructor(options?: SvelidationOptionsInterface) {
     this.entries = [];
     this.options = Object.assign({
       validateOn: ['change'],
       clearOn: ['reset'],
-      inputValidationPhase: PhaseEnum.afterFirstValidation
+      inputValidationPhase: SvelidationPhaseEnum.afterFirstValidation
     }, options);
 
     // ensure options as array
@@ -35,14 +35,14 @@ export default class Validation {
       this.options.validateOn = [];
     }
 
-    this.phase = PhaseEnum.never;
+    this.phase = SvelidationPhaseEnum.never;
     this.createForm = this.createForm.bind(this);
   }
 
-  createEntry(params: EntryParamsInterface): [StoreType, UseInputFunctionInterface] {
-    const store: StoreType = writable({ value: params.value || '', errors: [] });
-    const entry: EntryInterface = { store, params };
-    const useInput: UseInputFunctionInterface = (inputNode, useOptions) => {
+  createEntry(params: SvelidationEntryParamsInterface): [SvelidationStoreType, SvelidationUseInputFunctionInterface] {
+    const store: SvelidationStoreType = writable({ value: params.value || '', errors: [] });
+    const entry: SvelidationEntryInterface = { store, params };
+    const useInput: SvelidationUseInputFunctionInterface = (inputNode, useOptions) => {
       const inputOptions = Object.assign({}, this.options, useOptions, {
         onClear: () => {
           updateStoreErrors(store, []);
@@ -69,7 +69,7 @@ export default class Validation {
     return [ store, useInput ];
   }
 
-  createEntries(data: CreateEntriesDataInterface) {
+  createEntries(data: SvelidationCreateEntriesDataInterface) {
     if (Array.isArray(data)) {
       return data.map(_ => this.createEntry(_));
     } else {
@@ -81,11 +81,11 @@ export default class Validation {
     }
   }
 
-  removeEntry(entry: EntryInterface) {
+  removeEntry(entry: SvelidationEntryInterface) {
     this.entries = this.entries.filter(_ => entry !== _);
   }
 
-  createForm(formNode: HTMLFormElement, events: FormEventsInterface = {}): UseFunctionReturn {
+  createForm(formNode: HTMLFormElement, events: SvelidationFormEventsInterface = {}): SvelidationUseFunctionReturn {
     const { onFail: fail, onSubmit: submit, onSuccess: success } = events;
     const onReset = () => this.clearErrors();
     const onSubmit = e => {
@@ -111,7 +111,7 @@ export default class Validation {
     };
   }
 
-  validateStore(store: StoreType): ErrorsType {
+  validateStore(store: SvelidationStoreType): any[] {
     const entry = this.entries.find(entry => (entry.store === store));
     if (entry) {
       const { value } = get(store);
@@ -126,7 +126,7 @@ export default class Validation {
     return [];
   }
 
-  validate(includeNoInputs = false): ErrorsType[] {
+  validate(includeNoInputs = false): any[] {
     const errors = this.entries.reduce((errors, entry) => {
       if (entry.input || includeNoInputs) {
         const storeErrors = this.validateStore(entry.store);
@@ -138,12 +138,12 @@ export default class Validation {
       return errors;
     }, []);
 
-    this.setValidationPhase(PhaseEnum.afterFirstValidation);
+    this.setValidationPhase(SvelidationPhaseEnum.afterFirstValidation);
 
     return errors;
   }
 
-  setValidationPhase(phase: PhaseEnumType) {
+  setValidationPhase(phase: SvelidationPhaseEnumType) {
     this.phase = phase;
 
     this.entries.forEach(({ input }) => {

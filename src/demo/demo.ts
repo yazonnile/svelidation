@@ -1,6 +1,6 @@
 import Demo from './demo.svelte';
 import Dynamic from './dynamic.svelte';
-import { PhaseEnum } from 'lib/typing/typing';
+import { SvelidationPhaseEnum } from 'lib/typing/typing';
 
 const target = document.getElementById('app');
 
@@ -12,7 +12,7 @@ new Demo({
     options: {
       validateOn: ['change'],
       clearOn: ['reset'],
-      inputValidationPhase: PhaseEnum.afterFirstValidation
+      inputValidationPhase: SvelidationPhaseEnum.afterFirstValidation
     }
   }
 });
@@ -24,7 +24,7 @@ new Demo({
     options: {
       validateOn: ['blur'],
       clearOn: ['focus'],
-      inputValidationPhase: PhaseEnum.always
+      inputValidationPhase: SvelidationPhaseEnum.always
     }
   }
 });
@@ -34,7 +34,7 @@ new Demo({
   props: {
     title: '<mark>submit</mark> only validation',
     options: {
-      inputValidationPhase: PhaseEnum.never
+      inputValidationPhase: SvelidationPhaseEnum.never
     }
   }
 });
