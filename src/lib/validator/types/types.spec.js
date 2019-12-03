@@ -153,7 +153,7 @@ describe('validator types', () => {
       expect(getType('string').custom).toBeUndefined();
     });
 
-    it('ensureType', () => {
+    it('ensureType by function', () => {
       ensureType('test');
       expect(getType('test')).toBeUndefined();
       ensureType('test', { magicMethod() { } });
@@ -169,6 +169,15 @@ describe('validator types', () => {
       expect(getType('string').custom).toBeUndefined();
       ensureType('string', { custom() {} });
       expect(getType('string').custom).toBeDefined();
+    });
+
+    it('ensureType by extending', () => {
+      ensureType('test', { typeCheck: 'string.typeCheck' });
+      expect(getType('test')).toBeDefined();
+      expect(getType('test').typeCheck === getType('string').typeCheck).toBeTrue();
+
+      ensureType('test2', { typeCheck: 'nan.typeCheck' });
+      expect(getType('test2')).toBeUndefined();
     });
 
     it('ensureRule', () => {

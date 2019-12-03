@@ -1,5 +1,5 @@
-import { getInterceptors, SvelidationInterceptor } from './interceptor/interceptor';
-import { SvelidationValue, SvelidationRule, SvelidationRulesStore, getType, getRule } from './types/types';
+import { getSpies, SvelidationSpy } from './spy/spy';
+import { SvelidationRule, SvelidationRulesStore, getType, getRule } from './types/types';
 
 interface SvelidationValidatorParams {
   type: string;
@@ -11,29 +11,29 @@ interface SvelidationValidatorParams {
   maxLength?: number;
   min?: number;
   max?: number;
-  equal?: SvelidationValue;
+  equal?: any;
   match?: RegExp;
 
-  [key: string]: SvelidationValue;
+  [key: string]: any;
 }
 
-interface SvelidationRunWithInterceptors {(
+interface SvelidationRunWithSpies {(
   params: {
-    value: SvelidationValue,
+    value: any,
     params: SvelidationValidatorParams,
     rule: SvelidationRule,
     ruleName: string,
-    interceptors: SvelidationInterceptor[]
+    spies: SvelidationSpy[]
   }
 )}
 
-interface SvelidationRunWithInterceptorsResult {
+interface SvelidationRunWithSpiesResult {
   errors?: string[],
   stop?: boolean,
   abort?: boolean,
 }
 
-const runRuleWithInterceptors: SvelidationRunWithInterceptors = ({ value, params: initialParams, rule, ruleName, interceptors }): SvelidationRunWithInterceptorsResult => {
+const runRuleWithSpies: SvelidationRunWithSpies = ({ value, params: initialParams, rule, ruleName, spies }): SvelidationRunWithSpiesResult => {
   const errors = [];
   const { type } = initialParams;
   let nextValue = value;
@@ -41,9 +41,9 @@ const runRuleWithInterceptors: SvelidationRunWithInterceptors = ({ value, params
   let stop = false;
   let abort = false;
 
-  for (let i = 0; i < interceptors.length; i++) {
+  for (let i = 0; i < spies.length; i++) {
     stop = true;
-    const interceptorErrors = interceptors[i](nextValue, { type, ruleName, ...nextParams }, (value, params = {}) => {
+    const spyErrors = spies[i](nextValue, { type, ruleName, ...nextParams }, (value, params = {}) => {
       nextValue = value;
       nextParams = { ...initialParams, ...params };
       stop = false;
@@ -55,8 +55,8 @@ const runRuleWithInterceptors: SvelidationRunWithInterceptors = ({ value, params
       return { abort };
     }
 
-    if (Array.isArray(interceptorErrors)) {
-      errors.push(...interceptorErrors);
+    if (Array.isArray(spyErrors)) {
+      errors.push(...spyErrors);
     }
 
     if (stop) {
@@ -73,7 +73,7 @@ const runRuleWithInterceptors: SvelidationRunWithInterceptors = ({ value, params
 
 const getScope = ({ type, optional, ...rules }: SvelidationValidatorParams): SvelidationRulesStore => {
   const typeRules = getType(type);
-  return Object.keys(rules).reduce((rules, ruleName) => {
+  return [...Object.keys(rules), 'typeCheck'].reduce((rules, ruleName) => {
     const rule = typeRules[ruleName] || getRule(ruleName);
     if (rule) {
       rules[ruleName] = rule;
@@ -85,13 +85,13 @@ const getScope = ({ type, optional, ...rules }: SvelidationValidatorParams): Sve
   }, {});
 };
 
-const skipValidation = (value: any, { optional, required }): boolean => {
+const skipValidation = (value: any, { optional, required = false }): boolean => {
   const valueIsAbsent = [undefined, null, ''].indexOf(value) > -1;
   const valueIsOptional = typeof optional === 'boolean' ? optional : !required;
   return valueIsAbsent && valueIsOptional;
 };
 
-const validate = (value: SvelidationValue, validateParams: SvelidationValidatorParams): string[]|void => {
+const validate = (value: any, validateParams: SvelidationValidatorParams): string[]|void => {
   const { trimValue = false, ...params } = validateParams;
 
   if (trimValue && typeof value === 'string') {
@@ -103,20 +103,20 @@ const validate = (value: SvelidationValue, validateParams: SvelidationValidatorP
     return [];
   }
 
-  const globalInterceptors = getInterceptors();
-  const typeInterceptors = getInterceptors({ type });
+  const globalSpies = getSpies();
+  const typeSpies = getSpies({ type });
   const { typeCheck, ...scope } = getScope(params);
 
   if (typeof typeCheck !== 'function') {
     console.warn('svelidation: typeCheck method is absent for type', params.type);
     return [];
   } else {
-    const typeCheckInterceptors = getInterceptors({ type, ruleName: 'typeCheck' });
-    const { stop, errors, abort } = runRuleWithInterceptors({
+    const typeCheckSpies = getSpies({ type, ruleName: 'typeCheck' });
+    const { stop, errors, abort } = runRuleWithSpies({
       value, params,
       rule: typeCheck,
       ruleName: 'typeCheck',
-      interceptors: [...globalInterceptors, ...typeInterceptors, ...typeCheckInterceptors]
+      spies: [...globalSpies, ...typeSpies, ...typeCheckSpies]
     });
 
     if (abort) {
@@ -132,13 +132,13 @@ const validate = (value: SvelidationValue, validateParams: SvelidationValidatorP
   const ruleNames = Object.keys(scope);
 
   for (let i = 0; i < ruleNames.length; i++) {
-    const typeRuleInterceptors = getInterceptors({ type, ruleName: ruleNames[i] });
-    const ruleInterceptors = getInterceptors({ ruleName: ruleNames[i] });
-    const { stop, errors, abort } = runRuleWithInterceptors({
+    const typeRuleSpies = getSpies({ type, ruleName: ruleNames[i] });
+    const ruleSpies = getSpies({ ruleName: ruleNames[i] });
+    const { stop, errors, abort } = runRuleWithSpies({
       value, params,
       rule: typeCheck,
       ruleName: ruleNames[i],
-      interceptors: [...globalInterceptors, ...typeInterceptors, ...typeRuleInterceptors,  ...ruleInterceptors]
+      spies: [...globalSpies, ...typeSpies, ...typeRuleSpies,  ...ruleSpies]
     });
 
     if (abort) {

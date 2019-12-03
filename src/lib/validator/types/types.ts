@@ -1,36 +1,65 @@
-type SvelidationValue = undefined | null | string | number | boolean | object | (string|number|boolean|undefined|null|object)[];
-
-type SvelidationRule<Type = SvelidationValue, R = boolean> = {
+type SvelidationRule<Type = any, R = boolean> = {
   (value: Type, params?: {
     [key: string]: any
   }): R
 }
 
-type SvelidationType<Type = SvelidationValue> = {
+type SvelidationType<Type = any> = {
   typeCheck?: SvelidationRule<Type>;
-  [key: string]: SvelidationRule<Type>;
+  [key: string]: SvelidationRule<Type>
 }
 
-type SvelidationTypesStore<Type = SvelidationValue> = {
+type SvelidationTypesStore<Type = any> = {
   [key: string]: SvelidationType<Type>
 }
 
-type SvelidationRulesStore<Type = SvelidationValue> = {
+type SvelidationRulesStore<Type = any> = {
   [key: string]: SvelidationRule<Type>
 }
 
 let types: SvelidationTypesStore | {} = {};
 let rules: SvelidationRulesStore | {} = {};
 
-const ensureType = <Type = SvelidationValue>(
+const ensureType = <Type = any>(
   typeName: string,
-  typeRules: SvelidationType<Type>
+  typeRules: SvelidationType<Type> | {
+    typeCheck?: string;
+    [key: string]: string
+  }
 ) => {
   if (!types[typeName]) {
-    if (typeof typeRules !== 'object' || typeof typeRules.typeCheck !== 'function') {
+    if (typeof typeRules !== 'object') {
+      console.warn('svelidation: rule required for new type', typeName);
+      return;
+    }
+
+    if (typeof typeRules.typeCheck === 'string') {
+      const [ typeName, ruleName ] = typeRules.typeCheck.split('.');
+      const type = getType(typeName);
+
+      if (type && type[ruleName]) {
+        typeRules.typeCheck = type[ruleName];
+      }
+    }
+
+    if (typeof typeRules.typeCheck !== 'function') {
       console.warn('svelidation: typeCheck method is required for new types', typeName);
       return;
     }
+
+    Object.keys(typeRules).forEach(key => {
+      const rule = typeRules[key];
+      if (typeof rule === 'string') {
+        const [ typeName, ruleName ] = (rule as any).split('.');
+        const cb = getType(typeName)[ruleName];
+
+        if (typeof cb === 'function') {
+          typeRules[key] = cb;
+        } else {
+          delete typeRules[key];
+        }
+      }
+    });
 
     types[typeName] = {};
   }
@@ -85,7 +114,7 @@ const installType = {
   number: () => {
     ensureType<number>('number', {
       typeCheck: (value) => (
-        typeof value === 'number' || !isNaN(parseFloat(value as any))
+        typeof value === 'number' || !isNaN(parseFloat(value))
       ),
       min: (value, { min }) => (parseFloat(value as any) >= min),
       max: (value, { max }) => (parseFloat(value as any) <= max),
@@ -130,4 +159,4 @@ const getRule = (ruleName: string): SvelidationRule|undefined => rules[ruleName]
 resetType();
 resetRule();
 
-export { ensureRule, ensureType, resetType, resetRule, SvelidationValue, SvelidationRule, SvelidationRulesStore, getType, getRule };
+export { ensureRule, ensureType, resetType, resetRule, SvelidationRule, SvelidationRulesStore, getType, getRule };
