@@ -109,37 +109,26 @@ const validate = (value: any, validateParams: SvelidationValidatorParams): strin
   const { required, optional, type } = params;
   const globalSpies = getSpies();
   const typeSpies = getSpies({ type });
-  const { typeCheck, ...scope } = getScope(params);
+  const scope = getScope(params);
 
-  if (skipValidation(value, { required, optional }) && !Object.keys(scope).length) {
-    return [];
-  }
-
-  if (!isFunction(typeCheck)) {
+  // no typeCheck - no party
+  if (!isFunction(scope.typeCheck)) {
     if (process.env.DEV) {
       console.warn('svelidation: typeCheck method is absent for type', params.type);
     }
     return [];
-  } else {
-    const typeCheckSpies = getSpies({ ruleName: 'typeCheck' });
-    const { stop, errors, abort } = runRuleWithSpies({
-      value, params,
-      rule: typeCheck,
-      ruleName: 'typeCheck',
-      spies: [...globalSpies, ...typeSpies, ...typeCheckSpies]
-    });
+  }
 
-    if (abort) {
-      return;
-    }
-
-    if (errors.length || stop) {
-      return errors;
-    }
+  // skip for empty and optional fields with no other rules except typeCheck provided
+  if (skipValidation(value, { required, optional }) && Object.keys(scope).length === 1) {
+    return [];
   }
 
   const result = [];
-  const ruleNames = Object.keys(scope);
+
+  // ensure typeCheck with first pick
+  const ruleNames = Object.keys(scope).filter(key => (key !== 'typeCheck'));
+  ruleNames.unshift('typeCheck');
 
   for (let i = 0; i < ruleNames.length; i++) {
     const typeRuleSpies = getSpies({ type, ruleName: ruleNames[i] });
@@ -151,11 +140,14 @@ const validate = (value: any, validateParams: SvelidationValidatorParams): strin
       spies: [...globalSpies, ...typeSpies, ...typeRuleSpies,  ...ruleSpies]
     });
 
+    // exit validation with no errors in case of abort call
     if (abort) {
       return;
     }
 
-    if (stop) {
+    // stop validation with current errors in case of stop call
+    // or if there are errors on first (typeCheck) step
+    if (stop || (i === 0 && errors.length)) {
       return errors;
     } else {
       result.push(...errors);
