@@ -27,10 +27,10 @@
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "test": "rollup -c && node ./test/e2e/e2e.js --production && node ./test/unit/unit.js --production",
-    "test:e2e": "rollup -c && node ./test/e2e/e2e.js --production",
-    "test:e2e:dev": "node ./test/e2e/e2e.js",
-    "test:unit": "node ./test/unit/unit.js --production",
-    "test:unit:dev": "node ./test/unit/unit.js"
+    "e2e": "rollup -c && node ./test/e2e/e2e.js --production",
+    "e2e:dev": "node ./test/e2e/e2e.js",
+    "unit": "node ./test/unit/unit.js --production",
+    "unit:dev": "node ./test/unit/unit.js"
   },
   "dependencies": {
     "svelte": "^3.13.0"
