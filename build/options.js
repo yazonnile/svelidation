@@ -11,11 +11,11 @@ module.exports = ({ paths, types }) => (type, production) => {
       external: [ 'svelte/store' ]
     };
 
-    case types.demo:
+    case types.docs:
     return {
-      input: 'src/demo/demo.ts',
+      input: 'src/docs/docs.ts',
       output: {
-        dir: paths.docs,
+        dir: paths.docsDist,
         sourcemap: !production,
         format: 'es',
       },

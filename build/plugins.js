@@ -10,7 +10,7 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
       return require('@rollup/plugin-alias')({
         entries: {
           lib: paths.lib,
-          demo: paths.demo,
+          docs: paths.docs,
           dist: paths.dist,
           helpers: `${paths.e2e}/helpers`
         },
@@ -45,8 +45,8 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
     liveReload: (type, production) => {
       let liveReloadFolder;
       switch (type) {
-        case types.demo:
-          liveReloadFolder = paths.docs;
+        case types.docs:
+          liveReloadFolder = paths.docsDist;
           break;
 
         case types.e2e:
@@ -63,9 +63,9 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
     serve: (type, production) => {
       let opts;
       switch (type) {
-        case types.demo:
+        case types.docs:
           opts = {
-            contentBase: paths.docs,
+            contentBase: paths.docsDist,
           };
           break;
 
@@ -90,7 +90,7 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
         include: [`**/*.spec.js`],
         justImport: true
       }]);
-    }
+    },
   };
 
   return pluginsNames.reduce((list, name) => {

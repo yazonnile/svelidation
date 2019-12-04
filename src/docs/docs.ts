@@ -1,7 +1,7 @@
-import Demo from './demo.svelte';
-import Dynamic from './dynamic.svelte';
-import Radios from './radios.svelte';
-import Array from './array.svelte';
+import Demo from './components/demo.svelte';
+import Dynamic from './components/dynamic.svelte';
+import Radios from './components/radios.svelte';
+import Array from './components/array.svelte';
 import { ListenInputEventsEnum } from 'lib/typing/typing';
 
 const target = document.getElementById('app');

@@ -22,7 +22,7 @@ moduleAlias.addAliases({
   await fs.remove(paths.e2eDist);
 
   log('copy new files');
-  await fs.copy(`${paths.docs}/index.html`, `${paths.e2eDist}/index.html`);
+  await fs.copy(`${paths.docsDist}/index.html`, `${paths.e2eDist}/index.html`);
 
   log('build test bundles');
   const entryPoints = globby.sync([`${paths.e2e}/tests/**/*.js`]).filter(item => !item.match(/\.test\.js$/));

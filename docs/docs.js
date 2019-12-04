@@ -62,6 +62,14 @@ function attr(node, attribute, value) {
     else if (node.getAttribute(attribute) !== value)
         node.setAttribute(attribute, value);
 }
+function get_binding_group_value(group) {
+    const value = [];
+    for (let i = 0; i < group.length; i += 1) {
+        if (group[i].checked)
+            value.push(group[i].__value);
+    }
+    return value;
+}
 function to_number(value) {
     return value === '' ? undefined : +value;
 }
@@ -293,6 +301,24 @@ class SvelteComponent {
     }
 }
 
+var ListenInputEventsEnum;
+(function (ListenInputEventsEnum) {
+    ListenInputEventsEnum[ListenInputEventsEnum["never"] = 0] = "never";
+    ListenInputEventsEnum[ListenInputEventsEnum["always"] = 1] = "always";
+    ListenInputEventsEnum[ListenInputEventsEnum["afterValidation"] = 2] = "afterValidation";
+})(ListenInputEventsEnum || (ListenInputEventsEnum = {}));
+var SvelidationPresence;
+(function (SvelidationPresence) {
+    SvelidationPresence["required"] = "required";
+    SvelidationPresence["optional"] = "optional";
+})(SvelidationPresence || (SvelidationPresence = {}));
+
+var updateStoreErrors = (store, errors = []) => {
+    store.update(value => {
+        return { ...value, errors };
+    });
+};
+
 const subscriber_queue = [];
 /**
  * Create a `Writable` store that allows both updating and reading by subscription.
@@ -345,134 +371,11 @@ function writable(value, start = noop) {
     return { set, update, subscribe };
 }
 
-class BaseType {
-    constructor(value, params) {
-        this.value = value;
-        this.params = params;
-        this.errors = [];
-    }
-    getValue() {
-        return (this.value === undefined || this.value === null) ? '' : this.value;
-    }
-    optionalWithNoValue() {
-        return !this.getValue() && this.params.optional;
-    }
-    typeValidation(regExp) {
-        return !!this.getValue().toString().match(regExp);
-    }
-    matchRule() {
-        return this.getValue().toString().match(this.params.match);
-    }
-    equalRule() {
-        return this.getValue() === this.params.equal;
-    }
-    getErrors() {
-        return this.errors;
-    }
-}
-
-class StringType extends BaseType {
-    getValue() {
-        const { trim = true } = this.params;
-        const value = super.getValue().toString();
-        return trim ? value.trim() : value;
-    }
-    typeValidation() {
-        return super.typeValidation(/.+/);
-    }
-    minLengthRule() {
-        return this.getValue().length >= this.params.minLength;
-    }
-    maxLengthRule() {
-        return this.getValue().length <= this.params.maxLength;
-    }
-}
-
-class NumberType extends BaseType {
-    getValue() {
-        return parseFloat(super.getValue());
-    }
-    typeValidation() {
-        return super.typeValidation(/\d+/);
-    }
-    minValueRule() {
-        return this.getValue() >= this.params.minValue;
-    }
-    maxValueRule() {
-        return this.getValue() <= this.params.maxValue;
-    }
-}
-
-class EmailType extends BaseType {
-    typeValidation() {
-        return super.typeValidation(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
-    }
-}
-
-const validators = {
-    string: StringType,
-    number: NumberType,
-    email: EmailType
-};
-const getRuleKeys = (params) => {
-    const { type, value, trim, optional, ...rest } = params;
-    return Object.keys(rest);
-};
-const addValidator = (key, typeClass) => {
-    validators[key] = typeClass;
-};
-var validateValueByParams = (value, params) => {
-    const { type } = params;
-    const validatorClass = validators[type];
-    if (!validatorClass) {
-        console.warn(`validatorDoesntExist`);
-        return [];
-    }
-    const instance = new validatorClass(value, params);
-    // field is optional with empty value
-    if (instance.optionalWithNoValue()) {
-        return [];
-    }
-    const ruleKeys = getRuleKeys(params);
-    if (ruleKeys.length) {
-        return ruleKeys.reduce((errors, ruleKey) => {
-            const ruleMethod = `${ruleKey}Rule`;
-            if (typeof instance[ruleMethod] === 'function') {
-                if (!instance[ruleMethod]()) {
-                    errors.push(`${ruleKey}`);
-                }
-            }
-            else {
-                console.warn(`${type}::ruleDoesntExist::${ruleKey}`);
-            }
-            return errors;
-        }, []);
-    }
-    else {
-        if (typeof instance.typeValidation === 'function') {
-            return instance.typeValidation() ? [] : ['type'];
-        }
-        else {
-            console.warn(`${type}::typeValidationDoesntExist`);
-            return [];
-        }
-    }
+var isFunction = (f) => {
+    return typeof f === 'function';
 };
 
-var updateStoreErrors = (store, errors = []) => {
-    store.update(value => {
-        return { ...value, errors };
-    });
-};
-
-var PhaseEnum;
-(function (PhaseEnum) {
-    PhaseEnum[PhaseEnum["never"] = 0] = "never";
-    PhaseEnum[PhaseEnum["always"] = 1] = "always";
-    PhaseEnum[PhaseEnum["afterFirstValidation"] = 2] = "afterFirstValidation";
-})(PhaseEnum || (PhaseEnum = {}));
-
-class Input {
+class FormElement {
     constructor(node, options) {
         this.node = node;
         this.options = options;
@@ -494,11 +397,11 @@ class Input {
         this.currentPhase = phase;
     }
     preventEvents() {
-        const { inputValidationPhase: initialPhase } = this.options;
-        if (initialPhase === PhaseEnum.never) {
+        const { listenInputEvents: initialPhase } = this.options;
+        if (initialPhase === ListenInputEventsEnum.never) {
             return true;
         }
-        if (initialPhase === PhaseEnum.always) {
+        if (initialPhase === ListenInputEventsEnum.always) {
             return false;
         }
         return this.currentPhase < initialPhase;
@@ -509,73 +412,342 @@ class Input {
     }
 }
 
-var isFunction = (f) => {
-    return typeof f === 'function';
+const prepareBaseParams = (entryParams, validationOptions) => {
+    const { trim: entryTrim, required, optional } = entryParams;
+    const { presence, trim: optionsTrim } = validationOptions;
+    const output = { ...entryParams };
+    if (presence === SvelidationPresence.required && required === undefined && optional === undefined) {
+        output.required = true;
+    }
+    if (optionsTrim && entryTrim === undefined) {
+        output.trim = true;
+    }
+    return output;
 };
 
-class Validation {
-    constructor(options) {
-        this.entries = [];
-        this.options = Object.assign({
-            validateOn: ['change'],
-            clearOn: ['reset'],
-            inputValidationPhase: PhaseEnum.afterFirstValidation
-        }, options);
-        // ensure options as array
-        if (!this.options.clearOn) {
-            this.options.clearOn = [];
-        }
-        if (!this.options.validateOn) {
-            this.options.validateOn = [];
-        }
-        this.phase = PhaseEnum.never;
-        this.createForm = this.createForm.bind(this);
+let globals = [];
+let typeRules = {};
+let types = {};
+let rules = {};
+const getSpies = (params) => {
+    if (!params) {
+        return globals;
     }
-    createEntry(params) {
-        const store = writable({ value: params.value || '', errors: [] });
+    try {
+        const { type: typeName, ruleName } = params;
+        if (typeName && ruleName) {
+            return typeRules[typeName][ruleName] || [];
+        }
+        else if (typeName) {
+            return types[typeName] || [];
+        }
+        else {
+            return rules[ruleName] || [];
+        }
+    }
+    catch (e) {
+        return [];
+    }
+};
+
+let types$1 = {};
+let rules$1 = {};
+const ensureType = (typeName, typeRules) => {
+    if (typeof typeRules !== 'object') {
+        return;
+    }
+    Object.keys(typeRules).reduce((obj, key) => {
+        const rule = typeRules[key];
+        try {
+            if (typeof rule === 'string') {
+                const [typeName, ruleName] = rule.split('.');
+                const inheritedRule = getType(typeName)[ruleName];
+                if (isFunction(inheritedRule)) {
+                    obj[ruleName] = inheritedRule;
+                }
+            }
+            else if (isFunction(rule)) {
+                obj[key] = rule;
+            }
+        }
+        catch (e) {
+            delete obj[key];
+        }
+        return obj;
+    }, typeRules);
+    if (!types$1[typeName]) {
+        if (!isFunction(typeRules.typeCheck)) {
+            return;
+        }
+        types$1[typeName] = {};
+    }
+    Object.assign(types$1[typeName], typeRules);
+};
+const resetType = (typeName) => {
+    if (!typeName) {
+        types$1 = {};
+        Object.keys(installType).forEach(key => installType[key]());
+    }
+    else {
+        delete types$1[typeName];
+        if (installType[typeName]) {
+            installType[typeName]();
+        }
+    }
+};
+const resetRule = (ruleName) => {
+    if (!ruleName) {
+        rules$1 = {};
+        Object.keys(installRule).forEach(key => installRule[key]());
+    }
+    else {
+        delete rules$1[ruleName];
+        if (installType[ruleName]) {
+            installType[ruleName]();
+        }
+    }
+};
+const installType = {
+    string: () => {
+        ensureType('string', {
+            typeCheck: (value) => (typeof value === 'string'),
+            min: (value, { min }) => (value.length >= min),
+            max: (value, { max }) => (value.length <= max),
+        });
+    },
+    email: () => {
+        ensureType('email', {
+            typeCheck: (value) => (typeof value === 'string'
+                && !!(String(value)).match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))
+        });
+    },
+    number: () => {
+        ensureType('number', {
+            typeCheck: (value) => (typeof value === 'number' || !isNaN(parseFloat(value))),
+            min: (value, { min }) => (parseFloat(value) >= min),
+            max: (value, { max }) => (parseFloat(value) <= max),
+        });
+    },
+    boolean: () => {
+        ensureType('boolean', {
+            typeCheck: (value) => typeof value === 'boolean',
+            required: (value) => value,
+        });
+    },
+    array: () => {
+        ensureType('array', {
+            typeCheck: (value) => Array.isArray(value),
+            required: (value) => value.length > 0,
+            min: (value, { min }) => value.length >= min,
+            max: (value, { max }) => value.length <= max,
+            equal: (value, { equal }) => value.sort().toString() === equal.sort().toString(),
+            includes: (value, { includes }) => value.includes(includes)
+        });
+    },
+};
+const installRule = {
+    equal: () => {
+        ensureRule('equal', (value, { equal }) => (value === equal));
+    },
+    match: () => {
+        ensureRule('match', (value, { match }) => !!(String(value)).match(match));
+    },
+    required: () => {
+        ensureRule('required', (value) => {
+            if (value === undefined || value === null) {
+                return false;
+            }
+            if (typeof value === 'number') {
+                return !isNaN(value);
+            }
+            return !!String(value);
+        });
+    }
+};
+const ensureRule = (ruleName, rule) => {
+    if (!isFunction(rule)) {
+        return;
+    }
+    Object.assign(rules$1, {
+        [ruleName]: rule
+    });
+};
+const getType = (typeName) => types$1[typeName];
+const getRule = (ruleName) => rules$1[ruleName];
+resetType();
+resetRule();
+
+const runRuleWithSpies = ({ value, params: initialParams, rule, ruleName, spies }) => {
+    const errors = [];
+    const { type } = initialParams;
+    let nextValue = value;
+    let nextParams = initialParams;
+    let stop = false;
+    let abort = false;
+    for (let i = 0; i < spies.length; i++) {
+        stop = true;
+        const spyErrors = spies[i](nextValue, { type, ruleName, ...nextParams }, (value, params = {}) => {
+            nextValue = value;
+            nextParams = { ...initialParams, ...params };
+            stop = false;
+        }, () => {
+            abort = true;
+        });
+        if (abort) {
+            return { abort };
+        }
+        if (Array.isArray(spyErrors)) {
+            errors.push(...spyErrors);
+        }
+        if (stop) {
+            break;
+        }
+    }
+    if (!stop && !rule(nextValue, nextParams)) {
+        errors.push(ruleName);
+    }
+    return { errors, stop };
+};
+const getScope = ({ type, optional, ...rules }) => {
+    const typeRules = getType(type);
+    if (!typeRules) {
+        return {};
+    }
+    return [...Object.keys(rules), 'typeCheck'].reduce((obj, ruleName) => {
+        const rule = typeRules[ruleName] || getRule(ruleName);
+        if (rule) {
+            obj[ruleName] = rule;
+        }
+        return obj;
+    }, {});
+};
+const skipValidation = (value, { optional, required = false }) => {
+    const valueIsAbsent = [undefined, null, ''].indexOf(value) > -1;
+    const valueIsOptional = typeof optional === 'boolean' ? optional : !required;
+    return valueIsAbsent && valueIsOptional;
+};
+const validate = (value, validateParams) => {
+    const { trim = false, ...params } = validateParams;
+    if (trim && typeof value === 'string') {
+        value = value.trim();
+    }
+    const { required, optional, type } = params;
+    const globalSpies = getSpies();
+    const typeSpies = getSpies({ type });
+    const scope = getScope(params);
+    // no typeCheck - no party
+    if (!isFunction(scope.typeCheck)) {
+        return [];
+    }
+    // skip for empty and optional fields with no other rules except typeCheck provided
+    if (skipValidation(value, { required, optional }) && Object.keys(scope).length === 1) {
+        return [];
+    }
+    const result = [];
+    // ensure typeCheck with first pick
+    const ruleNames = Object.keys(scope).filter(key => (key !== 'typeCheck'));
+    ruleNames.unshift('typeCheck');
+    for (let i = 0; i < ruleNames.length; i++) {
+        const typeRuleSpies = getSpies({ type, ruleName: ruleNames[i] });
+        const ruleSpies = getSpies({ ruleName: ruleNames[i] });
+        const { stop, errors, abort } = runRuleWithSpies({
+            value, params,
+            rule: scope[ruleNames[i]],
+            ruleName: ruleNames[i],
+            spies: [...globalSpies, ...typeSpies, ...typeRuleSpies, ...ruleSpies]
+        });
+        // exit validation with no errors in case of abort call
+        if (abort) {
+            return;
+        }
+        // stop validation with current errors in case of stop call
+        // or if there are errors on first (typeCheck) step
+        if (stop || (i === 0 && errors.length)) {
+            return errors;
+        }
+        else {
+            result.push(...errors);
+        }
+    }
+    return result;
+};
+
+const setValidationPhase = (entries, phase) => {
+    entries.forEach(({ formElements }) => {
+        if (formElements) {
+            formElements.forEach(formElement => formElement.setPhase(phase));
+        }
+    });
+};
+const createValidation = (opts) => {
+    let phase = ListenInputEventsEnum.never;
+    const entries = [];
+    const options = Object.assign({
+        validateOn: ['change'],
+        clearOn: ['reset'],
+        listenInputEvents: ListenInputEventsEnum.afterValidation,
+        presence: 'optional',
+        trim: false
+    }, opts);
+    // ensure options as array
+    if (!Array.isArray(options.clearOn)) {
+        options.clearOn = [];
+    }
+    if (!Array.isArray(options.validateOn)) {
+        options.validateOn = [];
+    }
+    const createEntry = (createEntryParams) => {
+        const { value = '', ...params } = createEntryParams;
+        const store = writable({ value, errors: [] });
         const entry = { store, params };
         const useInput = (inputNode, useOptions) => {
-            const inputOptions = Object.assign({}, this.options, useOptions, {
-                onClear: () => {
-                    updateStoreErrors(store, []);
-                },
-                onValidate: () => {
-                    this.validateStore(store);
-                },
-                clearOn: this.options.clearOn.filter(event => event !== 'reset')
+            const formElementOptions = Object.assign({}, options, useOptions, {
+                onClear: () => updateStoreErrors(store, []),
+                onValidate: () => validateStore(store),
+                clearOn: options.clearOn.filter(event => event !== 'reset')
             });
-            entry.input = new Input(inputNode, inputOptions);
-            entry.input.setPhase(this.phase);
+            if (!entry.formElements) {
+                entry.formElements = [];
+            }
+            const newElement = new FormElement(inputNode, formElementOptions);
+            newElement.setPhase(phase);
+            entry.formElements.push(newElement);
             return {
                 destroy: () => {
-                    entry.input.destroy();
-                    delete entry.input;
+                    for (let i = 0; i < entry.formElements.length; i++) {
+                        const formElement = entry.formElements[i];
+                        if (formElement.node === inputNode) {
+                            entry.formElements.splice(i, 1);
+                            formElement.destroy();
+                            break;
+                        }
+                    }
+                    if (!entry.formElements.length) {
+                        delete entry.formElements;
+                    }
                 }
             };
         };
-        this.entries.push(entry);
+        entries.push(entry);
         return [store, useInput];
-    }
-    createEntries(data) {
+    };
+    const createEntries = (data) => {
         if (Array.isArray(data)) {
-            return data.map(_ => this.createEntry(_));
+            return data.map(createEntry);
         }
         else {
             return Object.keys(data).reduce((sum, currentKey) => {
                 return Object.assign(sum, {
-                    [currentKey]: this.createEntry(data[currentKey])
+                    [currentKey]: createEntry(data[currentKey])
                 });
             }, {});
         }
-    }
-    removeEntry(entry) {
-        this.entries = this.entries.filter(_ => entry !== _);
-    }
-    createForm(formNode, events = {}) {
+    };
+    const createForm = (formNode, events = {}) => {
         const { onFail: fail, onSubmit: submit, onSuccess: success } = events;
-        const onReset = () => this.clearErrors();
+        const onReset = () => clearErrors();
         const onSubmit = e => {
-            const errors = this.validate();
+            const errors = validate$1();
             isFunction(submit) && submit(e, errors);
             if (errors.length) {
                 isFunction(fail) && fail(errors);
@@ -585,7 +757,7 @@ class Validation {
             }
         };
         formNode.addEventListener('submit', onSubmit);
-        if (this.options.clearOn.indexOf('reset') > -1) {
+        if (options.clearOn.indexOf('reset') > -1) {
             formNode.addEventListener('reset', onReset);
         }
         return {
@@ -594,57 +766,61 @@ class Validation {
                 formNode.removeEventListener('reset', onReset);
             }
         };
-    }
-    validateStore(store) {
-        const entry = this.entries.find(entry => (entry.store === store));
+    };
+    const validateStore = (store) => {
+        const entry = entries.find(entry => (entry.store === store));
         if (entry) {
             const { value } = get_store_value(store);
-            const errors = validateValueByParams(value, entry.params);
-            updateStoreErrors(store, errors);
-            return errors;
+            const errors = validate(value, prepareBaseParams(entry.params, options));
+            if (Array.isArray(errors)) {
+                updateStoreErrors(store, errors);
+                return errors;
+            }
         }
         return [];
-    }
-    validate(includeNoInputs = false) {
-        const errors = this.entries.reduce((errors, entry) => {
-            if (entry.input || includeNoInputs) {
-                const storeErrors = this.validateStore(entry.store);
+    };
+    const validate$1 = (includeNoFormElements = false) => {
+        const errors = entries.reduce((errors, entry) => {
+            if (entry.formElements || includeNoFormElements) {
+                const storeErrors = validateStore(entry.store);
                 if (storeErrors.length) {
                     errors.push({ [entry.params.type]: storeErrors });
                 }
             }
             return errors;
         }, []);
-        this.setValidationPhase(PhaseEnum.afterFirstValidation);
+        phase = ListenInputEventsEnum.afterValidation;
+        setValidationPhase(entries, ListenInputEventsEnum.afterValidation);
         return errors;
-    }
-    setValidationPhase(phase) {
-        this.phase = phase;
-        this.entries.forEach(({ input }) => {
-            if (input) {
-                input.setPhase(phase);
-            }
-        });
-    }
-    clearErrors(includeNoInputs = false) {
-        this.entries.forEach(entry => {
-            if (entry.input || includeNoInputs) {
+    };
+    const clearErrors = (includeNoFormElements = false) => {
+        entries.forEach(entry => {
+            if (entry.formElements || includeNoFormElements) {
                 updateStoreErrors(entry.store, []);
             }
         });
-    }
-    destroy() {
-        this.entries.forEach(entry => {
-            if (entry.input) {
-                entry.input.destroy();
+    };
+    const destroy = () => {
+        entries.forEach(entry => {
+            if (entry.formElements) {
+                entry.formElements.forEach(formElement => formElement.destroy());
             }
         });
-    }
-}
+    };
+    return {
+        createEntry,
+        createEntries,
+        createForm,
+        validateStore,
+        validate: validate$1,
+        clearErrors,
+        destroy
+    };
+};
 
-/* src/demo/demo.svelte generated by Svelte v3.15.0 */
+/* src/docs/components/demo.svelte generated by Svelte v3.15.0 */
 
-function create_if_block_4(ctx) {
+function create_if_block_5(ctx) {
 	let p;
 
 	return {
@@ -662,8 +838,8 @@ function create_if_block_4(ctx) {
 	};
 }
 
-// (45:4) {#if $loginStore.errors.includes('maxLength')}
-function create_if_block_3(ctx) {
+// (44:4) {#if $loginStore.errors.includes('max')}
+function create_if_block_4(ctx) {
 	let p;
 
 	return {
@@ -681,8 +857,8 @@ function create_if_block_3(ctx) {
 	};
 }
 
-// (52:4) {#if $emailStore.errors.includes('type')}
-function create_if_block_2(ctx) {
+// (51:4) {#if $emailStore.errors.includes('typeCheck')}
+function create_if_block_3(ctx) {
 	let p;
 
 	return {
@@ -700,7 +876,26 @@ function create_if_block_2(ctx) {
 	};
 }
 
-// (59:4) {#if $ageStore.errors.includes('minValue')}
+// (58:4) {#if $ageStore.errors.includes('typeCheck')}
+function create_if_block_2(ctx) {
+	let p;
+
+	return {
+		c() {
+			p = element("p");
+			p.textContent = "Please, fill the number!";
+			attr(p, "class", "error");
+		},
+		m(target, anchor) {
+			insert(target, p, anchor);
+		},
+		d(detaching) {
+			if (detaching) detach(p);
+		}
+	};
+}
+
+// (61:4) {#if $ageStore.errors.includes('min')}
 function create_if_block_1(ctx) {
 	let p;
 
@@ -719,7 +914,7 @@ function create_if_block_1(ctx) {
 	};
 }
 
-// (65:2) {#if options && options.clearOn && options.clearOn.indexOf('reset') > -1}
+// (67:2) {#if options && options.clearOn && options.clearOn.indexOf('reset') > -1}
 function create_if_block(ctx) {
 	let button;
 
@@ -743,48 +938,44 @@ function create_fragment(ctx) {
 	let h1;
 	let t0;
 	let html_tag;
-	let raw1_value = `<pre><code>${ctx.defaultSettings ? "// default settings\n" : ""}new Validation(${JSON.stringify(ctx.options, null, "  ")});</code></pre>` + "";
+	let raw1_value = `<pre><code>${ctx.defaultSettings ? "// default settings\n" : ""}createValidation(${JSON.stringify(ctx.options, null, "  ")});</code></pre>` + "";
 	let t1;
 	let label0;
 	let t2;
 	let input0;
 	let loginInput_action;
 	let t3;
-	let show_if_4 = ctx.$loginStore.errors.includes("minLength");
+	let show_if_5 = ctx.$loginStore.errors.includes("min");
 	let t4;
-	let show_if_3 = ctx.$loginStore.errors.includes("maxLength");
+	let show_if_4 = ctx.$loginStore.errors.includes("max");
 	let t5;
 	let label1;
 	let t6;
 	let input1;
 	let emailInput_action;
 	let t7;
-	let show_if_2 = ctx.$emailStore.errors.includes("type");
+	let show_if_3 = ctx.$emailStore.errors.includes("typeCheck");
 	let t8;
 	let label2;
 	let t9;
 	let input2;
-	let input2_updating = false;
 	let ageInput_action;
 	let t10;
-	let show_if_1 = ctx.$ageStore.errors.includes("minValue");
+	let show_if_2 = ctx.$ageStore.errors.includes("typeCheck");
 	let t11;
+	let show_if_1 = ctx.$ageStore.errors.includes("min");
+	let t12;
 	let button;
-	let t13;
+	let t14;
 	let show_if = ctx.options && ctx.options.clearOn && ctx.options.clearOn.indexOf("reset") > -1;
 	let createForm_action;
 	let dispose;
-	let if_block0 = show_if_4 && create_if_block_4();
-	let if_block1 = show_if_3 && create_if_block_3();
-	let if_block2 = show_if_2 && create_if_block_2();
-
-	function input2_input_handler() {
-		input2_updating = true;
-		ctx.input2_input_handler.call(input2);
-	}
-
-	let if_block3 = show_if_1 && create_if_block_1();
-	let if_block4 = show_if && create_if_block();
+	let if_block0 = show_if_5 && create_if_block_5();
+	let if_block1 = show_if_4 && create_if_block_4();
+	let if_block2 = show_if_3 && create_if_block_3();
+	let if_block3 = show_if_2 && create_if_block_2();
+	let if_block4 = show_if_1 && create_if_block_1();
+	let if_block5 = show_if && create_if_block();
 
 	return {
 		c() {
@@ -812,14 +1003,16 @@ function create_fragment(ctx) {
 			t10 = space();
 			if (if_block3) if_block3.c();
 			t11 = space();
+			if (if_block4) if_block4.c();
+			t12 = space();
 			button = element("button");
 			button.textContent = "Submit";
-			t13 = space();
-			if (if_block4) if_block4.c();
+			t14 = space();
+			if (if_block5) if_block5.c();
 			html_tag = new HtmlTag(raw1_value, t1);
 			attr(input0, "type", "text");
 			attr(input1, "type", "email");
-			attr(input2, "type", "number");
+			attr(input2, "type", "text");
 			attr(button, "type", "submit");
 			form.noValidate = true;
 			toggle_class(form, "success", ctx.success);
@@ -827,7 +1020,7 @@ function create_fragment(ctx) {
 			dispose = [
 				listen(input0, "input", ctx.input0_input_handler),
 				listen(input1, "input", ctx.input1_input_handler),
-				listen(input2, "input", input2_input_handler),
+				listen(input2, "input", ctx.input2_input_handler),
 				listen(form, "submit", prevent_default(ctx.submit_handler))
 			];
 		},
@@ -863,10 +1056,12 @@ function create_fragment(ctx) {
 			ageInput_action = ctx.ageInput.call(null, input2) || ({});
 			append(label2, t10);
 			if (if_block3) if_block3.m(label2, null);
-			append(form, t11);
+			append(label2, t11);
+			if (if_block4) if_block4.m(label2, null);
+			append(form, t12);
 			append(form, button);
-			append(form, t13);
-			if (if_block4) if_block4.m(form, null);
+			append(form, t14);
+			if (if_block5) if_block5.m(form, null);
 
 			createForm_action = ctx.createForm.call(null, form, {
 				onSuccess: ctx.onSuccess,
@@ -874,17 +1069,17 @@ function create_fragment(ctx) {
 			}) || ({});
 		},
 		p(changed, ctx) {
-			if (changed.title) h1.innerHTML = ctx.title;			if ((changed.defaultSettings || changed.options) && raw1_value !== (raw1_value = `<pre><code>${ctx.defaultSettings ? "// default settings\n" : ""}new Validation(${JSON.stringify(ctx.options, null, "  ")});</code></pre>` + "")) html_tag.p(raw1_value);
+			if (changed.title) h1.innerHTML = ctx.title;			if ((changed.defaultSettings || changed.options) && raw1_value !== (raw1_value = `<pre><code>${ctx.defaultSettings ? "// default settings\n" : ""}createValidation(${JSON.stringify(ctx.options, null, "  ")});</code></pre>` + "")) html_tag.p(raw1_value);
 
 			if (changed.$loginStore && input0.value !== ctx.$loginStore.value) {
 				set_input_value(input0, ctx.$loginStore.value);
 			}
 
-			if (changed.$loginStore) show_if_4 = ctx.$loginStore.errors.includes("minLength");
+			if (changed.$loginStore) show_if_5 = ctx.$loginStore.errors.includes("min");
 
-			if (show_if_4) {
+			if (show_if_5) {
 				if (!if_block0) {
-					if_block0 = create_if_block_4();
+					if_block0 = create_if_block_5();
 					if_block0.c();
 					if_block0.m(label0, t4);
 				}
@@ -893,11 +1088,11 @@ function create_fragment(ctx) {
 				if_block0 = null;
 			}
 
-			if (changed.$loginStore) show_if_3 = ctx.$loginStore.errors.includes("maxLength");
+			if (changed.$loginStore) show_if_4 = ctx.$loginStore.errors.includes("max");
 
-			if (show_if_3) {
+			if (show_if_4) {
 				if (!if_block1) {
-					if_block1 = create_if_block_3();
+					if_block1 = create_if_block_4();
 					if_block1.c();
 					if_block1.m(label0, null);
 				}
@@ -910,11 +1105,11 @@ function create_fragment(ctx) {
 				set_input_value(input1, ctx.$emailStore.value);
 			}
 
-			if (changed.$emailStore) show_if_2 = ctx.$emailStore.errors.includes("type");
+			if (changed.$emailStore) show_if_3 = ctx.$emailStore.errors.includes("typeCheck");
 
-			if (show_if_2) {
+			if (show_if_3) {
 				if (!if_block2) {
-					if_block2 = create_if_block_2();
+					if_block2 = create_if_block_3();
 					if_block2.c();
 					if_block2.m(label1, null);
 				}
@@ -923,35 +1118,47 @@ function create_fragment(ctx) {
 				if_block2 = null;
 			}
 
-			if (!input2_updating && changed.$ageStore) {
+			if (changed.$ageStore && input2.value !== ctx.$ageStore.value) {
 				set_input_value(input2, ctx.$ageStore.value);
 			}
 
-			input2_updating = false;
-			if (changed.$ageStore) show_if_1 = ctx.$ageStore.errors.includes("minValue");
+			if (changed.$ageStore) show_if_2 = ctx.$ageStore.errors.includes("typeCheck");
 
-			if (show_if_1) {
+			if (show_if_2) {
 				if (!if_block3) {
-					if_block3 = create_if_block_1();
+					if_block3 = create_if_block_2();
 					if_block3.c();
-					if_block3.m(label2, null);
+					if_block3.m(label2, t11);
 				}
 			} else if (if_block3) {
 				if_block3.d(1);
 				if_block3 = null;
 			}
 
-			if (changed.options) show_if = ctx.options && ctx.options.clearOn && ctx.options.clearOn.indexOf("reset") > -1;
+			if (changed.$ageStore) show_if_1 = ctx.$ageStore.errors.includes("min");
 
-			if (show_if) {
+			if (show_if_1) {
 				if (!if_block4) {
-					if_block4 = create_if_block();
+					if_block4 = create_if_block_1();
 					if_block4.c();
-					if_block4.m(form, null);
+					if_block4.m(label2, null);
 				}
 			} else if (if_block4) {
 				if_block4.d(1);
 				if_block4 = null;
+			}
+
+			if (changed.options) show_if = ctx.options && ctx.options.clearOn && ctx.options.clearOn.indexOf("reset") > -1;
+
+			if (show_if) {
+				if (!if_block5) {
+					if_block5 = create_if_block();
+					if_block5.c();
+					if_block5.m(form, null);
+				}
+			} else if (if_block5) {
+				if_block5.d(1);
+				if_block5 = null;
 			}
 
 			if (changed.success) {
@@ -970,6 +1177,7 @@ function create_fragment(ctx) {
 			if (ageInput_action && is_function(ageInput_action.destroy)) ageInput_action.destroy();
 			if (if_block3) if_block3.d();
 			if (if_block4) if_block4.d();
+			if (if_block5) if_block5.d();
 			if (createForm_action && is_function(createForm_action.destroy)) createForm_action.destroy();
 			run_all(dispose);
 		}
@@ -983,19 +1191,12 @@ function instance($$self, $$props, $$invalidate) {
 	let { defaultSettings = false } = $$props;
 	let { options = null } = $$props;
 	let { title = "Default" } = $$props;
-	const validation = new Validation(options);
-	const { createForm } = validation;
-
-	const [loginStore, loginInput] = validation.createEntry({
-		type: "string",
-		minLength: 3,
-		maxLength: 15
-	});
-
+	const { createForm, createEntry } = createValidation(options);
+	const [loginStore, loginInput] = createEntry({ type: "string", min: 5, max: 15 });
 	component_subscribe($$self, loginStore, value => $$invalidate("$loginStore", $loginStore = value));
-	const [emailStore, emailInput] = validation.createEntry({ type: "email" });
+	const [emailStore, emailInput] = createEntry({ type: "email" });
 	component_subscribe($$self, emailStore, value => $$invalidate("$emailStore", $emailStore = value));
-	const [ageStore, ageInput] = validation.createEntry({ type: "number", minValue: 18 });
+	const [ageStore, ageInput] = createEntry({ type: "number", min: 18 });
 	component_subscribe($$self, ageStore, value => $$invalidate("$ageStore", $ageStore = value));
 	let success = false;
 
@@ -1022,7 +1223,7 @@ function instance($$self, $$props, $$invalidate) {
 	}
 
 	function input2_input_handler() {
-		$ageStore.value = to_number(this.value);
+		$ageStore.value = this.value;
 		ageStore.set($ageStore);
 	}
 
@@ -1063,7 +1264,7 @@ class Demo extends SvelteComponent {
 	}
 }
 
-/* src/demo/dynamic.svelte generated by Svelte v3.15.0 */
+/* src/docs/components/dynamic.svelte generated by Svelte v3.15.0 */
 
 function create_if_block_6(ctx) {
 	let label;
@@ -1072,7 +1273,9 @@ function create_if_block_6(ctx) {
 	let input_updating = false;
 	let ageInput_action;
 	let t1;
-	let show_if = ctx.$ageStore.errors.includes("minValue");
+	let show_if_1 = ctx.$ageStore.errors.includes("min");
+	let t2;
+	let show_if = ctx.$ageStore.errors.includes("typeCheck");
 	let dispose;
 
 	function input_input_handler_1() {
@@ -1080,7 +1283,8 @@ function create_if_block_6(ctx) {
 		ctx.input_input_handler_1.call(input);
 	}
 
-	let if_block = show_if && create_if_block_7();
+	let if_block0 = show_if_1 && create_if_block_8();
+	let if_block1 = show_if && create_if_block_7();
 
 	return {
 		c() {
@@ -1088,7 +1292,9 @@ function create_if_block_6(ctx) {
 			t0 = text("Number STEP 3\r\n      ");
 			input = element("input");
 			t1 = space();
-			if (if_block) if_block.c();
+			if (if_block0) if_block0.c();
+			t2 = space();
+			if (if_block1) if_block1.c();
 			attr(input, "type", "number");
 			dispose = listen(input, "input", input_input_handler_1);
 		},
@@ -1099,7 +1305,9 @@ function create_if_block_6(ctx) {
 			set_input_value(input, ctx.$ageStore.value);
 			ageInput_action = ctx.ageInput.call(null, input) || ({});
 			append(label, t1);
-			if (if_block) if_block.m(label, null);
+			if (if_block0) if_block0.m(label, null);
+			append(label, t2);
+			if (if_block1) if_block1.m(label, null);
 		},
 		p(changed, ctx) {
 			if (!input_updating && changed.$ageStore) {
@@ -1107,23 +1315,37 @@ function create_if_block_6(ctx) {
 			}
 
 			input_updating = false;
-			if (changed.$ageStore) show_if = ctx.$ageStore.errors.includes("minValue");
+			if (changed.$ageStore) show_if_1 = ctx.$ageStore.errors.includes("min");
+
+			if (show_if_1) {
+				if (!if_block0) {
+					if_block0 = create_if_block_8();
+					if_block0.c();
+					if_block0.m(label, t2);
+				}
+			} else if (if_block0) {
+				if_block0.d(1);
+				if_block0 = null;
+			}
+
+			if (changed.$ageStore) show_if = ctx.$ageStore.errors.includes("typeCheck");
 
 			if (show_if) {
-				if (!if_block) {
-					if_block = create_if_block_7();
-					if_block.c();
-					if_block.m(label, null);
+				if (!if_block1) {
+					if_block1 = create_if_block_7();
+					if_block1.c();
+					if_block1.m(label, null);
 				}
-			} else if (if_block) {
-				if_block.d(1);
-				if_block = null;
+			} else if (if_block1) {
+				if_block1.d(1);
+				if_block1 = null;
 			}
 		},
 		d(detaching) {
 			if (detaching) detach(label);
 			if (ageInput_action && is_function(ageInput_action.destroy)) ageInput_action.destroy();
-			if (if_block) if_block.d();
+			if (if_block0) if_block0.d();
+			if (if_block1) if_block1.d();
 			dispose();
 		}
 	};
@@ -1136,16 +1358,16 @@ function create_if_block_3$1(ctx) {
 	let input0;
 	let emailInput_action;
 	let t1;
-	let show_if_1 = ctx.$emailStore.errors.includes("type");
+	let show_if_1 = ctx.$emailStore.errors.includes("typeCheck");
 	let t2;
 	let label1;
 	let t3;
 	let input1;
 	let email2Input_action;
 	let t4;
-	let show_if = ctx.$email2Store.errors.includes("type");
+	let show_if = ctx.$email2Store.errors.includes("typeCheck");
 	let dispose;
-	let if_block0 = show_if_1 && create_if_block_5();
+	let if_block0 = show_if_1 && create_if_block_5$1();
 	let if_block1 = show_if && create_if_block_4$1();
 
 	return {
@@ -1191,11 +1413,11 @@ function create_if_block_3$1(ctx) {
 				set_input_value(input0, ctx.$emailStore.value);
 			}
 
-			if (changed.$emailStore) show_if_1 = ctx.$emailStore.errors.includes("type");
+			if (changed.$emailStore) show_if_1 = ctx.$emailStore.errors.includes("typeCheck");
 
 			if (show_if_1) {
 				if (!if_block0) {
-					if_block0 = create_if_block_5();
+					if_block0 = create_if_block_5$1();
 					if_block0.c();
 					if_block0.m(label0, null);
 				}
@@ -1208,7 +1430,7 @@ function create_if_block_3$1(ctx) {
 				set_input_value(input1, ctx.$email2Store.value);
 			}
 
-			if (changed.$email2Store) show_if = ctx.$email2Store.errors.includes("type");
+			if (changed.$email2Store) show_if = ctx.$email2Store.errors.includes("typeCheck");
 
 			if (show_if) {
 				if (!if_block1) {
@@ -1241,9 +1463,9 @@ function create_if_block$1(ctx) {
 	let input;
 	let loginInput_action;
 	let t1;
-	let show_if_1 = ctx.$loginStore.errors.includes("minLength");
+	let show_if_1 = ctx.$loginStore.errors.includes("min");
 	let t2;
-	let show_if = ctx.$loginStore.errors.includes("maxLength");
+	let show_if = ctx.$loginStore.errors.includes("max");
 	let dispose;
 	let if_block0 = show_if_1 && create_if_block_2$1();
 	let if_block1 = show_if && create_if_block_1$1();
@@ -1276,7 +1498,7 @@ function create_if_block$1(ctx) {
 				set_input_value(input, ctx.$loginStore.value);
 			}
 
-			if (changed.$loginStore) show_if_1 = ctx.$loginStore.errors.includes("minLength");
+			if (changed.$loginStore) show_if_1 = ctx.$loginStore.errors.includes("min");
 
 			if (show_if_1) {
 				if (!if_block0) {
@@ -1289,7 +1511,7 @@ function create_if_block$1(ctx) {
 				if_block0 = null;
 			}
 
-			if (changed.$loginStore) show_if = ctx.$loginStore.errors.includes("maxLength");
+			if (changed.$loginStore) show_if = ctx.$loginStore.errors.includes("max");
 
 			if (show_if) {
 				if (!if_block1) {
@@ -1312,8 +1534,8 @@ function create_if_block$1(ctx) {
 	};
 }
 
-// (82:6) {#if $ageStore.errors.includes('minValue')}
-function create_if_block_7(ctx) {
+// (82:6) {#if $ageStore.errors.includes('min')}
+function create_if_block_8(ctx) {
 	let p;
 
 	return {
@@ -1331,8 +1553,27 @@ function create_if_block_7(ctx) {
 	};
 }
 
-// (67:6) {#if $emailStore.errors.includes('type')}
-function create_if_block_5(ctx) {
+// (85:6) {#if $ageStore.errors.includes('typeCheck')}
+function create_if_block_7(ctx) {
+	let p;
+
+	return {
+		c() {
+			p = element("p");
+			p.textContent = "Number plz!";
+			attr(p, "class", "error");
+		},
+		m(target, anchor) {
+			insert(target, p, anchor);
+		},
+		d(detaching) {
+			if (detaching) detach(p);
+		}
+	};
+}
+
+// (67:6) {#if $emailStore.errors.includes('typeCheck')}
+function create_if_block_5$1(ctx) {
 	let p;
 
 	return {
@@ -1350,7 +1591,7 @@ function create_if_block_5(ctx) {
 	};
 }
 
-// (74:6) {#if $email2Store.errors.includes('type')}
+// (74:6) {#if $email2Store.errors.includes('typeCheck')}
 function create_if_block_4$1(ctx) {
 	let p;
 
@@ -1369,7 +1610,7 @@ function create_if_block_4$1(ctx) {
 	};
 }
 
-// (56:6) {#if $loginStore.errors.includes('minLength')}
+// (56:6) {#if $loginStore.errors.includes('min')}
 function create_if_block_2$1(ctx) {
 	let p;
 
@@ -1388,7 +1629,7 @@ function create_if_block_2$1(ctx) {
 	};
 }
 
-// (59:6) {#if $loginStore.errors.includes('maxLength')}
+// (59:6) {#if $loginStore.errors.includes('max')}
 function create_if_block_1$1(ctx) {
 	let p;
 
@@ -1544,21 +1785,14 @@ function instance$1($$self, $$props, $$invalidate) {
 	let $emailStore;
 	let $email2Store;
 	let $ageStore;
-	const validation = new Validation({ validateOn: [] });
-	const { createForm } = validation;
-
-	const [loginStore, loginInput] = validation.createEntry({
-		type: "string",
-		minLength: 3,
-		maxLength: 15
-	});
-
+	const { createForm, createEntry } = createValidation({ validateOn: [], presence: "required" });
+	const [loginStore, loginInput] = createEntry({ type: "string", min: 3, max: 15 });
 	component_subscribe($$self, loginStore, value => $$invalidate("$loginStore", $loginStore = value));
-	const [emailStore, emailInput] = validation.createEntry({ type: "email" });
+	const [emailStore, emailInput] = createEntry({ type: "email" });
 	component_subscribe($$self, emailStore, value => $$invalidate("$emailStore", $emailStore = value));
-	const [email2Store, email2Input] = validation.createEntry({ type: "email" });
+	const [email2Store, email2Input] = createEntry({ type: "email" });
 	component_subscribe($$self, email2Store, value => $$invalidate("$email2Store", $email2Store = value));
-	const [ageStore, ageInput] = validation.createEntry({ type: "number", minValue: 18 });
+	const [ageStore, ageInput] = createEntry({ type: "number", min: 18 });
 	component_subscribe($$self, ageStore, value => $$invalidate("$ageStore", $ageStore = value));
 	let step = 1;
 	let success = false;
@@ -1639,7 +1873,7 @@ class Dynamic extends SvelteComponent {
 	}
 }
 
-/* src/demo/custom.svelte generated by Svelte v3.15.0 */
+/* src/docs/components/radios.svelte generated by Svelte v3.15.0 */
 
 function create_if_block_1$2(ctx) {
 	let p;
@@ -1647,7 +1881,7 @@ function create_if_block_1$2(ctx) {
 	return {
 		c() {
 			p = element("p");
-			p.textContent = "OMG, you've messed up";
+			p.textContent = "Please select something";
 			attr(p, "class", "error");
 		},
 		m(target, anchor) {
@@ -1659,21 +1893,21 @@ function create_if_block_1$2(ctx) {
 	};
 }
 
-// (50:4) {#if $secondStore.errors.includes('type')}
+// (37:2) {#if options && options.clearOn && options.clearOn.indexOf('reset') > -1}
 function create_if_block$2(ctx) {
-	let p;
+	let button;
 
 	return {
 		c() {
-			p = element("p");
-			p.textContent = "OMG, you've messed up";
-			attr(p, "class", "error");
+			button = element("button");
+			button.textContent = "Reset";
+			attr(button, "type", "reset");
 		},
 		m(target, anchor) {
-			insert(target, p, anchor);
+			insert(target, button, anchor);
 		},
 		d(detaching) {
-			if (detaching) detach(p);
+			if (detaching) detach(button);
 		}
 	};
 }
@@ -1681,80 +1915,119 @@ function create_if_block$2(ctx) {
 function create_fragment$2(ctx) {
 	let form;
 	let h1;
-	let t1;
-	let label0;
+	let t0;
+	let div;
+	let p;
 	let t2;
+	let label0;
 	let input0;
-	let firstInput_action;
+	let input0_value_value;
+	let radioInput_action;
 	let t3;
-	let show_if_1 = ctx.$firstStore.errors.includes("newTypeParam");
 	let t4;
 	let label1;
-	let t5;
 	let input1;
-	let secondInput_action;
+	let input1_value_value;
+	let radioInput_action_1;
+	let t5;
 	let t6;
-	let show_if = ctx.$secondStore.errors.includes("type");
+	let label2;
+	let input2;
+	let input2_value_value;
+	let radioInput_action_2;
 	let t7;
+	let t8;
+	let t9;
 	let button;
+	let t11;
+	let show_if = ctx.options && ctx.options.clearOn && ctx.options.clearOn.indexOf("reset") > -1;
 	let createForm_action;
 	let dispose;
-	let if_block0 = show_if_1 && create_if_block_1$2();
+	let if_block0 = ctx.$radioStore.errors.length && create_if_block_1$2();
 	let if_block1 = show_if && create_if_block$2();
 
 	return {
 		c() {
 			form = element("form");
 			h1 = element("h1");
-			h1.textContent = "Custom example";
-			t1 = space();
+			t0 = space();
+			div = element("div");
+			p = element("p");
+			p.textContent = "Check your experience (years)";
+			t2 = space();
 			label0 = element("label");
-			t2 = text("Type 'AAA' (by rule)\r\n    ");
 			input0 = element("input");
-			t3 = space();
-			if (if_block0) if_block0.c();
+			t3 = text(" less than 1");
 			t4 = space();
 			label1 = element("label");
-			t5 = text("Type 'AAA' (by type)\r\n    ");
 			input1 = element("input");
+			t5 = text(" 1 .. 3");
 			t6 = space();
-			if (if_block1) if_block1.c();
-			t7 = space();
+			label2 = element("label");
+			input2 = element("input");
+			t7 = text(" more than 3");
+			t8 = space();
+			if (if_block0) if_block0.c();
+			t9 = space();
 			button = element("button");
-			button.textContent = "submit";
-			attr(input0, "type", "email");
-			attr(input1, "type", "email");
+			button.textContent = "Submit";
+			t11 = space();
+			if (if_block1) if_block1.c();
+			attr(input0, "type", "radio");
+			input0.__value = input0_value_value = 0;
+			input0.value = input0.__value;
+			ctx.$$binding_groups[0].push(input0);
+			attr(input1, "type", "radio");
+			input1.__value = input1_value_value = 1;
+			input1.value = input1.__value;
+			ctx.$$binding_groups[0].push(input1);
+			attr(input2, "type", "radio");
+			input2.__value = input2_value_value = 2;
+			input2.value = input2.__value;
+			ctx.$$binding_groups[0].push(input2);
+			attr(div, "class", "label");
 			attr(button, "type", "submit");
 			form.noValidate = true;
 			toggle_class(form, "success", ctx.success);
 
 			dispose = [
-				listen(input0, "input", ctx.input0_input_handler),
-				listen(input1, "input", ctx.input1_input_handler),
+				listen(input0, "change", ctx.input0_change_handler),
+				listen(input1, "change", ctx.input1_change_handler),
+				listen(input2, "change", ctx.input2_change_handler),
 				listen(form, "submit", prevent_default(ctx.submit_handler))
 			];
 		},
 		m(target, anchor) {
 			insert(target, form, anchor);
 			append(form, h1);
-			append(form, t1);
-			append(form, label0);
-			append(label0, t2);
+			h1.innerHTML = ctx.title;
+			append(form, t0);
+			append(form, div);
+			append(div, p);
+			append(div, t2);
+			append(div, label0);
 			append(label0, input0);
-			set_input_value(input0, ctx.$firstStore.value);
-			firstInput_action = ctx.firstInput.call(null, input0) || ({});
+			input0.checked = input0.__value === ctx.$radioStore.value;
+			radioInput_action = ctx.radioInput.call(null, input0) || ({});
 			append(label0, t3);
-			if (if_block0) if_block0.m(label0, null);
-			append(form, t4);
-			append(form, label1);
-			append(label1, t5);
+			append(div, t4);
+			append(div, label1);
 			append(label1, input1);
-			set_input_value(input1, ctx.$secondStore.value);
-			secondInput_action = ctx.secondInput.call(null, input1) || ({});
-			append(label1, t6);
-			if (if_block1) if_block1.m(label1, null);
-			append(form, t7);
+			input1.checked = input1.__value === ctx.$radioStore.value;
+			radioInput_action_1 = ctx.radioInput.call(null, input1) || ({});
+			append(label1, t5);
+			append(div, t6);
+			append(div, label2);
+			append(label2, input2);
+			input2.checked = input2.__value === ctx.$radioStore.value;
+			radioInput_action_2 = ctx.radioInput.call(null, input2) || ({});
+			append(label2, t7);
+			append(div, t8);
+			if (if_block0) if_block0.m(div, null);
+			append(form, t9);
 			append(form, button);
+			append(form, t11);
+			if (if_block1) if_block1.m(form, null);
 
 			createForm_action = ctx.createForm.call(null, form, {
 				onSuccess: ctx.onSuccess,
@@ -1762,34 +2035,37 @@ function create_fragment$2(ctx) {
 			}) || ({});
 		},
 		p(changed, ctx) {
-			if (changed.$firstStore && input0.value !== ctx.$firstStore.value) {
-				set_input_value(input0, ctx.$firstStore.value);
+			if (changed.title) h1.innerHTML = ctx.title;
+			if (changed.$radioStore) {
+				input0.checked = input0.__value === ctx.$radioStore.value;
 			}
 
-			if (changed.$firstStore) show_if_1 = ctx.$firstStore.errors.includes("newTypeParam");
+			if (changed.$radioStore) {
+				input1.checked = input1.__value === ctx.$radioStore.value;
+			}
 
-			if (show_if_1) {
+			if (changed.$radioStore) {
+				input2.checked = input2.__value === ctx.$radioStore.value;
+			}
+
+			if (ctx.$radioStore.errors.length) {
 				if (!if_block0) {
 					if_block0 = create_if_block_1$2();
 					if_block0.c();
-					if_block0.m(label0, null);
+					if_block0.m(div, null);
 				}
 			} else if (if_block0) {
 				if_block0.d(1);
 				if_block0 = null;
 			}
 
-			if (changed.$secondStore && input1.value !== ctx.$secondStore.value) {
-				set_input_value(input1, ctx.$secondStore.value);
-			}
-
-			if (changed.$secondStore) show_if = ctx.$secondStore.errors.includes("type");
+			if (changed.options) show_if = ctx.options && ctx.options.clearOn && ctx.options.clearOn.indexOf("reset") > -1;
 
 			if (show_if) {
 				if (!if_block1) {
 					if_block1 = create_if_block$2();
 					if_block1.c();
-					if_block1.m(label1, null);
+					if_block1.m(form, null);
 				}
 			} else if (if_block1) {
 				if_block1.d(1);
@@ -1804,9 +2080,13 @@ function create_fragment$2(ctx) {
 		o: noop,
 		d(detaching) {
 			if (detaching) detach(form);
-			if (firstInput_action && is_function(firstInput_action.destroy)) firstInput_action.destroy();
+			ctx.$$binding_groups[0].splice(ctx.$$binding_groups[0].indexOf(input0), 1);
+			if (radioInput_action && is_function(radioInput_action.destroy)) radioInput_action.destroy();
+			ctx.$$binding_groups[0].splice(ctx.$$binding_groups[0].indexOf(input1), 1);
+			if (radioInput_action_1 && is_function(radioInput_action_1.destroy)) radioInput_action_1.destroy();
+			ctx.$$binding_groups[0].splice(ctx.$$binding_groups[0].indexOf(input2), 1);
+			if (radioInput_action_2 && is_function(radioInput_action_2.destroy)) radioInput_action_2.destroy();
 			if (if_block0) if_block0.d();
-			if (secondInput_action && is_function(secondInput_action.destroy)) secondInput_action.destroy();
 			if (if_block1) if_block1.d();
 			if (createForm_action && is_function(createForm_action.destroy)) createForm_action.destroy();
 			run_all(dispose);
@@ -1815,32 +2095,12 @@ function create_fragment$2(ctx) {
 }
 
 function instance$2($$self, $$props, $$invalidate) {
-	let $firstStore;
-	let $secondStore;
-
-	addValidator("newTypeByRule", class extends StringType {
-		newTypeParamRule() {
-			return this.getValue() === this.params.newTypeParam;
-		}
-	});
-
-	addValidator("newTypeByType", class extends BaseType {
-		typeValidation() {
-			return super.typeValidation(/AAA/);
-		}
-	});
-
-	const validation = new Validation();
-	const { createForm } = validation;
-
-	const [firstStore, firstInput] = validation.createEntry({
-		type: "newTypeByRule",
-		newTypeParam: "AAA"
-	});
-
-	component_subscribe($$self, firstStore, value => $$invalidate("$firstStore", $firstStore = value));
-	const [secondStore, secondInput] = validation.createEntry({ type: "newTypeByType" });
-	component_subscribe($$self, secondStore, value => $$invalidate("$secondStore", $secondStore = value));
+	let $radioStore;
+	let { options = null } = $$props;
+	let { title = "Default" } = $$props;
+	const { createForm, createEntry } = createValidation(options);
+	const [radioStore, radioInput] = createEntry({ type: "number", required: true });
+	component_subscribe($$self, radioStore, value => $$invalidate("$radioStore", $radioStore = value));
 	let success = false;
 
 	const onSuccess = () => {
@@ -1851,45 +2111,368 @@ function instance$2($$self, $$props, $$invalidate) {
 		$$invalidate("success", success = false);
 	};
 
+	const $$binding_groups = [[]];
+
 	function submit_handler(event) {
 		bubble($$self, event);
 	}
 
-	function input0_input_handler() {
-		$firstStore.value = this.value;
-		firstStore.set($firstStore);
+	function input0_change_handler() {
+		$radioStore.value = this.__value;
+		radioStore.set($radioStore);
 	}
 
-	function input1_input_handler() {
-		$secondStore.value = this.value;
-		secondStore.set($secondStore);
+	function input1_change_handler() {
+		$radioStore.value = this.__value;
+		radioStore.set($radioStore);
 	}
+
+	function input2_change_handler() {
+		$radioStore.value = this.__value;
+		radioStore.set($radioStore);
+	}
+
+	$$self.$set = $$props => {
+		if ("options" in $$props) $$invalidate("options", options = $$props.options);
+		if ("title" in $$props) $$invalidate("title", title = $$props.title);
+	};
 
 	return {
+		options,
+		title,
 		createForm,
-		firstStore,
-		firstInput,
-		secondStore,
-		secondInput,
+		radioStore,
+		radioInput,
 		success,
 		onSuccess,
 		onFail,
-		$firstStore,
-		$secondStore,
+		$radioStore,
 		submit_handler,
-		input0_input_handler,
-		input1_input_handler
+		input0_change_handler,
+		input1_change_handler,
+		input2_change_handler,
+		$$binding_groups
 	};
 }
 
-class Custom extends SvelteComponent {
+class Radios extends SvelteComponent {
 	constructor(options) {
 		super();
-		init(this, options, instance$2, create_fragment$2, safe_not_equal, {});
+		init(this, options, instance$2, create_fragment$2, safe_not_equal, { options: 0, title: 0 });
+	}
+}
+
+/* src/docs/components/array.svelte generated by Svelte v3.15.0 */
+
+function add_css() {
+	var style = element("style");
+	style.id = "svelte-1gy2nnl-style";
+	style.textContent = "form.svelte-1gy2nnl{margin-top:1px}";
+	append(document.head, style);
+}
+
+// (32:4) {#if $arrayStore.errors.length}
+function create_if_block_1$3(ctx) {
+	let p;
+
+	return {
+		c() {
+			p = element("p");
+			p.textContent = "Please select at least 2";
+			attr(p, "class", "error");
+		},
+		m(target, anchor) {
+			insert(target, p, anchor);
+		},
+		d(detaching) {
+			if (detaching) detach(p);
+		}
+	};
+}
+
+// (38:2) {#if options && options.clearOn && options.clearOn.indexOf('reset') > -1}
+function create_if_block$3(ctx) {
+	let button;
+
+	return {
+		c() {
+			button = element("button");
+			button.textContent = "Reset";
+			attr(button, "type", "reset");
+		},
+		m(target, anchor) {
+			insert(target, button, anchor);
+		},
+		d(detaching) {
+			if (detaching) detach(button);
+		}
+	};
+}
+
+function create_fragment$3(ctx) {
+	let form;
+	let h1;
+	let t0;
+	let div;
+	let p;
+	let t2;
+	let label0;
+	let input0;
+	let input0_value_value;
+	let arrayInput_action;
+	let t3;
+	let t4;
+	let label1;
+	let input1;
+	let input1_value_value;
+	let arrayInput_action_1;
+	let t5;
+	let t6;
+	let label2;
+	let input2;
+	let input2_value_value;
+	let arrayInput_action_2;
+	let t7;
+	let t8;
+	let t9;
+	let button;
+	let t11;
+	let show_if = ctx.options && ctx.options.clearOn && ctx.options.clearOn.indexOf("reset") > -1;
+	let createForm_action;
+	let dispose;
+	let if_block0 = ctx.$arrayStore.errors.length && create_if_block_1$3();
+	let if_block1 = show_if && create_if_block$3();
+
+	return {
+		c() {
+			form = element("form");
+			h1 = element("h1");
+			t0 = space();
+			div = element("div");
+			p = element("p");
+			p.textContent = "Check your skills";
+			t2 = space();
+			label0 = element("label");
+			input0 = element("input");
+			t3 = text("Sport");
+			t4 = space();
+			label1 = element("label");
+			input1 = element("input");
+			t5 = text("History");
+			t6 = space();
+			label2 = element("label");
+			input2 = element("input");
+			t7 = text("Politics");
+			t8 = space();
+			if (if_block0) if_block0.c();
+			t9 = space();
+			button = element("button");
+			button.textContent = "Submit";
+			t11 = space();
+			if (if_block1) if_block1.c();
+			attr(input0, "type", "checkbox");
+			input0.__value = input0_value_value = 0;
+			input0.value = input0.__value;
+			ctx.$$binding_groups[0].push(input0);
+			attr(input1, "type", "checkbox");
+			input1.__value = input1_value_value = 1;
+			input1.value = input1.__value;
+			ctx.$$binding_groups[0].push(input1);
+			attr(input2, "type", "checkbox");
+			input2.__value = input2_value_value = 2;
+			input2.value = input2.__value;
+			ctx.$$binding_groups[0].push(input2);
+			attr(div, "class", "label");
+			attr(button, "type", "submit");
+			form.noValidate = true;
+			attr(form, "class", "svelte-1gy2nnl");
+			toggle_class(form, "success", ctx.success);
+
+			dispose = [
+				listen(input0, "change", ctx.input0_change_handler),
+				listen(input1, "change", ctx.input1_change_handler),
+				listen(input2, "change", ctx.input2_change_handler),
+				listen(form, "submit", prevent_default(ctx.submit_handler))
+			];
+		},
+		m(target, anchor) {
+			insert(target, form, anchor);
+			append(form, h1);
+			h1.innerHTML = ctx.title;
+			append(form, t0);
+			append(form, div);
+			append(div, p);
+			append(div, t2);
+			append(div, label0);
+			append(label0, input0);
+			input0.checked = ~ctx.$arrayStore.value.indexOf(input0.__value);
+			arrayInput_action = ctx.arrayInput.call(null, input0) || ({});
+			append(label0, t3);
+			append(div, t4);
+			append(div, label1);
+			append(label1, input1);
+			input1.checked = ~ctx.$arrayStore.value.indexOf(input1.__value);
+			arrayInput_action_1 = ctx.arrayInput.call(null, input1) || ({});
+			append(label1, t5);
+			append(div, t6);
+			append(div, label2);
+			append(label2, input2);
+			input2.checked = ~ctx.$arrayStore.value.indexOf(input2.__value);
+			arrayInput_action_2 = ctx.arrayInput.call(null, input2) || ({});
+			append(label2, t7);
+			append(div, t8);
+			if (if_block0) if_block0.m(div, null);
+			append(form, t9);
+			append(form, button);
+			append(form, t11);
+			if (if_block1) if_block1.m(form, null);
+
+			createForm_action = ctx.createForm.call(null, form, {
+				onSuccess: ctx.onSuccess,
+				onFail: ctx.onFail
+			}) || ({});
+		},
+		p(changed, ctx) {
+			if (changed.title) h1.innerHTML = ctx.title;
+			if (changed.$arrayStore) {
+				input0.checked = ~ctx.$arrayStore.value.indexOf(input0.__value);
+			}
+
+			if (changed.$arrayStore) {
+				input1.checked = ~ctx.$arrayStore.value.indexOf(input1.__value);
+			}
+
+			if (changed.$arrayStore) {
+				input2.checked = ~ctx.$arrayStore.value.indexOf(input2.__value);
+			}
+
+			if (ctx.$arrayStore.errors.length) {
+				if (!if_block0) {
+					if_block0 = create_if_block_1$3();
+					if_block0.c();
+					if_block0.m(div, null);
+				}
+			} else if (if_block0) {
+				if_block0.d(1);
+				if_block0 = null;
+			}
+
+			if (changed.options) show_if = ctx.options && ctx.options.clearOn && ctx.options.clearOn.indexOf("reset") > -1;
+
+			if (show_if) {
+				if (!if_block1) {
+					if_block1 = create_if_block$3();
+					if_block1.c();
+					if_block1.m(form, null);
+				}
+			} else if (if_block1) {
+				if_block1.d(1);
+				if_block1 = null;
+			}
+
+			if (changed.success) {
+				toggle_class(form, "success", ctx.success);
+			}
+		},
+		i: noop,
+		o: noop,
+		d(detaching) {
+			if (detaching) detach(form);
+			ctx.$$binding_groups[0].splice(ctx.$$binding_groups[0].indexOf(input0), 1);
+			if (arrayInput_action && is_function(arrayInput_action.destroy)) arrayInput_action.destroy();
+			ctx.$$binding_groups[0].splice(ctx.$$binding_groups[0].indexOf(input1), 1);
+			if (arrayInput_action_1 && is_function(arrayInput_action_1.destroy)) arrayInput_action_1.destroy();
+			ctx.$$binding_groups[0].splice(ctx.$$binding_groups[0].indexOf(input2), 1);
+			if (arrayInput_action_2 && is_function(arrayInput_action_2.destroy)) arrayInput_action_2.destroy();
+			if (if_block0) if_block0.d();
+			if (if_block1) if_block1.d();
+			if (createForm_action && is_function(createForm_action.destroy)) createForm_action.destroy();
+			run_all(dispose);
+		}
+	};
+}
+
+function instance$3($$self, $$props, $$invalidate) {
+	let $arrayStore;
+	let { options = null } = $$props;
+	let { title = "Default" } = $$props;
+	const { createEntry, createForm } = createValidation(options);
+	const [arrayStore, arrayInput] = createEntry({ type: "array", min: 2, value: [] });
+	component_subscribe($$self, arrayStore, value => $$invalidate("$arrayStore", $arrayStore = value));
+	let success = false;
+
+	const onSuccess = () => {
+		$$invalidate("success", success = true);
+	};
+
+	const onFail = () => {
+		$$invalidate("success", success = false);
+	};
+
+	const $$binding_groups = [[]];
+
+	function submit_handler(event) {
+		bubble($$self, event);
+	}
+
+	function input0_change_handler() {
+		$arrayStore.value = get_binding_group_value($$binding_groups[0]);
+		arrayStore.set($arrayStore);
+	}
+
+	function input1_change_handler() {
+		$arrayStore.value = get_binding_group_value($$binding_groups[0]);
+		arrayStore.set($arrayStore);
+	}
+
+	function input2_change_handler() {
+		$arrayStore.value = get_binding_group_value($$binding_groups[0]);
+		arrayStore.set($arrayStore);
+	}
+
+	$$self.$set = $$props => {
+		if ("options" in $$props) $$invalidate("options", options = $$props.options);
+		if ("title" in $$props) $$invalidate("title", title = $$props.title);
+	};
+
+	return {
+		options,
+		title,
+		createForm,
+		arrayStore,
+		arrayInput,
+		success,
+		onSuccess,
+		onFail,
+		$arrayStore,
+		submit_handler,
+		input0_change_handler,
+		input1_change_handler,
+		input2_change_handler,
+		$$binding_groups
+	};
+}
+
+class Array$1 extends SvelteComponent {
+	constructor(options) {
+		super();
+		if (!document.getElementById("svelte-1gy2nnl-style")) add_css();
+		init(this, options, instance$3, create_fragment$3, safe_not_equal, { options: 0, title: 0 });
 	}
 }
 
 const target = document.getElementById('app');
+new Array$1({
+    target,
+    props: {
+        title: 'Array example',
+        options: {
+            validateOn: ['change'],
+            clearOn: ['reset'],
+            listenInputEvents: ListenInputEventsEnum.afterValidation
+        }
+    }
+});
 new Demo({
     target,
     props: {
@@ -1898,7 +2481,7 @@ new Demo({
         options: {
             validateOn: ['change'],
             clearOn: ['reset'],
-            inputValidationPhase: PhaseEnum.afterFirstValidation
+            listenInputEvents: ListenInputEventsEnum.afterValidation
         }
     }
 });
@@ -1909,7 +2492,7 @@ new Demo({
         options: {
             validateOn: ['blur'],
             clearOn: ['focus'],
-            inputValidationPhase: PhaseEnum.always
+            listenInputEvents: ListenInputEventsEnum.always
         }
     }
 });
@@ -1918,9 +2501,19 @@ new Demo({
     props: {
         title: '<mark>submit</mark> only validation',
         options: {
-            inputValidationPhase: PhaseEnum.never
+            listenInputEvents: ListenInputEventsEnum.never
         }
     }
 });
 new Dynamic({ target });
-new Custom({ target });
+new Radios({
+    target,
+    props: {
+        title: 'Radios example',
+        options: {
+            validateOn: ['change'],
+            clearOn: ['reset'],
+            listenInputEvents: ListenInputEventsEnum.afterValidation
+        }
+    }
+});

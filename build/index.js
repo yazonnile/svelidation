@@ -3,7 +3,7 @@ const types = {
   lib: 1,
   e2e: 2,
   unit: 3,
-  demo: 4
+  docs: 4
 };
 const root = path.resolve(__dirname, '../');
 const buildPath = p => path.resolve(root, p);
@@ -16,8 +16,8 @@ const paths = {
   e2eDist: buildPath('test/e2e/dist'),
   unit: buildPath('test/unit'),
   unitDist: buildPath('test/unit/dist'),
-  docs: buildPath('docs'),
-  demo: buildPath('src/demo'),
+  docsDist: buildPath('docs'),
+  docs: buildPath('src/docs'),
 };
 
 const opts = require('./options')({ types, paths });
@@ -39,7 +39,7 @@ module.exports = {
           ], { type, production })
         };
 
-      case types.demo:
+      case types.docs:
         return  {
           ...opts(type, production),
           plugins: plugins([
