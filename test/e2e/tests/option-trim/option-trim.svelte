@@ -2,7 +2,7 @@
   import { getValidation, Form, Slide, Entry } from 'helpers/helpers';
 
   const getConfig = (options) => {
-    return { entries: [{ type: 'string', minLength: 5 }], options }
+    return { entries: [{ type: 'string', min: 5 }], options }
   };
 
   const {
@@ -24,7 +24,7 @@
     entries: [[ mix1Store, mix1Input ], [ mix2Store, mix2Input ]],
     createForm: mixCreateForm
   } = getValidation({
-    entries: [{ type: 'string', minLength: 5 }, { type: 'string', trim: false, minLength: 5}],
+    entries: [{ type: 'string', min: 5 }, { type: 'string', trim: false, min: 5}],
     options: { trim: true }
   });
 

@@ -2,7 +2,7 @@
   import { getValidation, Form, Slide, Entry } from 'helpers/helpers';
 
   const getConfig = () => {
-    return { entries: [{ type: 'string', minLength: 4 }, { type: 'string', minLength: 4 }] }
+    return { entries: [{ type: 'string', min: 4 }, { type: 'string', min: 4 }] }
   };
 
   const {

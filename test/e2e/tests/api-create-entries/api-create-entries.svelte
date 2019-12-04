@@ -2,7 +2,7 @@
   import { getValidation, Form, Slide, Entry } from 'helpers/helpers';
 
   const getConfig = (entriesCount) => {
-    return { entries: Array(entriesCount).fill({ type: 'string', minLength: 4 }) }
+    return { entries: Array(entriesCount).fill({ type: 'string', min: 4 }) }
   };
 
   const {

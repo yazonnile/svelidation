@@ -11,5 +11,5 @@ test('should show errors on form submit', async t => {
     .click(page.submitButton)
     .expect(page.errors.exists).ok()
     .expect(page.errors.count).eql(1)
-    .expect(page.errors.withExactText('minLength')).ok()
+    .expect(page.errors.withExactText('min')).ok()
 });

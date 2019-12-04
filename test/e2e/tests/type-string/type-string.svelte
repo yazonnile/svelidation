@@ -6,26 +6,26 @@
   };
 
   const {
-    entries: [[ minLengthStore, minLengthInput ]],
-    createForm: minLengthCreateForm
-  } = getValidation(getConfig({ minLength: 2 }));
+    entries: [[ minStore, minInput ]],
+    createForm: minCreateForm
+  } = getValidation(getConfig({ min: 2 }));
 
   const {
-    entries: [[ maxLengthStore, maxLengthInput ]],
-    createForm: maxLengthCreateForm
-  } = getValidation(getConfig({ maxLength: 6 }));
+    entries: [[ maxStore, maxInput ]],
+    createForm: maxCreateForm
+  } = getValidation(getConfig({ max: 6 }));
 
-  let activeId = 'minLength';
+  let activeId = 'min';
 </script>
 
-<Slide id="minLength" bind:activeId>
-  <Form createForm={minLengthCreateForm}>
-    <Entry store={minLengthStore} input={minLengthInput} />
+<Slide id="min" bind:activeId>
+  <Form createForm={minCreateForm}>
+    <Entry store={minStore} input={minInput} />
   </Form>
 </Slide>
 
-<Slide id="maxLength" bind:activeId>
-  <Form createForm={maxLengthCreateForm}>
-    <Entry store={maxLengthStore} input={maxLengthInput} />
+<Slide id="max" bind:activeId>
+  <Form createForm={maxCreateForm}>
+    <Entry store={maxStore} input={maxInput} />
   </Form>
 </Slide>

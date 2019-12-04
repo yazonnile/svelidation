@@ -8,8 +8,6 @@ export interface SvelidationValidatorParams {
   required?: boolean;
   trim?: boolean;
 
-  minLength?: number;
-  maxLength?: number;
   min?: number;
   max?: number;
   equal?: any;

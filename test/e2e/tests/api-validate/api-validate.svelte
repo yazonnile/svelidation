@@ -2,7 +2,7 @@
   import { getValidation, Entry } from 'helpers/helpers';
 
   const getConfig = (entriesCount) => {
-    return { entries: Array(entriesCount).fill({ type: 'string', minLength: 4 }) }
+    return { entries: Array(entriesCount).fill({ type: 'string', min: 4 }) }
   };
 
   const {
@@ -14,7 +14,7 @@
     validate, createEntry
   } = getValidation(getConfig(3));
 
-  const [ forthStore ] = createEntry({ type: 'string', minLength: 4 });
+  const [ forthStore ] = createEntry({ type: 'string', min: 4 });
 </script>
 
 <Entry store={visibleFirstStore} input={visibleFirstInput} />

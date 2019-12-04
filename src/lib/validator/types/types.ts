@@ -98,8 +98,8 @@ const installType = {
   string: () => {
     ensureType<string>('string', {
       typeCheck: (value) => (typeof value === 'string'),
-      minLength: (value, { minLength }) => (value.length >= minLength),
-      maxLength: (value, { maxLength }) => (value.length <= maxLength),
+      min: (value, { min }) => (value.length >= min),
+      max: (value, { max }) => (value.length <= max),
     })
   },
 

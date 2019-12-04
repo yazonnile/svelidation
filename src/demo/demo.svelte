@@ -9,8 +9,8 @@
 
   const [ loginStore, loginInput ] = createEntry({
     type: 'string',
-    minLength: 5,
-    maxLength: 15
+    min: 5,
+    max: 15
   });
 
   const [ emailStore, emailInput ] = createEntry({
@@ -38,10 +38,10 @@
   <label>
     Login
     <input type="text" use:loginInput bind:value={$loginStore.value} />
-    {#if $loginStore.errors.includes('minLength')}
+    {#if $loginStore.errors.includes('min')}
       <p class="error">Login should be at least 3 symbols long</p>
     {/if}
-    {#if $loginStore.errors.includes('maxLength')}
+    {#if $loginStore.errors.includes('max')}
       <p class="error">Login should be not longer than 15 symbols</p>
     {/if}
   </label>

@@ -22,7 +22,7 @@ describe('validator types', () => {
       const arrayType = getType('array');
 
       expect(stringType).toBeDefined();
-      expect(Object.keys(stringType).sort()).toEqual(['typeCheck', 'minLength', 'maxLength'].sort());
+      expect(Object.keys(stringType).sort()).toEqual(['typeCheck', 'min', 'max'].sort());
       expect(emailType).toBeDefined();
       expect(Object.keys(emailType).sort()).toEqual(['typeCheck'].sort());
       expect(numberType).toBeDefined();
@@ -54,20 +54,20 @@ describe('validator types', () => {
         expect(typeCheck(' ')).toBeTrue();
       });
 
-      it('minLength', () => {
-        const { minLength } = getType('string');
+      it('min', () => {
+        const { min } = getType('string');
         const value = '12345';
-        expect(minLength(value, { minLength: 2 })).toBeTrue();
-        expect(minLength(value, { minLength: 5 })).toBeTrue();
-        expect(minLength(value, { minLength: 6 })).toBeFalse();
+        expect(min(value, { min: 2 })).toBeTrue();
+        expect(min(value, { min: 5 })).toBeTrue();
+        expect(min(value, { min: 6 })).toBeFalse();
       });
 
-      it('maxLength', () => {
-        const { maxLength } = getType('string');
+      it('max', () => {
+        const { max } = getType('string');
         const value = '12345';
-        expect(maxLength(value, { maxLength: 2 })).toBeFalse();
-        expect(maxLength(value, { maxLength: 5 })).toBeTrue();
-        expect(maxLength(value, { maxLength: 6 })).toBeTrue();
+        expect(max(value, { max: 2 })).toBeFalse();
+        expect(max(value, { max: 5 })).toBeTrue();
+        expect(max(value, { max: 6 })).toBeTrue();
       });
     });
 

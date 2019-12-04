@@ -8,7 +8,7 @@
   const {
     entries: [[ optionalStore, optionalInput ]],
     createForm: optionalCreateForm
-  } = getValidation(getConfig({ minLength: 2 }));
+  } = getValidation(getConfig({ min: 2 }));
 
   const {
     entries: [[ matchStore, matchInput ]],

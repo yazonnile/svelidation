@@ -3,7 +3,7 @@
   import { ListenInputEventsEnum } from 'dist';
 
   const getConfig = (options) => {
-    return { entries: [{ type: 'string', minLength: 4 }], options }
+    return { entries: [{ type: 'string', min: 4 }], options }
   };
 
   const {
