@@ -1,4 +1,4 @@
-import createValidation, { SvelidationPhase } from './lib';
+import createValidation from './lib';
 import { get } from 'svelte/store';
 
 describe('lib', () => {

@@ -1,12 +1,12 @@
 import { Writable } from 'svelte/store';
 
-export enum SvelidationPhase {
+export enum ListenInputEventsEnum {
   never,
   always,
   afterValidation,
 }
 
-export type SvelidationPhaseType = SvelidationPhase.afterValidation | SvelidationPhase.always | SvelidationPhase.never;
+export type ListenInputEventsType = ListenInputEventsEnum.afterValidation | ListenInputEventsEnum.always | ListenInputEventsEnum.never;
 
 export interface SvelidationEntryParams {
   type: string;
@@ -30,7 +30,7 @@ export enum SvelidationPresence {
 export interface SvelidationOptions {
   validateOn?: string[];
   clearOn?: string[];
-  listenInputEvents?: SvelidationPhaseType;
+  listenInputEvents?: ListenInputEventsType;
   presence?: SvelidationPresence.required | SvelidationPresence.optional,
   trim?: boolean
 }
@@ -38,10 +38,10 @@ export interface SvelidationOptions {
 export interface SvelidationFormElement {
   node: HTMLInputElement;
   options: SvelidationFormElementOptions;
-  currentPhase: SvelidationPhaseType;
+  currentPhase: ListenInputEventsType;
   onClear(): void;
   onValidate(): void;
-  setPhase(phase: SvelidationPhaseType): void;
+  setPhase(phase: ListenInputEventsType): void;
   preventEvents(): boolean;
   destroy(): void;
 }

@@ -1,3 +1,3 @@
-import OptionListenInputEvents from './option-listen-input-events.svelte';
+import OptionListenInputEventsEnum from './option-listen-input-events.svelte';
 
-new OptionListenInputEvents({ target: document.getElementById('app') });
+new OptionListenInputEventsEnum({ target: document.getElementById('app') });

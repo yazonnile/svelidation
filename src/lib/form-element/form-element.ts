@@ -1,9 +1,9 @@
-import { SvelidationFormElement, SvelidationFormElementOptions, SvelidationPhase, SvelidationPhaseType } from 'lib/typing/typing';
+import { SvelidationFormElement, SvelidationFormElementOptions, ListenInputEventsEnum, ListenInputEventsType } from 'lib/typing/typing';
 
 export default class FormElement implements SvelidationFormElement {
   node: HTMLInputElement;
   options: SvelidationFormElementOptions;
-  currentPhase: SvelidationPhaseType;
+  currentPhase: ListenInputEventsType;
   onClear: () => void;
   onValidate: () => void;
 
@@ -28,17 +28,17 @@ export default class FormElement implements SvelidationFormElement {
     this.options.validateOn.forEach(eventName => node.addEventListener(eventName, this.onValidate));
   }
 
-  setPhase(phase: SvelidationPhaseType) {
+  setPhase(phase: ListenInputEventsType) {
     this.currentPhase = phase;
   }
 
   preventEvents(): boolean {
     const { listenInputEvents: initialPhase } = this.options;
-    if (initialPhase === SvelidationPhase.never) {
+    if (initialPhase === ListenInputEventsEnum.never) {
       return true;
     }
 
-    if (initialPhase === SvelidationPhase.always) {
+    if (initialPhase === ListenInputEventsEnum.always) {
       return false;
     }
 

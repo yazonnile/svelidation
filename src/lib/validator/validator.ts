@@ -158,3 +158,5 @@ const validate = (value: any, validateParams: SvelidationValidatorParams): strin
 };
 
 export { validate };
+export { addSpy, removeSpies } from './spy/spy';
+export { ensureRule, ensureType, resetType, resetRule } from './types/types';

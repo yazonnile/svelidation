@@ -1,12 +1,12 @@
 import prepareBaseParams from './prepare-base-params';
-import {SvelidationPhase} from "../typing/typing";
+import { ListenInputEventsEnum } from 'lib/typing/typing';
 
 describe('prepareBaseParams', () => {
   it('should work with any input', () => {
     let options = {
       validateOn: ['change'],
       clearOn: ['reset'],
-      listenInputEvents: SvelidationPhase.afterValidation,
+      listenInputEvents: ListenInputEventsEnum.afterValidation,
       presence: 'optional',
       trim: false
     };

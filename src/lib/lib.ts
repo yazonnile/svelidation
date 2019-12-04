@@ -1,19 +1,18 @@
+import {
+  SvelidationCreateEntriesData, SvelidationEntry,
+  SvelidationEntryParams, SvelidationFormEvents,
+  SvelidationOptions, SvelidationUseFunctionReturn,
+  ListenInputEventsEnum, SvelidationUseInputFunction,
+  ListenInputEventsType, SvelidationStoreType
+} from 'lib/typing/typing';
 import updateStoreErrors from 'lib/update-store-errors/update-store-errors';
 import { get, writable } from 'svelte/store';
-import { validate as validateValueByParams } from 'lib/validator/validator';
 import isFunction from 'lib/is-function/is-function';
 import FormElement from 'lib/form-element/form-element';
 import prepareBaseParams from 'lib/prepare-base-params/prepare-base-params';
-import {
-  SvelidationCreateEntriesData,
-  SvelidationEntry,
-  SvelidationEntryParams, SvelidationFormEvents,
-  SvelidationOptions, SvelidationUseFunctionReturn,
-  SvelidationPhase, SvelidationUseInputFunction,
-  SvelidationPhaseType, SvelidationStoreType
-} from 'lib/typing/typing';
+import { validate as validateValueByParams } from 'lib/validator/validator';
 
-const setValidationPhase = (entries: SvelidationEntry[], phase: SvelidationPhaseType) => {
+const setValidationPhase = (entries: SvelidationEntry[], phase: ListenInputEventsType) => {
   entries.forEach(({ formElements }) => {
     if (formElements) {
       formElements.forEach(formElement => formElement.setPhase(phase));
@@ -22,12 +21,12 @@ const setValidationPhase = (entries: SvelidationEntry[], phase: SvelidationPhase
 };
 
 const createValidation = (opts?: SvelidationOptions) => {
-  let phase: SvelidationPhaseType = SvelidationPhase.never;
+  let phase: ListenInputEventsType = ListenInputEventsEnum.never;
   const entries: SvelidationEntry[] = [];
   const options: SvelidationOptions = Object.assign({
     validateOn: ['change'],
     clearOn: ['reset'],
-    listenInputEvents: SvelidationPhase.afterValidation,
+    listenInputEvents: ListenInputEventsEnum.afterValidation,
     presence: 'optional',
     trim: false
   }, opts);
@@ -148,8 +147,8 @@ const createValidation = (opts?: SvelidationOptions) => {
       return errors;
     }, []);
 
-    phase = SvelidationPhase.afterValidation;
-    setValidationPhase(entries, SvelidationPhase.afterValidation);
+    phase = ListenInputEventsEnum.afterValidation;
+    setValidationPhase(entries, ListenInputEventsEnum.afterValidation);
 
     return errors;
   };
@@ -182,4 +181,6 @@ const createValidation = (opts?: SvelidationOptions) => {
 };
 
 export default createValidation;
-export { SvelidationPhase };
+export { ListenInputEventsEnum };
+export { addSpy, removeSpies } from 'lib/validator/spy/spy';
+export { ensureRule, ensureType, resetType, resetRule } from 'lib/validator/types/types';

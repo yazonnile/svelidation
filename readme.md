@@ -1,20 +1,19 @@
 ![Svelidation](https://svgshare.com/i/GUq.svg)
 
-Easily customizable library for `validation` scenarios in `svelte` components 
+Easily customizable library for `validation` scenarios in `svelte` components
 
-## Quick example
+# Quick example
 ```js
-import Svelidation from 'svelidation';
+import createSvelidation from 'svelidation';
 
 // 1. create an instance
-const validation = new Svelidation();
-const { createForm } = validation;
+const { createForm, createEntry } = createSvelidation();
 
 // 2. create a validation model
-const [ loginStore, loginInput ] = validation.createEntry({
+const [ loginStore, loginInput ] = createEntry({
   type: 'string',
-  minLength: 3,
-  maxLength: 15
+  min: 3,
+  max: 15
 });
 ```
 ```html
@@ -22,11 +21,11 @@ const [ loginStore, loginInput ] = validation.createEntry({
 <form use:createForm>
   <input type="text" use:loginInput bind:value={$loginStore.value} />
 
-  {#if $loginStore.errors.includes('minLength')}
+  {#if $loginStore.errors.includes('min')}
     Login should be at least 3 symbols long
   {/if}
 
-  {#if $loginStore.errors.includes('maxLength')}
+  {#if $loginStore.errors.includes('max')}
     Login should be not longer than 15 symbols
   {/if}
 
@@ -35,185 +34,44 @@ const [ loginStore, loginInput ] = validation.createEntry({
 ```
 Check this and more on the [demo page](http://yazonnile.github.io/svelidation/)
 
-## Install
+# install
 `npm i -S svelidation`
 
-## Class options (all options are optional)
-```js
-new Svelidation({
-  validateOn,
-  clearOn,
-  listenInputEvents
-});
-```
-`validateOn (string[]: ['change'])`: array of input events to validate input value
-
-`clearOn (string[]: ['reset'])`: array of input and form events to clear errors. All events except `reset` will be applied to input. `reset` to form 
-
-`listenInputEvents (number: 0)`: specific option for control input events
-  - `0`: dont allow input events
-  - `1`: allow input events always
-  - `2`: allow input events after first form validation
-    
-#### Example #1
-Inputs will remove errors on focus and validate value on blur only after first form validation. Form `reset` has no effect to errors
-```js
-new Svelidation({
-  validateOn: ['blur'],
-  clearOn: ['focus']
-});
-```
-    
-#### Example #2
-Inputs events will not affect validation, but `reset` form event will
-```js
-new Svelidation({
-  listenInputEvents: 0
-});
-```
-
-## Validators
- - `base`
-   - optional
-   - match
-   - equal
- - `string` extends `base`
-   - type
-   - minLength
-   - maxLength
- - `number` extends `base`
-   - type
-   - min
-   - max
- - `email` extends `base`
-   - type
-
-## API
-
-### `this.createEntry`
-```js
-const instance = new Svelidation();
-const [ store, inputFunctionForUse ] = instance.createEntry({
-  type, // required
-  
-  minLength,
-  maxLength,
-  min,
-  max,
-  match,
-  equal,
-
-  optional,
-  trim,
-  value,
-})
-```
-`type (string)`: specific validator name (`string`, `number`, `email`). The only required param
-
-`maxLength | minLength (number)`: `string` specific rules for value length 
-
-`max | min (number)`: `number` specific rules for value
-
-`match (regExp)`
-
-`equal (any)`
-
-`optional (boolean)`: is field optional. If optional and empty - it is valid.
-
-`trim (boolean)`: does validation need to trim value before check
-
-`value (string)`: initial value of input
-
-### `this.createEntries`
-Additional way to create a few entries at the time
-```js
-const instance = new Svelidation();
-const {
-  first: [firstStore, firstInput],
-  second: [secondStore, secondInput]
-} = instance.createEntries({
-  first: {
-    // createEntry params
-  },
-  second: {
-    // createEntry params
-  },
-})
-```
-```js
-const instance = new Svelidation();
-const [
-  [firstStore, firstInput],
-  [secondStore, secondInput]
-] = instance.createEntries([
-  {
-    // createEntry params
-  }, {
-    // createEntry params
-  },
-])
-```
-
-### `this.createForm`
-Function for form `use`
-```js
-const instance = new Svelidation();
-const { createForm } = instance;
-```
-```html
-<form use:createForm></form>
-<!-- or -->
-<form use:createForm={{ onSubmit, onFail, onSuccess }}></form>
-```
-Callbacks for form validation on submit 
-
-`onSubmit(submitEvent, errors[])`
-
-`onFail(errors[])`
-
-`onSuccess()`
-
-### `this.validate`
-Manually validate stores
-```js
-const instance = new Svelidation();
-instance.validate(); // just input used stores
-instance.validate(true); // all stores
-```
-
-### `this.clearErrors`
-Clear errors in stores
-```js
-const instance = new Svelidation();
-instance.clearErrors(); // just input based stores
-instance.clearErrors(true); // all stores
-```
-
-### `this.validateStore`
-Manually validate store
-```js
-const instance = new Svelidation();
-const [ emailStore ] = instance.createEntry({ type: 'email' });
-instance.validateStore(emailStore);
-```
-
-## Advanced API
-Add custom or modify current validators
-### `addValidator`
-```js
-// TODO
-```
-```html
-// TODO
-```
-
-## `npm scripts`
-- `npm run build` - build demo and library files into `dist`
-- `npm run dev` - run dev server from dist folder with demo page by default
-- `npm run test:e2e` - e2e testing of lib file from `dist`
-- `npm run test:e2e:dev` - dev server from `e2e/dist` folder with tests name in params
-- `npm run test:unit` - unit testing of `spec.js` files in `lib`
-- `npm run test:unit:dev` - dev server for unit testing
-
-# TODO
-- eslints
+# types/rules
+### `string`
+  - `min|max` - rules to check string length
+### `email`
+### `number`
+  - `min|max` - rules to compare number value
+### `boolean`
+### `array`
+    - `max|max` - rules to check number value
+- types
+  - array
+    - min
+    - max
+    - includes
+- rules
+  - equal
+  - match
+  - required
+- options
+  - validateOn
+  - clearOn
+  - listenInputEvents
+  - presence
+  - trim
+- validation level API
+  - createValidation main function
+  - createEntry
+  - createEntries
+  - createForm
+  - validateStore
+  - validate
+  - clearErrors
+  - destroy
+- project level API Advanced
+  - addSpy, removeSpies
+  - ensureRule, ensureType, resetType, resetRule
+  - ListenInputEventsEnum
+- scripts

@@ -2,7 +2,7 @@ import Demo from './demo.svelte';
 import Dynamic from './dynamic.svelte';
 import Radios from './radios.svelte';
 import Array from './array.svelte';
-import { SvelidationPhase } from 'lib/typing/typing';
+import { ListenInputEventsEnum } from 'lib/typing/typing';
 
 const target = document.getElementById('app');
 
@@ -13,7 +13,7 @@ new Array({
     options: {
       validateOn: ['change'],
       clearOn: ['reset'],
-      listenInputEvents: SvelidationPhase.afterValidation
+      listenInputEvents: ListenInputEventsEnum.afterValidation
     }
   }
 });
@@ -26,7 +26,7 @@ new Demo({
     options: {
       validateOn: ['change'],
       clearOn: ['reset'],
-      listenInputEvents: SvelidationPhase.afterValidation
+      listenInputEvents: ListenInputEventsEnum.afterValidation
     }
   }
 });
@@ -38,7 +38,7 @@ new Demo({
     options: {
       validateOn: ['blur'],
       clearOn: ['focus'],
-      listenInputEvents: SvelidationPhase.always
+      listenInputEvents: ListenInputEventsEnum.always
     }
   }
 });
@@ -48,7 +48,7 @@ new Demo({
   props: {
     title: '<mark>submit</mark> only validation',
     options: {
-      listenInputEvents: SvelidationPhase.never
+      listenInputEvents: ListenInputEventsEnum.never
     }
   }
 });
@@ -62,7 +62,7 @@ new Radios({
     options: {
       validateOn: ['change'],
       clearOn: ['reset'],
-      listenInputEvents: SvelidationPhase.afterValidation
+      listenInputEvents: ListenInputEventsEnum.afterValidation
     }
   }
 });
