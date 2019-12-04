@@ -2,12 +2,10 @@
   export let options = null;
   export let title = 'Default';
 
-  import Validation from 'lib/lib';
+  import createValidation from 'lib/lib';
+  const { createForm, createEntry } = createValidation(options);
 
-  const validation = new Validation(options);
-  const { createForm } = validation;
-
-  const [ radioStore, radioInput ] = validation.createEntry({
+  const [ radioStore, radioInput ] = createEntry({
     type: 'number',
     required: true,
     // value: 0

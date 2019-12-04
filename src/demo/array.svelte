@@ -2,12 +2,11 @@
   export let options = null;
   export let title = 'Default';
 
-  import Validation from 'lib/lib';
+  import createValidation from 'lib/lib';
 
-  const validation = new Validation(options);
-  const { createForm } = validation;
+  const { createEntry, createForm } = createValidation(options);
 
-  const [ arrayStore, arrayInput ] = validation.createEntry({
+  const [ arrayStore, arrayInput ] = createEntry({
     type: 'array',
     min: 2,
     value: []

@@ -3,22 +3,21 @@
   export let options = null;
   export let title = 'Default';
 
-  import Validation from 'lib/lib';
+  import createValidation from 'lib/lib';
 
-  const validation = new Validation(options);
-  const { createForm } = validation;
+  const { createForm, createEntry } = createValidation(options);
 
-  const [ loginStore, loginInput ] = validation.createEntry({
+  const [ loginStore, loginInput ] = createEntry({
     type: 'string',
     minLength: 5,
     maxLength: 15
   });
 
-  const [ emailStore, emailInput ] = validation.createEntry({
+  const [ emailStore, emailInput ] = createEntry({
     type: 'email'
   });
 
-  const [ ageStore, ageInput ] = validation.createEntry({
+  const [ ageStore, ageInput ] = createEntry({
     type: 'number',
     min: 18
   });
@@ -35,7 +34,7 @@
   class:success
 >
   <h1>{@html title}</h1>
-  {@html `<pre><code>${defaultSettings ? '// default settings\n' : ''}new Validation(${JSON.stringify(options, null, '  ')});</code></pre>`}
+  {@html `<pre><code>${defaultSettings ? '// default settings\n' : ''}createValidation(${JSON.stringify(options, null, '  ')});</code></pre>`}
   <label>
     Login
     <input type="text" use:loginInput bind:value={$loginStore.value} />

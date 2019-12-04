@@ -22,11 +22,16 @@ export interface SvelidationEntryParams {
   match?: RegExp;
 }
 
+export enum SvelidationPresence {
+  required = 'required',
+  optional = 'optional'
+}
+
 export interface SvelidationOptions {
   validateOn?: string[];
   clearOn?: string[];
   listenInputEvents?: SvelidationPhaseType;
-  presence?: 'required' | 'optional',
+  presence?: SvelidationPresence.required | SvelidationPresence.optional,
   trim?: boolean
 }
 

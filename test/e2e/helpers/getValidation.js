@@ -1,4 +1,4 @@
-import Validation from 'dist';
+import createValidation from 'dist';
 
 export default ({
   entries,
@@ -9,16 +9,10 @@ export default ({
     options.vaidateOn = validateOn;
   }
 
-  const validation = new Validation(options);
-  let { createForm, validate, clearErrors, validateStore, createEntry } = validation;
-
-  validate = validate.bind(validation);
-  clearErrors = clearErrors.bind(validation);
-  validateStore = validateStore.bind(validation);
-  createEntry = createEntry.bind(validation);
+  const { createForm, validate, clearErrors, validateStore, createEntry, createEntries } = createValidation(options);
 
   return {
-    entries: validation.createEntries(entries),
+    entries: createEntries(entries),
     createForm, validate, clearErrors, validateStore, createEntry
   }
 }

@@ -2,7 +2,7 @@ import { getSpies, SvelidationSpy } from './spy/spy';
 import { SvelidationRule, SvelidationRulesStore, getType, getRule } from './types/types';
 import isFunction from 'lib/is-function/is-function';
 
-interface SvelidationValidatorParams {
+export interface SvelidationValidatorParams {
   type: string;
   optional?: boolean;
   required?: boolean;

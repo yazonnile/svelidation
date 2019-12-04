@@ -1,82 +1,58 @@
-import Validation, { SvelidationPhase } from './lib';
+import createValidation, { SvelidationPhase } from './lib';
 import { get } from 'svelte/store';
 
 describe('lib', () => {
-  const createInstance = opts => new Validation(opts);
+  const createInstance = opts => createValidation(opts);
   let instance;
 
   afterEach(() => {
     instance.destroy();
   });
 
-  describe('constructor', () => {
-    it('default', () => {
-      instance = createInstance();
-      const { options } = instance;
-      expect(options.validateOn).toEqual(['change']);
-      expect(options.clearOn).toEqual(['reset']);
-      expect(options.listenInputEvents).toEqual(SvelidationPhase.afterValidation);
-      expect(instance.phase).toEqual(SvelidationPhase.never);
-    });
-
-    it('with null on clearOn and validateOn', () => {
-      instance = createInstance({ clearOn: null, validateOn: null });
-      expect(instance.options.validateOn).toEqual([]);
-      expect(instance.options.clearOn).toEqual([]);
-    });
-  });
-
-  it('prepareBaseParams', () => {
+  it('constructor', () => {
     instance = createInstance();
-    expect(instance.options.presence).toBe('optional');
-    expect(instance.options.trim).toBeFalse();
-    expect(instance.prepareBaseParams({ a: 1 })).toEqual({ a: 1 });
-    instance.options.presence = 'required';
-    instance.options.trim = true;
-    expect(instance.prepareBaseParams({ a: 1 })).toEqual({ a: 1, required: true, trim: true });
-    expect(instance.prepareBaseParams({ a: 1, optional: true })).toEqual({ a: 1, optional: true, trim: true });
-    expect(instance.prepareBaseParams({ a: true, trim: false })).toEqual({ a: true, trim: false, required: true });
+    const { createEntry, createEntries, createForm, validateStore, validate, clearErrors, destroy } = instance;
+
+    expect(createEntry).toBeDefined();
+    expect(createEntries).toBeDefined();
+    expect(createForm).toBeDefined();
+    expect(validateStore).toBeDefined();
+    expect(validate).toBeDefined();
+    expect(clearErrors).toBeDefined();
+    expect(destroy).toBeDefined();
   });
 
   it('createEntry', () => {
     instance = createInstance();
+    const { createEntry } = instance;
 
-    const [ withValueStore ] = instance.createEntry({ type: 'number', value: 10 });
+    const [ withValueStore ] = createEntry({ type: 'number', value: 10 });
     expect(get(withValueStore).value).toBe(10);
-
-    const [ store, email ] = instance.createEntry({ type: 'email' });
-    const { destroy } = email(document.createElement('input'));
-    expect(instance.entries.length).toBe(2);
-    expect(instance.entries[0].formElements).toBeUndefined();
-    expect(instance.entries[1].formElements).toBeDefined();
-    expect(instance.entries[1].formElements[0].currentPhase).toEqual(instance.phase);
-
-    destroy();
-
-    expect(instance.entries[1].formElements).toBeUndefined();
+    const [ store ] = createEntry({ type: 'number' });
+    expect(get(store).value).toBe('');
   });
 
   describe('createEntries', () => {
     it('array', () => {
       instance = createInstance();
-      spyOn(instance, 'createEntry').and.callThrough();
+      const { createEntries } = instance;
       const [
         [store1, input1],
         [store2, input2]
-      ] = instance.createEntries([{ type: 'string', value: '1' }, { type: 'string', value: '2' }]);
+      ] = createEntries([{ type: 'string', value: '1' }, { type: 'string', value: '2' }]);
       expect(get(store1).value).toBe('1');
       expect(get(store2).value).toBe('2');
       expect(input1).toEqual(jasmine.any(Function));
       expect(input2).toEqual(jasmine.any(Function));
-      expect(instance.createEntry).toHaveBeenCalledTimes(2);
     });
 
     it('object', () => {
       instance = createInstance();
+      const { createEntries } = instance;
       const {
         first: [store1, input1],
         second: [store2, input2]
-      } = instance.createEntries({
+      } = createEntries({
         first: { type: 'string', value: '1' },
         second: { type: 'string', value: '2' }
       });
@@ -85,28 +61,6 @@ describe('lib', () => {
       expect(input1).toEqual(jasmine.any(Function));
       expect(input2).toEqual(jasmine.any(Function));
     });
-  });
-
-  it('removeEntry', () => {
-    instance = createInstance();
-    const [
-      [store1],
-      [store2]
-    ] = instance.createEntries([{ type: 'string', value: '1' }, { type: 'string', value: '2' }]);
-
-    expect(instance.entries[0].store).not.toBe(store2);
-    instance.removeEntry(instance.entries[0]);
-    expect(instance.entries[0].store).toBe(store2);
-  });
-
-  it('createForm', () => {
-    instance = createInstance();
-    instance.clearErrors = jasmine.createSpy('clearErrors');
-    const { createForm } = instance;
-    const form = document.createElement('form');
-    createForm(form);
-    form.reset();
-    expect(instance.clearErrors).toHaveBeenCalled();
   });
 
   it('validateStore', () => {
@@ -128,42 +82,19 @@ describe('lib', () => {
       input1 = result[0][1];
       input2 = result[1][1];
       input1(document.createElement('input'));
-      spyOn(instance, 'validateStore').and.callThrough();
-      spyOn(instance, 'setValidationPhase');
     });
 
     it('default', () => {
       instance.validate();
       expect(get(store1).errors.length).toBe(1);
       expect(get(store2).errors.length).toBe(0);
-      expect(instance.validateStore).toHaveBeenCalledTimes(1);
-      expect(instance.validateStore).toHaveBeenCalledWith(store1);
-      expect(instance.setValidationPhase).toHaveBeenCalledTimes(1);
-      expect(instance.setValidationPhase).toHaveBeenCalledWith(SvelidationPhase.afterValidation);
     });
 
     it('true', () => {
       instance.validate(true);
       expect(get(store1).errors.length).toBe(1);
       expect(get(store2).errors.length).toBe(1);
-      expect(instance.validateStore).toHaveBeenCalledTimes(2);
-      expect(instance.validateStore).toHaveBeenCalledWith(store1);
-      expect(instance.setValidationPhase).toHaveBeenCalledTimes(1);
-      expect(instance.setValidationPhase).toHaveBeenCalledWith(SvelidationPhase.afterValidation);
     });
-  });
-
-  it('setValidationPhase', () => {
-    instance = createInstance();
-    const [ store, input ] = instance.createEntry({ type: 'email' });
-    input(document.createElement('input'));
-    spyOn(instance.entries[0].formElements[0], 'setPhase').and.callThrough();
-    instance.setValidationPhase(SvelidationPhase.afterValidation);
-
-    expect(instance.entries[0].formElements[0].currentPhase).toBe(SvelidationPhase.afterValidation);
-    expect(instance.phase).toBe(SvelidationPhase.afterValidation);
-    expect(instance.entries[0].formElements[0].setPhase).toHaveBeenCalledTimes(1);
-    expect(instance.entries[0].formElements[0].setPhase).toHaveBeenCalledWith(SvelidationPhase.afterValidation);
   });
 
   describe('clearErrors', () => {
@@ -199,14 +130,5 @@ describe('lib', () => {
       expect(store1.update).toHaveBeenCalledTimes(2);
       expect(store2.update).toHaveBeenCalledTimes(2);
     });
-  });
-
-  it('destroy', () => {
-    instance = createInstance();
-    const [ store, input ] = instance.createEntry({ type: 'email' });
-    input(document.createElement('input'));
-    spyOn(instance.entries[0].formElements[0], 'destroy');
-    instance.destroy();
-    expect(instance.entries[0].formElements[0].destroy).toHaveBeenCalled();
   });
 });

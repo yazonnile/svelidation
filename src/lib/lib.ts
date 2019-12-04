@@ -1,59 +1,55 @@
-import { writable, get } from 'svelte/store';
-import { validate as validateValueByParams } from 'lib/validator/validator';
 import updateStoreErrors from 'lib/update-store-errors/update-store-errors';
-import FormElement from 'lib/form-element/form-element';
+import { get, writable } from 'svelte/store';
+import { validate as validateValueByParams } from 'lib/validator/validator';
 import isFunction from 'lib/is-function/is-function';
+import FormElement from 'lib/form-element/form-element';
+import prepareBaseParams from 'lib/prepare-base-params/prepare-base-params';
 import {
-  SvelidationEntryParams, SvelidationEntry,
-  SvelidationPhase, SvelidationPhaseType,
-  SvelidationOptions, SvelidationStoreType,
-  SvelidationUseInputFunction, SvelidationUseFunctionReturn,
-  SvelidationCreateEntriesData, SvelidationFormEvents
+  SvelidationCreateEntriesData,
+  SvelidationEntry,
+  SvelidationEntryParams, SvelidationFormEvents,
+  SvelidationOptions, SvelidationUseFunctionReturn,
+  SvelidationPhase, SvelidationUseInputFunction,
+  SvelidationPhaseType, SvelidationStoreType
 } from 'lib/typing/typing';
 
-export { SvelidationPhase } from 'lib/typing/typing';
-
-export default class Validation {
-  entries: SvelidationEntry[];
-  options: SvelidationOptions;
-  phase: SvelidationPhaseType;
-
-  constructor(options?: SvelidationOptions) {
-    this.entries = [];
-    this.options = Object.assign({
-      validateOn: ['change'],
-      clearOn: ['reset'],
-      listenInputEvents: SvelidationPhase.afterValidation,
-      presence: 'optional',
-      trim: false
-    }, options);
-
-    // ensure options as array
-    if (!this.options.clearOn) {
-      this.options.clearOn = [];
+const setValidationPhase = (entries: SvelidationEntry[], phase: SvelidationPhaseType) => {
+  entries.forEach(({ formElements }) => {
+    if (formElements) {
+      formElements.forEach(formElement => formElement.setPhase(phase));
     }
+  });
+};
 
-    if (!this.options.validateOn) {
-      this.options.validateOn = [];
-    }
+const createValidation = (opts?: SvelidationOptions) => {
+  const entries: SvelidationEntry[] = [];
+  let phase: SvelidationPhaseType = SvelidationPhase.never;
+  const options: SvelidationOptions = Object.assign({
+    validateOn: ['change'],
+    clearOn: ['reset'],
+    listenInputEvents: SvelidationPhase.afterValidation,
+    presence: 'optional',
+    trim: false
+  }, opts);
 
-    this.phase = SvelidationPhase.never;
-    this.createForm = this.createForm.bind(this);
+  // ensure options as array
+  if (!options.clearOn) {
+    options.clearOn = [];
   }
 
-  createEntry(createEntryParams: SvelidationEntryParams): [SvelidationStoreType, SvelidationUseInputFunction] {
+  if (!options.validateOn) {
+    options.validateOn = [];
+  }
+
+  const createEntry = (createEntryParams: SvelidationEntryParams): [SvelidationStoreType, SvelidationUseInputFunction] => {
     const { value = '', ...params } = createEntryParams;
     const store: SvelidationStoreType = writable({ value, errors: [] });
     const entry: SvelidationEntry = { store, params };
     const useInput: SvelidationUseInputFunction = (inputNode, useOptions) => {
-      const formElementOptions = Object.assign({}, this.options, useOptions, {
-        onClear: () => {
-          updateStoreErrors(store, []);
-        },
-        onValidate: () => {
-          this.validateStore(store);
-        },
-        clearOn: this.options.clearOn.filter(event => event !== 'reset')
+      const formElementOptions = Object.assign({}, options, useOptions, {
+        onClear: () => updateStoreErrors(store, []),
+        onValidate: () => validateStore(store),
+        clearOn: options.clearOn.filter(event => event !== 'reset')
       });
 
       if (!entry.formElements) {
@@ -61,7 +57,7 @@ export default class Validation {
       }
 
       const newElement = new FormElement(inputNode, formElementOptions);
-      newElement.setPhase(this.phase);
+      newElement.setPhase(phase);
       entry.formElements.push(newElement);
 
       return {
@@ -82,32 +78,28 @@ export default class Validation {
       };
     };
 
-    this.entries.push(entry);
+    entries.push(entry);
 
     return [ store, useInput ];
-  }
+  };
 
-  createEntries(data: SvelidationCreateEntriesData) {
+  const createEntries = (data: SvelidationCreateEntriesData) => {
     if (Array.isArray(data)) {
-      return data.map(_ => this.createEntry(_));
+      return data.map(createEntry);
     } else {
       return Object.keys(data).reduce((sum, currentKey) => {
         return Object.assign(sum, {
-          [currentKey]: this.createEntry(data[currentKey])
+          [currentKey]: createEntry(data[currentKey])
         });
       }, {});
     }
-  }
+  };
 
-  removeEntry(entry: SvelidationEntry) {
-    this.entries = this.entries.filter(_ => entry !== _);
-  }
-
-  createForm(formNode: HTMLFormElement, events: SvelidationFormEvents = {}): SvelidationUseFunctionReturn {
+  const createForm = (formNode: HTMLFormElement, events: SvelidationFormEvents = {}): SvelidationUseFunctionReturn => {
     const { onFail: fail, onSubmit: submit, onSuccess: success } = events;
-    const onReset = () => this.clearErrors();
+    const onReset = () => clearErrors();
     const onSubmit = e => {
-      const errors = this.validate();
+      const errors = validate();
       isFunction(submit) && submit(e, errors);
       if (errors.length) {
         isFunction(fail) && fail(errors);
@@ -117,7 +109,7 @@ export default class Validation {
     };
 
     formNode.addEventListener('submit', onSubmit);
-    if (this.options.clearOn.indexOf('reset') > -1) {
+    if (options.clearOn.indexOf('reset') > -1) {
       formNode.addEventListener('reset', onReset);
     }
 
@@ -127,26 +119,13 @@ export default class Validation {
         formNode.removeEventListener('reset', onReset);
       }
     };
-  }
+  };
 
-  prepareBaseParams(params) {
-    const { trim, required, optional } = params;
-    if (this.options.presence === 'required' && required === undefined && optional === undefined) {
-      params.required = true;
-    }
-
-    if (this.options.trim && trim === undefined) {
-      params.trim = true;
-    }
-
-    return {...params};
-  }
-
-  validateStore(store: SvelidationStoreType): any[] {
-    const entry = this.entries.find(entry => (entry.store === store));
+  const validateStore = (store: SvelidationStoreType): any[] => {
+    const entry = entries.find(entry => (entry.store === store));
     if (entry) {
       const { value } = get(store);
-      const errors = validateValueByParams(value, this.prepareBaseParams(entry.params));
+      const errors = validateValueByParams(value, prepareBaseParams(entry.params, options));
 
       if (Array.isArray(errors)) {
         updateStoreErrors(store, errors);
@@ -155,12 +134,12 @@ export default class Validation {
     }
 
     return [];
-  }
+  };
 
-  validate(includeNoFormElements = false): any[] {
-    const errors = this.entries.reduce((errors, entry) => {
+  const validate = (includeNoFormElements = false): any[] => {
+    const errors = entries.reduce((errors, entry) => {
       if (entry.formElements || includeNoFormElements) {
-        const storeErrors = this.validateStore(entry.store);
+        const storeErrors = validateStore(entry.store);
         if (storeErrors.length) {
           errors.push({ [entry.params.type]: storeErrors });
         }
@@ -169,34 +148,38 @@ export default class Validation {
       return errors;
     }, []);
 
-    this.setValidationPhase(SvelidationPhase.afterValidation);
+    phase = SvelidationPhase.afterValidation;
+    setValidationPhase(entries, SvelidationPhase.afterValidation);
 
     return errors;
-  }
+  };
 
-  setValidationPhase(phase: SvelidationPhaseType) {
-    this.phase = phase;
-
-    this.entries.forEach(({ formElements }) => {
-      if (formElements) {
-        formElements.forEach(formElement => formElement.setPhase(phase));
-      }
-    });
-  }
-
-  clearErrors(includeNoFormElements = false) {
-    this.entries.forEach(entry => {
+  const clearErrors = (includeNoFormElements = false) => {
+    entries.forEach(entry => {
       if (entry.formElements || includeNoFormElements) {
         updateStoreErrors(entry.store, []);
       }
     });
-  }
+  };
 
-  destroy() {
-    this.entries.forEach(entry => {
+  const destroy = () => {
+    entries.forEach(entry => {
       if (entry.formElements) {
         entry.formElements.forEach(formElement => formElement.destroy());
       }
     });
+  };
+
+  return {
+    createEntry,
+    createEntries,
+    createForm,
+    validateStore,
+    validate,
+    clearErrors,
+    destroy
   }
-}
+};
+
+export default createValidation;
+export { SvelidationPhase };

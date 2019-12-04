@@ -1,26 +1,26 @@
 <script>
-  import Validation from 'lib/lib';
+  import createValidation from 'lib/lib';
 
-  const validation = new Validation({
-    validateOn: []
+  const { createForm, createEntry } = createValidation({
+    validateOn: [],
+    presence: 'required'
   });
-  const { createForm } = validation;
 
-  const [ loginStore, loginInput ] = validation.createEntry({
+  const [ loginStore, loginInput ] = createEntry({
     type: 'string',
     minLength: 3,
     maxLength: 15
   });
 
-  const [ emailStore, emailInput ] = validation.createEntry({
+  const [ emailStore, emailInput ] = createEntry({
+    type: 'email',
+  });
+
+  const [ email2Store, email2Input ] = createEntry({
     type: 'email'
   });
 
-  const [ email2Store, email2Input ] = validation.createEntry({
-    type: 'email'
-  });
-
-  const [ ageStore, ageInput ] = validation.createEntry({
+  const [ ageStore, ageInput ] = createEntry({
     type: 'number',
     min: 18
   });
@@ -81,6 +81,9 @@
       <input type="number" use:ageInput bind:value={$ageStore.value} />
       {#if $ageStore.errors.includes('min')}
         <p class="error">For boomers only!</p>
+      {/if}
+      {#if $ageStore.errors.includes('typeCheck')}
+        <p class="error">Number plz!</p>
       {/if}
     </label>
   {/if}
