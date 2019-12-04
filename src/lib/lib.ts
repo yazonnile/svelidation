@@ -22,8 +22,8 @@ const setValidationPhase = (entries: SvelidationEntry[], phase: SvelidationPhase
 };
 
 const createValidation = (opts?: SvelidationOptions) => {
-  const entries: SvelidationEntry[] = [];
   let phase: SvelidationPhaseType = SvelidationPhase.never;
+  const entries: SvelidationEntry[] = [];
   const options: SvelidationOptions = Object.assign({
     validateOn: ['change'],
     clearOn: ['reset'],
@@ -33,11 +33,11 @@ const createValidation = (opts?: SvelidationOptions) => {
   }, opts);
 
   // ensure options as array
-  if (!options.clearOn) {
+  if (!Array.isArray(options.clearOn)) {
     options.clearOn = [];
   }
 
-  if (!options.validateOn) {
+  if (!Array.isArray(options.validateOn)) {
     options.validateOn = [];
   }
 
