@@ -15,6 +15,11 @@
     createForm: maxCreateForm
   } = getValidation(getConfig({ max: 6 }));
 
+  const {
+    entries: [betweenEntry],
+    createForm: betweenCreateForm
+  } = getValidation(getConfig({ between: [2,5] }));
+
   let activeId = 'min';
 </script>
 
@@ -27,5 +32,11 @@
 <Slide id="max" bind:activeId>
   <Form createForm={maxCreateForm}>
     <Entry entry={maxEntry} />
+  </Form>
+</Slide>
+
+<Slide id="between" bind:activeId>
+  <Form createForm={betweenCreateForm}>
+    <Entry entry={betweenEntry} />
   </Form>
 </Slide>

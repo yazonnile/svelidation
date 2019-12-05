@@ -50,3 +50,16 @@ test('max rule', async t => {
   await t
     .expect(page.errors.exists).ok();
 });
+
+test('between rule', async t => {
+  await t
+    .click(page.slideButton.withExactText('between'))
+    .expect(page.forms.exists).ok()
+    .expect(page.errors.exists).notOk()
+    .click(page.submitButton)
+    .expect(page.errors.exists).ok()
+    .typeText(page.inputs, '4');
+  await blur();
+  await t
+    .expect(page.errors.exists).notOk();
+});

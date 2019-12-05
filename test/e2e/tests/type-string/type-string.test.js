@@ -17,15 +17,19 @@ test('min rule', async t => {
     .expect(page.errors.exists).notOk();
 });
 
-test('max rule', async t => {
+test('between rule', async t => {
   await t
-    .click(page.slideButton.withExactText('max'))
+    .click(page.slideButton.withExactText('between'))
     .expect(page.forms.exists).ok()
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
-    .expect(page.errors.exists).notOk()
-    .typeText(page.inputs, '1234567');
+    .expect(page.errors.exists).ok()
+    .typeText(page.inputs, '1');
   await blur();
   await t
-    .expect(page.errors.exists).ok();
+    .expect(page.errors.exists).ok()
+    .typeText(page.inputs, '1');
+  await blur();
+  await t
+    .expect(page.errors.exists).notOk();
 });

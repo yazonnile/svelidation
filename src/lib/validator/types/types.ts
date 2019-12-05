@@ -100,6 +100,7 @@ const installType = {
       typeCheck: (value) => (typeof value === 'string'),
       min: (value, { min }) => (value.length >= min),
       max: (value, { max }) => (value.length <= max),
+      between: (value, { between }) => (value.length >= between[0] && value.length <= between[1])
     })
   },
 
@@ -119,6 +120,7 @@ const installType = {
       ),
       min: (value, { min }) => (parseFloat(value as string) >= min),
       max: (value, { max }) => (parseFloat(value as string) <= max),
+      between: (value, { between }) => (value >= between[0] && value <= between[1])
     });
   },
 

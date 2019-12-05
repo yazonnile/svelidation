@@ -22,11 +22,11 @@ describe('types', () => {
       const arrayType = getType('array');
 
       expect(stringType).toBeDefined();
-      expect(Object.keys(stringType).sort()).toEqual(['typeCheck', 'min', 'max'].sort());
+      expect(Object.keys(stringType).sort()).toEqual(['typeCheck', 'min', 'max', 'between'].sort());
       expect(emailType).toBeDefined();
       expect(Object.keys(emailType).sort()).toEqual(['typeCheck'].sort());
       expect(numberType).toBeDefined();
-      expect(Object.keys(numberType).sort()).toEqual(['typeCheck', 'min', 'max'].sort());
+      expect(Object.keys(numberType).sort()).toEqual(['typeCheck', 'min', 'max', 'between'].sort());
       expect(booleanType).toBeDefined();
       expect(Object.keys(booleanType).sort()).toEqual(['typeCheck', 'required'].sort());
       expect(arrayType).toBeDefined();
@@ -68,6 +68,14 @@ describe('types', () => {
         expect(max(value, { max: 2 })).toBeFalse();
         expect(max(value, { max: 5 })).toBeTrue();
         expect(max(value, { max: 6 })).toBeTrue();
+      });
+
+      it('between', () => {
+        const { between } = getType('string');
+        const value = '12345';
+        expect(between(value, { between: [2, 5] })).toBeTrue();
+        expect(between(value, { between: [2, 6] })).toBeTrue();
+        expect(between(value, { between: [1, 4] })).toBeFalse();
       });
     });
 
@@ -112,6 +120,14 @@ describe('types', () => {
         expect(max(value, { max: 2 })).toBeFalse();
         expect(max(value, { max: 15 })).toBeFalse();
         expect(max(value, { max: 16 })).toBeTrue();
+      });
+
+      it('between', () => {
+        const { between } = getType('number');
+        const value = 5;
+        expect(between(value, { between: [2, 5] })).toBeTrue();
+        expect(between(value, { between: [2, 6] })).toBeTrue();
+        expect(between(value, { between: [1, 4] })).toBeFalse();
       });
     });
 
