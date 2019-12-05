@@ -157,6 +157,9 @@ describe('types', () => {
       it('equal', () => {
         const { equal } = getType('array');
         expect(equal([1,5,2], { equal: [5,2,1] })).toBeTrue();
+        expect(equal([1,5,2], { equal: (value) => {
+            return value.length === 3;
+        } })).toBeTrue();
         expect(equal([1,6,2], { equal: [5,2,1] })).toBeFalse();
         expect(equal([1,5,2,1], { equal: [5,2,1] })).toBeFalse();
       });
@@ -187,9 +190,15 @@ describe('types', () => {
   describe('rules', () => {
     it('equal', () => {
       const equal = getRule('equal');
+      const dynamicValue = () => {
+        return .1;
+      };
       expect(equal(1, { equal: 1 })).toBeTrue();
       expect(equal('1', { equal: 1 })).toBeFalse();
       expect(equal(.1, { equal: 0.1 })).toBeTrue();
+      expect(equal(.1, { equal: value => {
+        return value === dynamicValue();
+      } })).toBeTrue();
     });
 
     it('match', () => {

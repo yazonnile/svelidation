@@ -49,8 +49,8 @@ Check this and more on the [demo page](http://yazonnile.github.io/svelidation/)
   - `includes` - check array includes element
 
 - global rules
-  - `equal` - equality with value (in case of array it sort and stringify it)
-  - `match` - match textual value form by regExp 
+  - `equal` - equality with value (in case of array it sort and stringify it), could take a function as equal value
+  - `match` - match textual value form by regExp
   - `required` - check value exists
 
 # options
@@ -70,18 +70,18 @@ createSvelidation({
   - possible events: `change`, `input`, `blur`
 
 - `clearErrorsOnEvents: { [key: string]: boolean }`
-  - object of events to clear errors 
+  - object of events to clear errors
   - possible events: `reset`, `focus`
 
 - `listenInputEvents: number`
   - specific option for control input events
     - `0`: dont allow input events
-    - `1`: allow input events always 
+    - `1`: allow input events always
     - `2`: allow input events after first validation run
 
 - `presence: string`
   - Default inputs presence. If we set it to `required` - all inputs will be validated as required by default
-   
+
 - `trim: boolean`
   - allow validator trim textual values before check
   - *(!!!) it doesn't trim value itself, just for check purpose*
@@ -90,7 +90,7 @@ createSvelidation({
   - By default validation works for entries that were assigned with inputs by `use` svelte directive. This option makes possible to validate ALL entries in validation
 
 
-`validateOnEvents`, `clearErrorsOnEvents`, `presence` and `trim` behavior could be overrides by any input for itself ([check here](#createEntry)) 
+`validateOnEvents`, `clearErrorsOnEvents`, `presence` and `trim` behavior could be overrides by any input for itself ([check here](#createEntry))
 
 # validation level API
 ```js
@@ -105,14 +105,14 @@ const {
   destroy
 } = createSvelidation();
 ```
-  - createEntry
+ ## createEntry
   - createEntries
   - createForm
   - validateValueStore
   - validate
   - clearErrors
   - destroy
-  
+
 # global level API
 ```js
 import {
@@ -128,8 +128,8 @@ import {
   - ensureRule, ensureType
   - resetType, resetRule
   - removeSpies
-  
-  
+
+
 # scripts
 - `npm run build` - build demo and library files into `dist`
 - `npm run dev` - run dev server from dist folder with demo page by default

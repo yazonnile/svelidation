@@ -135,7 +135,13 @@ const installType = {
       required: (value) => value.length > 0,
       min: (value, { min }) => value.length >= min,
       max: (value, { max }) => value.length <= max,
-      equal: (value, { equal }) => value.sort().toString() === equal.sort().toString(),
+      equal: (value, { equal }) => {
+        if (isFunction(equal)) {
+          return equal(value);
+        }
+
+        return value.sort().toString() === equal.sort().toString();
+      },
       includes: (value, { includes }) => value.includes(includes)
     });
   },
@@ -143,7 +149,13 @@ const installType = {
 
 const installRule = {
   equal: () => {
-    ensureRule('equal', (value, { equal }) => (value === equal));
+    ensureRule('equal', (value, { equal }) => {
+      if (isFunction(equal)) {
+        return equal(value);
+      }
+
+      return value === equal;
+    });
   },
 
   match: () => {
