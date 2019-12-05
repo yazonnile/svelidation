@@ -123,4 +123,31 @@ describe('lib', () => {
       expect(entry2[0].set).toHaveBeenCalledTimes(2);
     });
   });
+
+  describe('includeAllEntries option', () => {
+    let entry1, entry2;
+
+    it('validate without true', () => {
+      instance = createInstance({ includeAllEntries: true });
+      [ entry1, entry2 ] = instance.createEntries([{ type: 'email', required: true }, { type: 'email', required: true }]);
+      entry1[2](document.createElement('input'));
+      instance.validate();
+      expect(get(entry1[0]).length).toBe(1);
+      expect(get(entry2[0]).length).toBe(1);
+    });
+
+    it('clear errors without true', () => {
+      instance = createInstance({ includeAllEntries: true });
+      [ entry1, entry2 ] = instance.createEntries([{ type: 'email', required: true }, { type: 'email', required: true }]);
+      entry1[2](document.createElement('input'));
+      spyOn(entry1[0], 'set').and.callThrough();
+      spyOn(entry2[0], 'set').and.callThrough();
+      instance.validate(true);
+      instance.clearErrors();
+      expect(get(entry1[0]).length).toBe(0);
+      expect(get(entry2[0]).length).toBe(0);
+      expect(entry1[0].set).toHaveBeenCalledTimes(2);
+      expect(entry2[0].set).toHaveBeenCalledTimes(2);
+    });
+  })
 });

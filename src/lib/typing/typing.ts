@@ -30,7 +30,8 @@ export interface SvelidationOptions {
   clearErrorsOnEvents?: { [key: string]: boolean };
   listenInputEvents?: ListenInputEventsType;
   presence?: SvelidationPresence.required | SvelidationPresence.optional,
-  trim?: boolean
+  trim?: boolean,
+  includeAllEntries?: boolean;
 }
 
 export interface SvelidationFormElement {

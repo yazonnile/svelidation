@@ -10,7 +10,7 @@ import createSvelidation from 'svelidation';
 const { createForm, createEntry } = createSvelidation();
 
 // 2. create a validation model
-const [ loginStore, loginInput ] = createEntry({
+const [ errorsStore, valueStore, useInput ] = createEntry({
   type: 'string',
   min: 3,
   max: 15
@@ -19,13 +19,13 @@ const [ loginStore, loginInput ] = createEntry({
 ```html
 <!-- 3. use it in template  -->
 <form use:createForm>
-  <input type="text" use:loginInput bind:value={$loginStore.value} />
+  <input type="text" use:useInput bind:value={$valueStore} />
 
-  {#if $loginStore.errors.includes('min')}
+  {#if $errorsStore.includes('min')}
     Login should be at least 3 symbols long
   {/if}
 
-  {#if $loginStore.errors.includes('max')}
+  {#if $errorsStore.includes('max')}
     Login should be not longer than 15 symbols
   {/if}
 
@@ -57,18 +57,21 @@ Check this and more on the [demo page](http://yazonnile.github.io/svelidation/)
 ```js
 // default values
 createSvelidation({
-  validateOnEvents: { change: true },
-  clearErrorsOnEvents: { reset: true },
+  validateOnEvents: { change: true, input: false, blur: false },
+  clearErrorsOnEvents: { reset: true, focus: false },
   listenInputEvents: 2,
   presence: 'optional',
-  trim: false
+  trim: false,
+  includeAllEntries: false
 });
 ```
 - `validateOnEvents: { [key: string]: boolean }`
-  - array of input events to validate input value
+  - object of input events to validate input value
+  - possible events: `change`, `input`, `blur`
 
 - `clearErrorsOnEvents: { [key: string]: boolean }`
-  - array of input and form events to clear errors. All events except `reset` will be applied to input. `reset` to form 
+  - object of events to clear errors 
+  - possible events: `reset`, `focus`
 
 - `listenInputEvents: number`
   - specific option for control input events
@@ -77,15 +80,17 @@ createSvelidation({
     - `2`: allow input events after first validation run
 
 - `presence: string`
-  - Default inputs presence. If we set it to `required` - all inputs will be validated as required.
+  - Default inputs presence. If we set it to `required` - all inputs will be validated as required by default
    
 - `trim: boolean`
   - allow validator trim textual values before check
-  - *(!!!) it doesn't trim value itself, just for check*
-  
-Use `validateOnEvents`, `clearErrorsOnEvents` and `listenInputEvents` options to be more precise in validation behavior
+  - *(!!!) it doesn't trim value itself, just for check purpose*
 
-`presence` and `trim` as validation options could be overrides by any input for itself 
+- `includeAllEntries: boolean`
+  - By default validation works for entries that were assigned with inputs by `use` svelte directive. This option makes possible to validate ALL entries in validation
+
+
+`validateOnEvents`, `clearErrorsOnEvents`, `presence` and `trim` behavior could be overrides by any input for itself ([check here](#createEntry)) 
 
 # validation level API
 ```js

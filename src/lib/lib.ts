@@ -26,6 +26,7 @@ const createValidation = (opts?: SvelidationOptions) => {
     listenInputEvents: ListenInputEventsEnum.afterValidation,
     presence: 'optional',
     trim: false,
+    includeAllEntries: false,
     validateOnEvents: {
       input: false,
       change: true,
@@ -158,7 +159,7 @@ const createValidation = (opts?: SvelidationOptions) => {
 
   const validate = (includeNoFormElements = false): any[] => {
     const errors = entries.reduce((errors, entry) => {
-      if (entry.formElements || includeNoFormElements) {
+      if (entry.formElements || includeNoFormElements || options.includeAllEntries) {
         const storeErrors = validateValueStore(entry.store.value);
         if (storeErrors.length) {
           errors.push({ [entry.params.type]: storeErrors });
@@ -176,7 +177,7 @@ const createValidation = (opts?: SvelidationOptions) => {
 
   const clearErrors = (includeNoFormElements = false) => {
     entries.forEach(entry => {
-      if (entry.formElements || includeNoFormElements) {
+      if (entry.formElements || includeNoFormElements || options.includeAllEntries) {
         entry.store.errors.set([]);
       }
     });
