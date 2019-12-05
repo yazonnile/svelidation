@@ -38,9 +38,9 @@
     <label><input disabled={$score === 100} use:input bind:group={$value} value={-10} class="input-choice" type="checkbox" /> Rich Harris</label>
   </Cells>
 
-  <Error {errors} errorCode="required" errorText="Pick something please" inline />
+  <Error {errors} errorCode="required" errorText="Pick something please" />
   {#if $value.length}
-    <h1 style={`color: ${color}`}>Your score: {$score.toFixed(0)}/100 {#if $score === 100}You won!{/if}</h1>
+    <h1 style={`color: ${color}`} >Your score: {$score.toFixed(0)}/100 {#if $score === 100}You won!{/if}</h1>
   {/if}
 
   <Code html={`let score = tweened(0, {
@@ -69,7 +69,7 @@ $: color = ($score < 0 ? 'red' : ($score < 50 ? 'inherit' : ($score < 100 ? '#76
 &lt;input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={11} /> Georges St-Pierre
 &lt;input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={-10} /> Rich Harris
 
-&lt;Error {errors} errorCode="required" errorText="Pick something please" inline />
+{#if $errors.includes('required')}Pick something please{/if}
 {#if $value.length}
   &lt;h1 style={\`color: ${color}\`}>Your score: {$score.toFixed(0)}/100 {#if $score === 100}You won!{/if}</h1>
 {/if}`} />

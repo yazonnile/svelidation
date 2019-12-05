@@ -837,8 +837,8 @@ const resetRule = (ruleName) => {
     }
     else {
         delete rules$1[ruleName];
-        if (installType[ruleName]) {
-            installType[ruleName]();
+        if (installRule[ruleName]) {
+            installRule[ruleName]();
         }
     }
 };
@@ -4920,7 +4920,7 @@ function create_if_block$4(ctx) {
 	};
 }
 
-// (43:70) {#if $score === 100}
+// (43:71) {#if $score === 100}
 function create_if_block_1$2(ctx) {
 	let t;
 
@@ -4958,8 +4958,7 @@ function create_default_slot$8(ctx) {
 			props: {
 				errors: ctx.errors,
 				errorCode: "required",
-				errorText: "Pick something please",
-				inline: true
+				errorText: "Pick something please"
 			}
 		});
 
@@ -4998,7 +4997,7 @@ $: color = ($score < 0 ? 'red' : ($score < 50 ? 'inherit' : ($score < 100 ? '#76
 &lt;input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={11} /> Georges St-Pierre
 &lt;input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={-10} /> Rich Harris
 
-&lt;Error {errors} errorCode="required" errorText="Pick something please" inline />
+{#if $errors.includes('required')}Pick something please{/if}
 {#if $value.length}
   &lt;h1 style={\`color: ${ctx.color}\`}>Your score: {$score.toFixed(0)}/100 {#if $score === 100}You won!{/if}</h1>
 {/if}`
@@ -5070,7 +5069,7 @@ $: color = ($score < 0 ? 'red' : ($score < 50 ? 'inherit' : ($score < 100 ? '#76
 &lt;input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={11} /> Georges St-Pierre
 &lt;input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={-10} /> Rich Harris
 
-&lt;Error {errors} errorCode="required" errorText="Pick something please" inline />
+{#if $errors.includes('required')}Pick something please{/if}
 {#if $value.length}
   &lt;h1 style={\`color: ${ctx.color}\`}>Your score: {$score.toFixed(0)}/100 {#if $score === 100}You won!{/if}</h1>
 {/if}`;

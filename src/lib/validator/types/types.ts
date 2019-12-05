@@ -88,8 +88,8 @@ const resetRule = (ruleName?: string) => {
   } else {
     delete rules[ruleName];
 
-    if (installType[ruleName]) {
-      installType[ruleName]();
+    if (installRule[ruleName]) {
+      installRule[ruleName]();
     }
   }
 };

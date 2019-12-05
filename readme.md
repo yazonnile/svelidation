@@ -126,9 +126,16 @@ Create validation entry
 const [ errorsStore, valueStore, inputFunctionForUse ] = createEntry(createEntryParams);
 ```
 
-`errorsStore`, `valueStore` used for bind errors and value store in templates
+`errorsStore`, `valueStore` used for bind errors and value store in templates. One more time. THIS IS SVELTE STORES. Below in this readme you might see something lose `errors[]` - this is just a array with strings
 
 `inputFunctionForUse` function for `use` svelte directive on input, to assign its events to validation process
+
+```html
+<input use:inputFunctionForUse />
+<!-- or -->
+<input use:inputFunctionForUse={{ clearErrorsOnEvents, clearErrorsOnEvents }}></input>
+```
+This is the place where `clearErrorsOnEvents` and `clearErrorsOnEvents` options could be overrided
 
 #### createEntryParams
 Check list of types/rules [here](#basic-typesrules)
@@ -188,7 +195,7 @@ By default this function makes subscribe on submit/reset form events for validat
 ```
 As options in use function could be use an object with callbacks.
 
-`onSubmit(submitEvent, errors[])` - every form submit attempt. `errors[]` - array of all errors store values
+`onSubmit(submitEvent, errors[])` - every form submit attempt. `errors[]` - array of all errors store values. Not array of stores, but array of store errors.
 
 `onFail(errors[])` - on every failed validation (when `errors.length > 0`)
 
@@ -216,27 +223,211 @@ Return array of all errors store values
 Manually validate value store
 ```js
 const [ emailErrorsStore, emailValueStore ] = createEntry({ type: 'email' });
-const errors = validateValueStore(emailValueStore);
+const errors = validateValueStore(emailValueStore); // array of string, not errorsStores!!!
 ```
 Returns errors store value
 
-# global level API
+# advanced API
 ```js
 import {
-  addSpy,
   ensureRule,
+  resetRule,
   ensureType,
   resetType,
-  resetRule,
+  addSpy,
   removeSpies
 } from 'svelidation';
 ```
-### `addSpy`
-### `ensureRule`
-### `ensureType`
-### `resetType`
-### `resetRule`
-### `removeSpies`
+### `ensureRule(ruleName: string, ruleFunction)`
+  - `ruleFunction: (value, entryParams): boolean`
+Allows to add your own global (will be available for any type) rules
+```js
+import createValidation, { ensureRule } from 'svelidation';
+const { createEntry, validate } = createValidation();
+
+const myRuleFunction = (value, entryParams) => {
+  // entryParams === { type: 'string'... }
+  // myRule === 'my rule value...'
+  return entryParams.type === 'string';
+}
+
+ensureRule('myRule', myRuleFunction);
+
+const [ stringErrors, stringValue ] = createEntry({
+  type: 'string',
+  myRule: 'my rule value for string'
+});
+
+const [ numberErrors, numberValue ] = createEntry({
+  type: 'number',
+  myRule: 'my rule value for email'
+});
+
+console.log(validate(true)); // [{ number: ['myRule'] }]
+```
+### `resetRule(ruleName?: string)`
+Remove custom rule. If calls without `ruleName` - it will remove all custom global rules
+```js
+import createValidation, { ensureRule, resetRule } from 'svelidation';
+const { createEntry, validate } = createValidation();
+
+ensureRule('myRule', (value, { myRule, type }) => {
+// myRule === 'my rule value...'
+return type === 'string';
+});
+
+const [ numberErrors, numberValue ] = createEntry({
+  type: 'number',
+  myRule: 'my rule value for email'
+});
+
+console.log(validate(true)); // [{ number: ['myRule'] }]
+resetRule('myRule'); // if call function w
+console.log(validate(true)); // [] - there in no rule like myRule, so no validation, no errors
+```
+### `ensureType(typeName: string, typeRules)`
+  - `typeRules: { [key: string]: ruleFunction }`
+    - `ruleFunction: (value, entryParams): boolean`
+
+Extend existed/add new type to validator. In case of creating new type, there is one clause. `typeRules` has to have method named `typeCheck`. This is a basic and required method for every type and it calls everytime we validate type. And if it return `false` - current type validation stops with `typeCheck` error
+```js
+import createValidation, { ensureType } from 'lib/lib';
+const { createEntry, validate, validateValueStore } = createValidation();
+
+ensureType('string', {
+  min: (value, { min }) => {
+    console.log('extended!');
+    return value.length >= min;
+  }
+});
+
+const [ stringErrors, stringValue ] = createEntry({
+  type: 'string',
+  min: 5,
+  value: '1234'
+});
+
+console.log(validateValueStore(stringValue)); // ['min'] +
+
+ensureType('myNewType', {
+  typeCheck: (value) => {
+    return value === 'custom!!!';
+  },
+  anotherRule: (value, { anotherRule }) => {
+    return false;
+  },
+  min: 'string.min' // yes, we can take some existing rules from another types
+});
+
+const [ myErrors, myValue ] = createEntry({
+  type: 'myNewType',
+  anotherRule: 'something',
+  min: 10,
+  value: 'custom!!!'
+});
+
+console.log(validateValueStore(myValue)); // ['anotherRule', 'min']
+```
+### `resetType(typeName?: string)`
+Work same as `resetRule`, but works on type level
+
+~~omg :) I hope noone will need to use methods below~~
+### Ok, so what you are saying? Spies? O_o
+
+Yes. Spies. Spy.
+
+By design, this is a function to observe validation process and get into it, if it needs.
+
+Spy can observe types, global rules, specific rule of type. Spy can observe everything! Literally. Just create a global spy and every validation rule, every type, everything will be in its hands.
+
+You need to know one thing. Spy has god power, but it has to give this power to next spy. And there will always be **next** spy, even if its not a spy.
+
+So, lets dive into examples
+
+### `addSpy(spyFunction, spyParams?): removeSpyFunction`
+Method to add spy in the validation process
+
+  - `spyFunction(value, entryParams, next, abort): errors[]`
+    - `next(nextValue, mixedParams?: entryParamsLike)`
+    - `abort()`
+  - `spyParams?: { ruleName?: string, type?: string }`
+
+```js
+import createValidation, { addSpy } from 'lib/lib';
+const { createEntry, validateValueStore } = createValidation();
+
+const [ stringErrors, stringValue ] = createEntry({
+  type: 'string',
+  value: '...',
+  min: 5,
+  max: 10,
+});
+
+const removeSpy = addSpy((value, params, next, abort) => {
+  console.log('spying!');
+  next(value);
+}, { type: 'string', ruleName: 'min' });
+
+validateValueStore(stringValue);
+// LOG: >> 'spying!'
+```
+
+First of all, take a look at the line with `next(value)` call. This is VERY IMPORTANT LINE in spies paradigm. Remember? Spy has god power, but it has to give this power to next spy. That's.
+
+`next(value, params)` - is the function witch spy have to call with any value spy wants. This new value will be taken next validation rules or another spies. Almost same with the params. This params will be merged with original for next validators.
+
+And it can returns errors, that will be merged with validation errors
+
+```js
+import createValidation, { addSpy, ensureType } from 'lib/lib';
+const { createEntry, validateValueStore } = createValidation();
+
+const [ stringErrors, stringValue ] = createEntry({
+  type: 'string',
+  value: '...',
+  myRule: 'hello'
+});
+
+const removeSpy = addSpy((value, params, next, abort) => {
+  console.log('spying!');
+  next(value, { somethingFromSpy: 'world' });
+  return ['error-from-spy'];
+}, { type: 'string', ruleName: 'myRule' });
+
+ensureType('string', {
+  myRule: (value, { myRule, somethingFromSpy }) => {
+    console.log(myRule, somethingFromSpy); // 'hello', 'world'
+    return false;
+  }
+});
+
+console.log(validateValueStore(stringValue));
+// ["error-from-spy", "myRule"]
+// first is from spy, second from our rule, that always return false
+```
+
+What happens if we will not call `next`? Validation process will stop and return existing errors for the moment.
+
+`abort()` method - its an emergency brake. If it calls - validation stop and return nothing.
+
+And last, but not least `spyParams?: { ruleName?: string, type?: string }`. This is an optional object to describe spy's field of responsibilty.
+  - `{ ruleName: 'min', type: 'string' }` - spy for specific rule in specific type
+  - `{ ruleName: 'match' }` - spy for specific global rule
+  - `{ type: 'array' }` - spy for EVERY rule in specific type
+  - `undefined` - spy will be called for every rule, every type
+
+Last thing about the spies. If you create a spy that will observe `typeCheck` method of any type - remember, that returning an error from that spy will stop current entry validation because typeCheck fails.
+
+To remove your spy - just call `removeSpyFunction` that returns `addSpy` method.
+
+And to remove all spies...
+
+### `removeSpies(params?: { type?: string, ruleName?: string })`
+This is an easy one after `addSpy` :). It just removes all spies depends on params.
+  - `{type: 'string', ruleName: 'min'}` - remove all spies for specific rule in specific type
+  - `{runeName: 'match'}` - remove all spies for specific global rule
+  - `{type: 'string'}` - remove all spies for specific type
+  - `undefined` - remove all spies at all
 
 # scripts
 - `npm run build` - build demo and library files into `dist`
