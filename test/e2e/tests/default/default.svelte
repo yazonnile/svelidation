@@ -2,9 +2,7 @@
   import { getValidation, Form, Entry } from 'helpers/helpers';
 
   const {
-    entries: [
-      [ store, input ]
-    ],
+    entries: [ entry ],
     createForm
   } = getValidation({
     entries: [{
@@ -16,5 +14,5 @@
 </script>
 
 <Form {createForm}>
-  <Entry {store} {input} />
+  <Entry {entry} />
 </Form>

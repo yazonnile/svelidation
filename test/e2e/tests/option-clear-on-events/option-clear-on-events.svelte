@@ -6,37 +6,37 @@
   };
 
   const {
-    entries: [[ defaultStore, defaultInput ]],
+    entries: [defaultEntry],
     createForm: defaultCreateForm
   } = getValidation(getConfig());
 
   const {
-    entries: [[ focusStore, focusInput ]],
+    entries: [focusEntry],
     createForm: focusCreateForm
-  } = getValidation(getConfig({ clearOn: ['focus'] }));
+  } = getValidation(getConfig({ clearErrorsOnEvents:  { focus: true } }));
 
   const {
-    entries: [[ focusChangeResetStore, focusChangeResetInput ]],
+    entries: [focusChangeResetEntry],
     createForm: focusChangeResetCreateForm
-  } = getValidation(getConfig({ clearOn: ['focus', 'change', 'reset'], validateOn: [] }));
+  } = getValidation(getConfig({ clearErrorsOnEvents: { focus: true }, validateOnEvents: null }));
 
   let activeId = 'default';
 </script>
 
 <Slide id="default" bind:activeId>
   <Form createForm={defaultCreateForm}>
-    <Entry store={defaultStore} input={defaultInput} />
+    <Entry entry={defaultEntry} />
   </Form>
 </Slide>
 
 <Slide id="focus" bind:activeId>
   <Form createForm={focusCreateForm}>
-    <Entry store={focusStore} input={focusInput} />
+    <Entry entry={focusEntry} />
   </Form>
 </Slide>
 
 <Slide id="focus-change-reset" bind:activeId>
   <Form createForm={focusChangeResetCreateForm}>
-    <Entry store={focusChangeResetStore} input={focusChangeResetInput} />
+    <Entry entry={focusChangeResetEntry} />
   </Form>
 </Slide>

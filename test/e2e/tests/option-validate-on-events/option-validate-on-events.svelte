@@ -6,37 +6,37 @@
   };
 
   const {
-    entries: [[ defaultStore, defaultInput ]],
+    entries: [defaultEntry],
     createForm: defaultCreateForm
   } = getValidation(getConfig());
 
   const {
-    entries: [[ emptyStore, emptyInput ]],
+    entries: [emptyEntry],
     createForm: emptyCreateForm
-  } = getValidation(getConfig({ validateOn: [] }));
+  } = getValidation(getConfig({ validateOnEvents: null }));
 
   const {
-    entries: [[ blurStore, blurInput ]],
+    entries: [blurEntry],
     createForm: blurCreateForm
-  } = getValidation(getConfig({ validateOn: ['blur'] }));
+  } = getValidation(getConfig({ validateOnEvents: { blur: true }}));
 
   let activeId = 'default';
 </script>
 
 <Slide id="default" bind:activeId>
   <Form createForm={defaultCreateForm}>
-    <Entry store={defaultStore} input={defaultInput} />
+    <Entry entry={defaultEntry} />
   </Form>
 </Slide>
 
 <Slide id="empty" bind:activeId>
   <Form createForm={emptyCreateForm}>
-    <Entry store={emptyStore} input={emptyInput} />
+    <Entry entry={emptyEntry} />
   </Form>
 </Slide>
 
 <Slide id="blur" bind:activeId>
   <Form createForm={blurCreateForm}>
-    <Entry store={blurStore} input={blurInput} />
+    <Entry entry={blurEntry} />
   </Form>
 </Slide>

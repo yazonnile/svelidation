@@ -7,19 +7,19 @@
 
   const {
     entries: [
-      [ visibleFirstStore, visibleFirstInput ],
-      [ visibleSecondStore, visibleSecondInput ],
-      [ visibleThirdStore ],
+      visibleFirstEntry,
+      visibleSecondEntry,
+      visibleThirdEntry,
     ],
     validate, createEntry
   } = getValidation(getConfig(3));
 
-  const [ forthStore ] = createEntry({ type: 'string', min: 4 });
+  const forthEntry = createEntry({ type: 'string', min: 4 });
 </script>
 
-<Entry store={visibleFirstStore} input={visibleFirstInput} />
-<Entry store={visibleSecondStore} input={visibleSecondInput} />
-<Entry store={visibleThirdStore} />
-<Entry store={forthStore} />
+<Entry entry={visibleFirstEntry} />
+<Entry entry={visibleSecondEntry} />
+<Entry entry={visibleThirdEntry} noInput />
+<Entry entry={forthEntry} noInput />
 <button id="primary" on:click={() => validate()}></button>
 <button id="secondary" on:click={() => validate(true)}></button>

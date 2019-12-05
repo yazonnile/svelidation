@@ -24,8 +24,20 @@ export default class FormElement implements SvelidationFormElement {
       }
     };
 
-    this.options.clearOn.forEach(eventName => node.addEventListener(eventName, this.onClear));
-    this.options.validateOn.forEach(eventName => node.addEventListener(eventName, this.onValidate));
+    const { change, blur } = this.options.validateOnEvents;
+    const { focus } = this.options.clearErrorsOnEvents;
+
+    if (change) {
+      node.addEventListener('change', this.onValidate);
+    }
+
+    if (blur) {
+      node.addEventListener('blur', this.onValidate);
+    }
+
+    if (focus) {
+      node.addEventListener('focus', this.onClear);
+    }
   }
 
   setPhase(phase: ListenInputEventsType) {
@@ -46,7 +58,8 @@ export default class FormElement implements SvelidationFormElement {
   }
 
   destroy() {
-    this.options.clearOn.forEach(eventName => this.node.removeEventListener(eventName, this.onClear));
-    this.options.validateOn.forEach(eventName => this.node.removeEventListener(eventName, this.onValidate));
+    this.node.removeEventListener('change', this.onValidate);
+    this.node.removeEventListener('blur', this.onValidate);
+    this.node.removeEventListener('blur', this.onClear);
   }
 }

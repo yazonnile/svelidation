@@ -1,8 +1,8 @@
 import Page, { focus, blur } from 'helpers/page';
 const page = new Page();
 
-fixture `option clearOn`
-  .page `http://localhost:4411/?test=option-clear-on`;
+fixture `option clearErrorsOnEvents`
+  .page `http://localhost:4411/?test=option-clear-on-events`;
 
 test('should work reset only by default', async t => {
   await t

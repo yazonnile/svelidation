@@ -4,8 +4,8 @@ import { ListenInputEventsEnum } from 'lib/typing/typing';
 describe('prepareBaseParams', () => {
   it('should work with any input', () => {
     let options = {
-      validateOn: ['change'],
-      clearOn: ['reset'],
+      validateOnEvents: { change: true },
+      clearErrorsOnEvents: { reset: true },
       listenInputEvents: ListenInputEventsEnum.afterValidation,
       presence: 'optional',
       trim: false

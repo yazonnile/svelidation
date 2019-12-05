@@ -39,7 +39,10 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
     },
     svelte: (type, production) => {
       return require('rollup-plugin-svelte')({
-        dev: !production
+        dev: !production,
+        preprocess: require('svelte-preprocess')({
+          postcss: true
+        })
       });
     },
     liveReload: (type, production) => {

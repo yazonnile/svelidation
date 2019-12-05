@@ -1,8 +1,8 @@
 import Page, { blur } from 'helpers/page';
 const page = new Page();
 
-fixture `option validateOn`
-  .page `http://localhost:4411/?test=option-validate-on`;
+fixture `option validateOnEvents`
+  .page `http://localhost:4411/?test=option-validate-on-events`;
 
 test('should work on input by default', async t => {
   await t

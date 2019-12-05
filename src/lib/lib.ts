@@ -5,8 +5,7 @@ import {
   ListenInputEventsEnum, SvelidationUseInputFunction,
   ListenInputEventsType, SvelidationStoreType
 } from 'lib/typing/typing';
-import updateStoreErrors from 'lib/update-store-errors/update-store-errors';
-import { get, writable } from 'svelte/store';
+import { get, Writable, writable } from 'svelte/store';
 import isFunction from 'lib/is-function/is-function';
 import FormElement from 'lib/form-element/form-element';
 import prepareBaseParams from 'lib/prepare-base-params/prepare-base-params';
@@ -24,31 +23,39 @@ const createValidation = (opts?: SvelidationOptions) => {
   let phase: ListenInputEventsType = ListenInputEventsEnum.never;
   const entries: SvelidationEntry[] = [];
   const options: SvelidationOptions = Object.assign({
-    validateOn: ['change'],
-    clearOn: ['reset'],
     listenInputEvents: ListenInputEventsEnum.afterValidation,
     presence: 'optional',
-    trim: false
+    trim: false,
+    validateOnEvents: {
+      input: false,
+      change: true,
+      blur: false
+    },
+    clearErrorsOnEvents: {
+      focus: false,
+      reset: true
+    }
   }, opts);
 
-  // ensure options as array
-  if (!Array.isArray(options.clearOn)) {
-    options.clearOn = [];
+  if (typeof options.validateOnEvents !== 'object' || options.validateOnEvents === null) {
+    options.validateOnEvents = {};
   }
 
-  if (!Array.isArray(options.validateOn)) {
-    options.validateOn = [];
+  if (typeof options.clearErrorsOnEvents !== 'object' || options.clearErrorsOnEvents === null) {
+    options.clearErrorsOnEvents = {};
   }
 
-  const createEntry = (createEntryParams: SvelidationEntryParams): [SvelidationStoreType, SvelidationUseInputFunction] => {
+  const createEntry = (createEntryParams: SvelidationEntryParams): [Writable<any[]>, Writable<any>, SvelidationUseInputFunction] => {
     const { value = '', ...params } = createEntryParams;
-    const store: SvelidationStoreType = writable({ value, errors: [] });
+    const store: SvelidationStoreType = {
+      errors: writable([]),
+      value: writable(value)
+    };
     const entry: SvelidationEntry = { store, params };
     const useInput: SvelidationUseInputFunction = (inputNode, useOptions) => {
       const formElementOptions = Object.assign({}, options, useOptions, {
-        onClear: () => updateStoreErrors(store, []),
-        onValidate: () => validateStore(store),
-        clearOn: options.clearOn.filter(event => event !== 'reset')
+        onClear: () => store.errors.set([]),
+        onValidate: () => validateValueStore(store.value)
       });
 
       if (!entry.formElements) {
@@ -59,8 +66,22 @@ const createValidation = (opts?: SvelidationOptions) => {
       newElement.setPhase(phase);
       entry.formElements.push(newElement);
 
+      let subscribeEvent = true;
+      const unsubscribe = formElementOptions.validateOnEvents.input && store.value.subscribe(() => {
+        if (subscribeEvent) {
+          subscribeEvent = false;
+          return;
+        }
+
+        validateValueStore(store.value);
+      });
+
       return {
         destroy: () => {
+          if (isFunction(unsubscribe)) {
+            unsubscribe();
+          }
+
           for (let i = 0; i < entry.formElements.length; i++) {
             const formElement = entry.formElements[i];
             if (formElement.node === inputNode) {
@@ -79,7 +100,7 @@ const createValidation = (opts?: SvelidationOptions) => {
 
     entries.push(entry);
 
-    return [ store, useInput ];
+    return [ store.errors, store.value, useInput ];
   };
 
   const createEntries = (data: SvelidationCreateEntriesData) => {
@@ -108,7 +129,7 @@ const createValidation = (opts?: SvelidationOptions) => {
     };
 
     formNode.addEventListener('submit', onSubmit);
-    if (options.clearOn.indexOf('reset') > -1) {
+    if (options.clearErrorsOnEvents.reset) {
       formNode.addEventListener('reset', onReset);
     }
 
@@ -120,14 +141,14 @@ const createValidation = (opts?: SvelidationOptions) => {
     };
   };
 
-  const validateStore = (store: SvelidationStoreType): any[] => {
-    const entry = entries.find(entry => (entry.store === store));
+  const validateValueStore = (value: Writable<any>): any[] => {
+    const entry = entries.find(entry => (entry.store.value === value));
     if (entry) {
-      const { value } = get(store);
+      const value = get(entry.store.value);
       const errors = validateValueByParams(value, prepareBaseParams(entry.params, options));
 
       if (Array.isArray(errors)) {
-        updateStoreErrors(store, errors);
+        entry.store.errors.set(errors);
         return errors;
       }
     }
@@ -138,7 +159,7 @@ const createValidation = (opts?: SvelidationOptions) => {
   const validate = (includeNoFormElements = false): any[] => {
     const errors = entries.reduce((errors, entry) => {
       if (entry.formElements || includeNoFormElements) {
-        const storeErrors = validateStore(entry.store);
+        const storeErrors = validateValueStore(entry.store.value);
         if (storeErrors.length) {
           errors.push({ [entry.params.type]: storeErrors });
         }
@@ -156,7 +177,7 @@ const createValidation = (opts?: SvelidationOptions) => {
   const clearErrors = (includeNoFormElements = false) => {
     entries.forEach(entry => {
       if (entry.formElements || includeNoFormElements) {
-        updateStoreErrors(entry.store, []);
+        entry.store.errors.set([]);
       }
     });
   };
@@ -173,7 +194,7 @@ const createValidation = (opts?: SvelidationOptions) => {
     createEntry,
     createEntries,
     createForm,
-    validateStore,
+    validateValueStore,
     validate,
     clearErrors,
     destroy

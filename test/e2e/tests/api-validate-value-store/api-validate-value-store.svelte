@@ -7,11 +7,11 @@
 
   const {
     entries: [
-      [ visibleSecondStore ],
+      entry,
     ],
-    validateStore
+    validateValueStore
   } = getValidation(getConfig(2));
 </script>
 
-<Entry store={visibleSecondStore} />
-<button id="primary" on:click={() => validateStore(visibleSecondStore)}></button>
+<Entry {entry} noInput />
+<button id="primary" on:click={() => validateValueStore(entry[1])}></button>

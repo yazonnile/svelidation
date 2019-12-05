@@ -6,8 +6,8 @@ describe('form-element', () => {
   let formElement = (phase) => new FormElement(node, {
     onClear() {},
     onValidate() {},
-    validateOn: [],
-    clearOn: [],
+    validateOnEvents: {},
+    clearErrorsOnEvents: {},
     listenInputEvents: phase
   });
 

@@ -6,18 +6,18 @@
   };
 
   const {
-    entries: [[ typeStore, typeInput ]],
+    entries: [typeEntry],
     createForm: typeCreateForm
   } = getValidation(getConfig({ required: true }));
 
   const {
-    entries: [[ minStore, minInput ]],
+    entries: [minEntry],
     createForm: minCreateForm
   } = getValidation(getConfig({ min: 22 }));
 
   const {
-    entries: [[ maxValueStore, maxValueInput ]],
-    createForm: maxValueCreateForm
+    entries: [maxEntry],
+    createForm: maxCreateForm
   } = getValidation(getConfig({ max: 22 }));
 
   let activeId = 'type';
@@ -25,18 +25,18 @@
 
 <Slide id="type" bind:activeId>
   <Form createForm={typeCreateForm}>
-    <Entry store={typeStore} input={typeInput} />
+    <Entry entry={typeEntry} />
   </Form>
 </Slide>
 
 <Slide id="min" bind:activeId>
   <Form createForm={minCreateForm}>
-    <Entry store={minStore} input={minInput} />
+    <Entry entry={minEntry} />
   </Form>
 </Slide>
 
 <Slide id="max" bind:activeId>
-  <Form createForm={maxValueCreateForm}>
-    <Entry store={maxValueStore} input={maxValueInput} />
+  <Form createForm={maxCreateForm}>
+    <Entry entry={maxEntry} />
   </Form>
 </Slide>

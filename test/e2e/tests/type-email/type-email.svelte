@@ -6,7 +6,7 @@
   };
 
   const {
-    entries: [[ typeStore, typeInput ]],
+    entries: [entry],
     createForm: typeCreateForm
   } = getValidation(getConfig());
 
@@ -15,6 +15,6 @@
 
 <Slide id="type" bind:activeId>
   <Form createForm={typeCreateForm}>
-    <Entry store={typeStore} input={typeInput} />
+    <Entry {entry} />
   </Form>
 </Slide>

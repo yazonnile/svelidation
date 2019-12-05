@@ -6,32 +6,32 @@
   };
 
   const {
-    entries: [[ defaultStore, defaultInput ]],
+    entries: [[ defaultErrors, defaultValue, defaultInput ]],
     createForm: defaultCreateForm
   } = getValidation(getConfig());
 
   const {
-    entries: [[ requiredStore, requiredInput ]],
+    entries: [[ requiredErrors, requiredValue, requiredInput ]],
     createForm: requiredCreateForm
   } = getValidation(getConfig({ required: true }));
 
   const {
-    entries: [[ minStore, minInput ]],
+    entries: [[ minErrors, minValue, minInput ]],
     createForm: minCreateForm
   } = getValidation(getConfig({ min: 2 }));
 
   const {
-    entries: [[ maxStore, maxInput ]],
+    entries: [[ maxErrors, maxValue, maxInput ]],
     createForm: maxCreateForm
   } = getValidation(getConfig({ max: 1, required: true }));
 
   const {
-    entries: [[ equalStore, equalInput ]],
+    entries: [[ equalErrors, equalValue, equalInput ]],
     createForm: equalCreateForm
   } = getValidation(getConfig({ equal: [0,2] }));
 
   const {
-    entries: [[ includesStore, includesInput ]],
+    entries: [[ includesErrors, includesValue, includesInput ]],
     createForm: includesCreateForm
   } = getValidation(getConfig({ includes: 1 }));
 
@@ -40,10 +40,10 @@
 
 <Slide id="default" bind:activeId>
   <Form createForm={defaultCreateForm}>
-    <label><input type="checkbox" use:defaultInput bind:group={$defaultStore.value} value={0} /></label>
-    <label><input type="checkbox" use:defaultInput bind:group={$defaultStore.value} value={1} /></label>
-    <label><input type="checkbox" use:defaultInput bind:group={$defaultStore.value} value={2} /></label>
-    {#if $defaultStore.errors.length}
+    <label><input type="checkbox" use:defaultInput bind:group={$defaultValue} value={0} /></label>
+    <label><input type="checkbox" use:defaultInput bind:group={$defaultValue} value={1} /></label>
+    <label><input type="checkbox" use:defaultInput bind:group={$defaultValue} value={2} /></label>
+    {#if $defaultErrors.length}
       <p class="error">error</p>
     {/if}
   </Form>
@@ -51,10 +51,10 @@
 
 <Slide id="required" bind:activeId>
   <Form createForm={requiredCreateForm}>
-    <label><input type="checkbox" use:requiredInput bind:group={$requiredStore.value} value={0} /></label>
-    <label><input type="checkbox" use:requiredInput bind:group={$requiredStore.value} value={1} /></label>
-    <label><input type="checkbox" use:requiredInput bind:group={$requiredStore.value} value={2} /></label>
-    {#if $requiredStore.errors.length}
+    <label><input type="checkbox" use:requiredInput bind:group={$requiredValue} value={0} /></label>
+    <label><input type="checkbox" use:requiredInput bind:group={$requiredValue} value={1} /></label>
+    <label><input type="checkbox" use:requiredInput bind:group={$requiredValue} value={2} /></label>
+    {#if $requiredErrors.length}
       <p class="error">error</p>
     {/if}
   </Form>
@@ -62,10 +62,10 @@
 
 <Slide id="min" bind:activeId>
   <Form createForm={minCreateForm}>
-    <label><input type="checkbox" use:minInput bind:group={$minStore.value} value={0} /></label>
-    <label><input type="checkbox" use:minInput bind:group={$minStore.value} value={1} /></label>
-    <label><input type="checkbox" use:minInput bind:group={$minStore.value} value={2} /></label>
-    {#if $minStore.errors.length}
+    <label><input type="checkbox" use:minInput bind:group={$minValue} value={0} /></label>
+    <label><input type="checkbox" use:minInput bind:group={$minValue} value={1} /></label>
+    <label><input type="checkbox" use:minInput bind:group={$minValue} value={2} /></label>
+    {#if $minErrors.length}
       <p class="error">error</p>
     {/if}
   </Form>
@@ -73,10 +73,10 @@
 
 <Slide id="max" bind:activeId>
   <Form createForm={maxCreateForm}>
-    <label><input type="checkbox" use:maxInput bind:group={$maxStore.value} value={0} /></label>
-    <label><input type="checkbox" use:maxInput bind:group={$maxStore.value} value={1} /></label>
-    <label><input type="checkbox" use:maxInput bind:group={$maxStore.value} value={2} /></label>
-    {#if $maxStore.errors.length}
+    <label><input type="checkbox" use:maxInput bind:group={$maxValue} value={0} /></label>
+    <label><input type="checkbox" use:maxInput bind:group={$maxValue} value={1} /></label>
+    <label><input type="checkbox" use:maxInput bind:group={$maxValue} value={2} /></label>
+    {#if $maxErrors.length}
       <p class="error">error</p>
     {/if}
   </Form>
@@ -84,10 +84,10 @@
 
 <Slide id="equal" bind:activeId>
   <Form createForm={equalCreateForm}>
-    <label><input type="checkbox" use:equalInput bind:group={$equalStore.value} value={0} /></label>
-    <label><input type="checkbox" use:equalInput bind:group={$equalStore.value} value={1} /></label>
-    <label><input type="checkbox" use:equalInput bind:group={$equalStore.value} value={2} /></label>
-    {#if $equalStore.errors.length}
+    <label><input type="checkbox" use:equalInput bind:group={$equalValue} value={0} /></label>
+    <label><input type="checkbox" use:equalInput bind:group={$equalValue} value={1} /></label>
+    <label><input type="checkbox" use:equalInput bind:group={$equalValue} value={2} /></label>
+    {#if $equalErrors.length}
       <p class="error">error</p>
     {/if}
   </Form>
@@ -95,10 +95,10 @@
 
 <Slide id="includes" bind:activeId>
   <Form createForm={includesCreateForm}>
-    <label><input type="checkbox" use:includesInput bind:group={$includesStore.value} value={0} /></label>
-    <label><input type="checkbox" use:includesInput bind:group={$includesStore.value} value={1} /></label>
-    <label><input type="checkbox" use:includesInput bind:group={$includesStore.value} value={2} /></label>
-    {#if $includesStore.errors.length}
+    <label><input type="checkbox" use:includesInput bind:group={$includesValue} value={0} /></label>
+    <label><input type="checkbox" use:includesInput bind:group={$includesValue} value={1} /></label>
+    <label><input type="checkbox" use:includesInput bind:group={$includesValue} value={2} /></label>
+    {#if $includesErrors.length}
       <p class="error">error</p>
     {/if}
   </Form>

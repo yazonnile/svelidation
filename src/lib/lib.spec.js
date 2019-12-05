@@ -11,12 +11,12 @@ describe('lib', () => {
 
   it('constructor', () => {
     instance = createInstance();
-    const { createEntry, createEntries, createForm, validateStore, validate, clearErrors, destroy } = instance;
+    const { createEntry, createEntries, createForm, validateValueStore, validate, clearErrors, destroy } = instance;
 
     expect(createEntry).toBeDefined();
     expect(createEntries).toBeDefined();
     expect(createForm).toBeDefined();
-    expect(validateStore).toBeDefined();
+    expect(validateValueStore).toBeDefined();
     expect(validate).toBeDefined();
     expect(clearErrors).toBeDefined();
     expect(destroy).toBeDefined();
@@ -26,10 +26,10 @@ describe('lib', () => {
     instance = createInstance();
     const { createEntry } = instance;
 
-    const [ withValueStore ] = createEntry({ type: 'number', value: 10 });
-    expect(get(withValueStore).value).toBe(10);
-    const [ store ] = createEntry({ type: 'number' });
-    expect(get(store).value).toBe('');
+    const withValueEntry = createEntry({ type: 'number', value: 10 });
+    expect(get(withValueEntry[1])).toBe(10);
+    const noValueEntry = createEntry({ type: 'number' });
+    expect(get(noValueEntry[1])).toBe('');
   });
 
   describe('createEntries', () => {
@@ -37,98 +37,90 @@ describe('lib', () => {
       instance = createInstance();
       const { createEntries } = instance;
       const [
-        [store1, input1],
-        [store2, input2]
+        entry1,
+        entry2
       ] = createEntries([{ type: 'string', value: '1' }, { type: 'string', value: '2' }]);
-      expect(get(store1).value).toBe('1');
-      expect(get(store2).value).toBe('2');
-      expect(input1).toEqual(jasmine.any(Function));
-      expect(input2).toEqual(jasmine.any(Function));
+      expect(get(entry1[1])).toBe('1');
+      expect(get(entry2[1])).toBe('2');
+      expect(entry1[2]).toEqual(jasmine.any(Function));
+      expect(entry2[2]).toEqual(jasmine.any(Function));
     });
 
     it('object', () => {
       instance = createInstance();
       const { createEntries } = instance;
       const {
-        first: [store1, input1],
-        second: [store2, input2]
+        first: entry1,
+        second: entry2
       } = createEntries({
         first: { type: 'string', value: '1' },
         second: { type: 'string', value: '2' }
       });
-      expect(get(store1).value).toBe('1');
-      expect(get(store2).value).toBe('2');
-      expect(input1).toEqual(jasmine.any(Function));
-      expect(input2).toEqual(jasmine.any(Function));
+      expect(get(entry1[1])).toBe('1');
+      expect(get(entry2[1])).toBe('2');
+      expect(entry1[2]).toEqual(jasmine.any(Function));
+      expect(entry2[2]).toEqual(jasmine.any(Function));
     });
   });
 
-  it('validateStore', () => {
+  it('validateValueStore', () => {
     instance = createInstance();
-    const [ store ] = instance.createEntry({ type: 'email', required: true });
-    spyOn(store, 'update').and.callThrough();
-    expect(instance.validateStore(store));
-    expect(get(store).errors.length).toBe(1);
-    expect(store.update).toHaveBeenCalledTimes(1);
+    const [ errors, value ] = instance.createEntry({ type: 'email', required: true });
+    spyOn(errors, 'set').and.callThrough();
+    expect(instance.validateValueStore(value));
+    expect(get(errors).length).toBe(1);
+    expect(errors.set).toHaveBeenCalledTimes(1);
   });
 
   describe('validate', () => {
-    let store1, store2, input1, input2;
+    let entry1, entry2;
     beforeEach(() => {
       instance = createInstance();
-      const result = instance.createEntries([{ type: 'email', required: true }, { type: 'email', required: true }]);
-      store1 = result[0][0];
-      store2 = result[1][0];
-      input1 = result[0][1];
-      input2 = result[1][1];
-      input1(document.createElement('input'));
+      [ entry1, entry2 ] = instance.createEntries([{ type: 'email', required: true }, { type: 'email', required: true }]);
+      entry1[2](document.createElement('input'));
     });
 
     it('default', () => {
       instance.validate();
-      expect(get(store1).errors.length).toBe(1);
-      expect(get(store2).errors.length).toBe(0);
+      expect(get(entry1[0]).length).toBe(1);
+      expect(get(entry2[0]).length).toBe(0);
     });
 
     it('true', () => {
       instance.validate(true);
-      expect(get(store1).errors.length).toBe(1);
-      expect(get(store2).errors.length).toBe(1);
+      expect(get(entry1[0]).length).toBe(1);
+      expect(get(entry2[0]).length).toBe(1);
     });
   });
 
   describe('clearErrors', () => {
-    let store1, store2, input1, input2;
+    let entry1, entry2;
     beforeEach(() => {
       instance = createInstance();
-      const result = instance.createEntries([{ type: 'email', required: true }, { type: 'email', required: true }]);
-      store1 = result[0][0];
-      store2 = result[1][0];
-      input1 = result[0][1];
-      input2 = result[1][1];
-      input1(document.createElement('input'));
-      spyOn(store1, 'update').and.callThrough();
-      spyOn(store2, 'update').and.callThrough();
+      [ entry1, entry2 ] = instance.createEntries([{ type: 'email', required: true }, { type: 'email', required: true }]);
+      entry1[2](document.createElement('input'));
+      spyOn(entry1[0], 'set').and.callThrough();
+      spyOn(entry2[0], 'set').and.callThrough();
     });
 
     it('default', () => {
       instance.validate(true);
       instance.clearErrors();
 
-      expect(get(store1).errors.length).toBe(0);
-      expect(get(store2).errors.length).toBe(1);
-      expect(store1.update).toHaveBeenCalledTimes(2);
-      expect(store2.update).toHaveBeenCalledTimes(1);
+      expect(get(entry1[0]).length).toBe(0);
+      expect(get(entry2[0]).length).toBe(1);
+      expect(entry1[0].set).toHaveBeenCalledTimes(2);
+      expect(entry2[0].set).toHaveBeenCalledTimes(1);
     });
 
     it('true', () => {
       instance.validate(true);
       instance.clearErrors(true);
 
-      expect(get(store1).errors.length).toBe(0);
-      expect(get(store2).errors.length).toBe(0);
-      expect(store1.update).toHaveBeenCalledTimes(2);
-      expect(store2.update).toHaveBeenCalledTimes(2);
+      expect(get(entry1[0]).length).toBe(0);
+      expect(get(entry2[0]).length).toBe(0);
+      expect(entry1[0].set).toHaveBeenCalledTimes(2);
+      expect(entry2[0].set).toHaveBeenCalledTimes(2);
     });
   });
 });

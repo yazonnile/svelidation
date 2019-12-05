@@ -7,7 +7,7 @@ import {
   resetRule
 } from './types';
 
-describe('validator types', () => {
+describe('types', () => {
   beforeEach(() => {
     resetRule();
     resetType();
@@ -85,7 +85,7 @@ describe('validator types', () => {
     describe('number', () => {
       it('typeCheck', () => {
         const { typeCheck } = getType('number');
-        expect(typeCheck('')).toBeFalse();
+        expect(typeCheck('')).toBeTrue();
         expect(typeCheck(undefined)).toBeFalse();
         expect(typeCheck(null)).toBeFalse();
         expect(typeCheck('null')).toBeFalse();

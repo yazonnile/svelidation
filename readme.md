@@ -57,17 +57,17 @@ Check this and more on the [demo page](http://yazonnile.github.io/svelidation/)
 ```js
 // default values
 createSvelidation({
-  validateOn: ['change'],
-  clearOn: ['reset'],
+  validateOnEvents: { change: true },
+  clearErrorsOnEvents: { reset: true },
   listenInputEvents: 2,
   presence: 'optional',
   trim: false
 });
 ```
-- `validateOn: string[]`
+- `validateOnEvents: { [key: string]: boolean }`
   - array of input events to validate input value
 
-- `clearOn: string[]`
+- `clearErrorsOnEvents: { [key: string]: boolean }`
   - array of input and form events to clear errors. All events except `reset` will be applied to input. `reset` to form 
 
 - `listenInputEvents: number`
@@ -83,7 +83,7 @@ createSvelidation({
   - allow validator trim textual values before check
   - *(!!!) it doesn't trim value itself, just for check*
   
-Use `validateOn`, `clearOn` and `listenInputEvents` options to be more precise in validation behavior
+Use `validateOnEvents`, `clearErrorsOnEvents` and `listenInputEvents` options to be more precise in validation behavior
 
 `presence` and `trim` as validation options could be overrides by any input for itself 
 
@@ -94,7 +94,7 @@ const {
   createEntry,
   createEntries,
   createForm,
-  validateStore,
+  validateValueStore,
   validate,
   clearErrors,
   destroy
@@ -103,7 +103,7 @@ const {
   - createEntry
   - createEntries
   - createForm
-  - validateStore
+  - validateValueStore
   - validate
   - clearErrors
   - destroy

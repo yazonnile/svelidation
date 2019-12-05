@@ -3,16 +3,16 @@ import createValidation from 'dist';
 export default ({
   entries,
   options = {},
-  validateOn
+  validateOnEvents
 }) => {
-  if (typeof validateOn !== 'undefined') {
-    options.vaidateOn = validateOn;
+  if (typeof validateOnEvents !== 'undefined') {
+    options.validateOnEvents = validateOnEvents;
   }
 
-  const { createForm, validate, clearErrors, validateStore, createEntry, createEntries } = createValidation(options);
+  const { createForm, validate, clearErrors, validateValueStore, createEntry, createEntries } = createValidation(options);
 
   return {
     entries: createEntries(entries),
-    createForm, validate, clearErrors, validateStore, createEntry
+    createForm, validate, clearErrors, validateValueStore, createEntry
   }
 }

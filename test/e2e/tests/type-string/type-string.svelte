@@ -6,12 +6,12 @@
   };
 
   const {
-    entries: [[ minStore, minInput ]],
+    entries: [minEntry],
     createForm: minCreateForm
   } = getValidation(getConfig({ min: 2 }));
 
   const {
-    entries: [[ maxStore, maxInput ]],
+    entries: [maxEntry],
     createForm: maxCreateForm
   } = getValidation(getConfig({ max: 6 }));
 
@@ -20,12 +20,12 @@
 
 <Slide id="min" bind:activeId>
   <Form createForm={minCreateForm}>
-    <Entry store={minStore} input={minInput} />
+    <Entry entry={minEntry} />
   </Form>
 </Slide>
 
 <Slide id="max" bind:activeId>
   <Form createForm={maxCreateForm}>
-    <Entry store={maxStore} input={maxInput} />
+    <Entry entry={maxEntry} />
   </Form>
 </Slide>

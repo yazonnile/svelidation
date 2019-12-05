@@ -113,12 +113,12 @@ const installType = {
   },
 
   number: () => {
-    ensureType<number>('number', {
+    ensureType<number|string>('number', {
       typeCheck: (value) => (
-        typeof value === 'number' || !isNaN(parseFloat(value))
+        typeof value === 'number' || (typeof value === 'string' && (value === '' || !isNaN(parseFloat(value))))
       ),
-      min: (value, { min }) => (parseFloat(value as any) >= min),
-      max: (value, { max }) => (parseFloat(value as any) <= max),
+      min: (value, { min }) => (parseFloat(value as string) >= min),
+      max: (value, { max }) => (parseFloat(value as string) <= max),
     });
   },
 

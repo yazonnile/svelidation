@@ -7,23 +7,24 @@
 
   const {
     entries: [
-      [ visibleFirstStore, visibleFirstInput ],
-      [ visibleSecondStore, visibleSecondInput ],
-      [ visibleThirdStore ],
-      [ forthStore ],
+      visibleFirstEntry,
+      visibleSecondEntry,
+      visibleThirdEntry,
+      forthEntry,
     ],
-    createForm, clearErrors, validateStore
+    createForm, clearErrors, validateValueStore
   } = getValidation(getConfig(4));
 
-  validateStore(forthStore);
+  validateValueStore(forthEntry[1]);
+  let errors = forthEntry[0];
 </script>
 
 <Form {createForm}>
-  <Entry store={visibleFirstStore} input={visibleFirstInput} />
-  <Entry store={visibleSecondStore} input={visibleSecondInput} />
-  <Entry store={visibleThirdStore} />
+  <Entry entry={visibleFirstEntry} />
+  <Entry entry={visibleSecondEntry} />
+  <Entry entry={visibleThirdEntry} noInput />
 </Form>
-{#if $forthStore.errors.length}
+{#if $errors.length}
   <p id="forth-error"></p>
 {/if}
 <button id="primary" on:click={() => clearErrors()}></button>

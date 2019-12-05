@@ -6,22 +6,22 @@
   };
 
   const {
-    entries: [[ defaultStore, defaultInput ]],
+    entries: [defaultEntry],
     createForm: defaultCreateForm
   } = getValidation(getConfig());
 
   const {
-    entries: [[ trueStore, trueInput ]],
+    entries: [trueEntry],
     createForm: trueCreateForm
   } = getValidation(getConfig({ trim: true }));
 
   const {
-    entries: [[ falseStore, falseInput ]],
+    entries: [falseEntry],
     createForm: falseCreateForm
   } = getValidation(getConfig({ trim: false }));
 
   const {
-    entries: [[ mix1Store, mix1Input ], [ mix2Store, mix2Input ]],
+    entries: [mix1Entry, mix2Entry],
     createForm: mixCreateForm
   } = getValidation({
     entries: [{ type: 'string', min: 5 }, { type: 'string', trim: false, min: 5}],
@@ -33,25 +33,25 @@
 
 <Slide id="default" bind:activeId>
   <Form createForm={defaultCreateForm}>
-    <Entry store={defaultStore} input={defaultInput} />
+    <Entry entry={defaultEntry} />
   </Form>
 </Slide>
 
 <Slide id="true" bind:activeId>
   <Form createForm={trueCreateForm}>
-    <Entry store={trueStore} input={trueInput} />
+    <Entry entry={trueEntry} />
   </Form>
 </Slide>
 
 <Slide id="false" bind:activeId>
   <Form createForm={falseCreateForm}>
-    <Entry store={falseStore} input={falseInput} />
+    <Entry entry={falseEntry} />
   </Form>
 </Slide>
 
 <Slide id="mix" bind:activeId>
   <Form createForm={mixCreateForm}>
-    <Entry store={mix1Store} input={mix1Input} />
-    <Entry store={mix2Store} input={mix2Input} />
+    <Entry entry={mix1Entry} />
+    <Entry entry={mix2Entry} />
   </Form>
 </Slide>

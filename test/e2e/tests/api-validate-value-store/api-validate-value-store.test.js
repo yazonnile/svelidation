@@ -1,8 +1,8 @@
 import Page from 'helpers/page';
 const page = new Page();
 
-fixture `api validateStore`
-  .page `http://localhost:4411/?test=api-validate-store`;
+fixture `api validateValueStore`
+  .page `http://localhost:4411/?test=api-validate-value-store`;
 
 test('should validate store without submit', async t => {
   await t

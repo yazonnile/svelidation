@@ -6,12 +6,12 @@
   };
 
   const {
-    entries: [[ defaultStore, defaultInput ]],
+    entries: [defaultEntry],
     createForm: defaultCreateForm
   } = getValidation(getConfig());
 
   const {
-    entries: [[ requiredStore, requiredInput ]],
+    entries: [requiredEntry],
     createForm: requiredCreateForm
   } = getValidation(getConfig({ required: true }));
 
@@ -20,12 +20,12 @@
 
 <Slide id="default" bind:activeId>
   <Form createForm={defaultCreateForm}>
-    <Entry type="boolean" store={defaultStore} input={defaultInput} />
+    <Entry type="boolean" entry={defaultEntry} />
   </Form>
 </Slide>
 
 <Slide id="required" bind:activeId>
   <Form createForm={requiredCreateForm}>
-    <Entry type="boolean" store={requiredStore} input={requiredInput} />
+    <Entry type="boolean" entry={requiredEntry} />
   </Form>
 </Slide>

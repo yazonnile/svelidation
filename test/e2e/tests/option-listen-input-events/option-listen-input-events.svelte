@@ -7,17 +7,17 @@
   };
 
   const {
-    entries: [[ defaultStore, defaultInput ]],
+    entries: [defaultEntry],
     createForm: defaultCreateForm
   } = getValidation(getConfig());
 
   const {
-    entries: [[ neverStore, neverInput ]],
+    entries: [neverEntry],
     createForm: neverCreateForm
   } = getValidation(getConfig({ listenInputEvents: ListenInputEventsEnum.never }));
 
   const {
-    entries: [[ alwaysStore, alwaysInput ]],
+    entries: [alwaysEntry],
     createForm: alwaysCreateForm
   } = getValidation(getConfig({ listenInputEvents: ListenInputEventsEnum.always }));
 
@@ -26,18 +26,18 @@
 
 <Slide id="default" bind:activeId>
   <Form createForm={defaultCreateForm}>
-    <Entry store={defaultStore} input={defaultInput} />
+    <Entry entry={defaultEntry} />
   </Form>
 </Slide>
 
 <Slide id="never" bind:activeId>
   <Form createForm={neverCreateForm}>
-    <Entry store={neverStore} input={neverInput} />
+    <Entry entry={neverEntry} />
   </Form>
 </Slide>
 
 <Slide id="always" bind:activeId>
   <Form createForm={alwaysCreateForm}>
-    <Entry store={alwaysStore} input={alwaysInput} />
+    <Entry entry={alwaysEntry} />
   </Form>
 </Slide>

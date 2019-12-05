@@ -26,8 +26,8 @@ export enum SvelidationPresence {
 }
 
 export interface SvelidationOptions {
-  validateOn?: string[];
-  clearOn?: string[];
+  validateOnEvents?: { [key: string]: boolean };
+  clearErrorsOnEvents?: { [key: string]: boolean };
   listenInputEvents?: ListenInputEventsType;
   presence?: SvelidationPresence.required | SvelidationPresence.optional,
   trim?: boolean
@@ -49,12 +49,10 @@ export interface SvelidationFormElementOptions extends SvelidationOptions {
   onValidate: () => void;
 }
 
-export interface SvelidationStoreObject {
-  value: any;
-  errors: any[];
-}
-
-export type SvelidationStoreType = Writable<SvelidationStoreObject>;
+export type SvelidationStoreType = {
+  errors: Writable<any[]>,
+  value: Writable<any>
+};
 
 export interface SvelidationEntry {
   store: SvelidationStoreType;

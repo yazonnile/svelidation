@@ -6,17 +6,17 @@
   };
 
   const {
-    entries: [[ optionalStore, optionalInput ]],
+    entries: [optionalEntry],
     createForm: optionalCreateForm
   } = getValidation(getConfig({ min: 2 }));
 
   const {
-    entries: [[ matchStore, matchInput ]],
+    entries: [matchEntry],
     createForm: matchCreateForm
   } = getValidation(getConfig({ match: /testmatch/ }));
 
   const {
-    entries: [[ equalStore, equalInput ]],
+    entries: [equalEntry],
     createForm: equalCreateForm
   } = getValidation(getConfig({ equal: 'hello' }));
 
@@ -25,18 +25,18 @@
 
 <Slide id="optional" bind:activeId>
   <Form createForm={optionalCreateForm}>
-    <Entry store={optionalStore} input={optionalInput} />
+    <Entry entry={optionalEntry} />
   </Form>
 </Slide>
 
 <Slide id="match" bind:activeId>
   <Form createForm={matchCreateForm}>
-    <Entry store={matchStore} input={matchInput} />
+    <Entry entry={matchEntry} />
   </Form>
 </Slide>
 
 <Slide id="equal" bind:activeId>
   <Form createForm={equalCreateForm}>
-    <Entry store={equalStore} input={equalInput} />
+    <Entry entry={equalEntry} />
   </Form>
 </Slide>
