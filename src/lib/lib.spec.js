@@ -5,13 +5,9 @@ describe('lib', () => {
   const createInstance = opts => createValidation(opts);
   let instance;
 
-  afterEach(() => {
-    instance.destroy();
-  });
-
   it('constructor', () => {
     instance = createInstance();
-    const { createEntry, createEntries, createForm, validateValueStore, validate, clearErrors, destroy } = instance;
+    const { createEntry, createEntries, createForm, validateValueStore, validate, clearErrors } = instance;
 
     expect(createEntry).toBeDefined();
     expect(createEntries).toBeDefined();
@@ -19,7 +15,6 @@ describe('lib', () => {
     expect(validateValueStore).toBeDefined();
     expect(validate).toBeDefined();
     expect(clearErrors).toBeDefined();
-    expect(destroy).toBeDefined();
   });
 
   it('createEntry', () => {

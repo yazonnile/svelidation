@@ -12,12 +12,6 @@ var SvelidationPresence;
     SvelidationPresence["optional"] = "optional";
 })(SvelidationPresence || (SvelidationPresence = {}));
 
-var updateStoreErrors = (store, errors = []) => {
-    store.update(value => {
-        return { ...value, errors };
-    });
-};
-
 var isFunction = (f) => {
     return typeof f === 'function';
 };
@@ -37,8 +31,17 @@ class FormElement {
                 this.options.onValidate();
             }
         };
-        this.options.clearOn.forEach(eventName => node.addEventListener(eventName, this.onClear));
-        this.options.validateOn.forEach(eventName => node.addEventListener(eventName, this.onValidate));
+        const { change, blur } = this.options.validateOnEvents;
+        const { focus } = this.options.clearErrorsOnEvents;
+        if (change) {
+            node.addEventListener('change', this.onValidate);
+        }
+        if (blur) {
+            node.addEventListener('blur', this.onValidate);
+        }
+        if (focus) {
+            node.addEventListener('focus', this.onClear);
+        }
     }
     setPhase(phase) {
         this.currentPhase = phase;
@@ -54,8 +57,9 @@ class FormElement {
         return this.currentPhase < initialPhase;
     }
     destroy() {
-        this.options.clearOn.forEach(eventName => this.node.removeEventListener(eventName, this.onClear));
-        this.options.validateOn.forEach(eventName => this.node.removeEventListener(eventName, this.onValidate));
+        this.node.removeEventListener('change', this.onValidate);
+        this.node.removeEventListener('blur', this.onValidate);
+        this.node.removeEventListener('blur', this.onClear);
     }
 }
 
@@ -216,7 +220,7 @@ const installType = {
     },
     number: () => {
         ensureType('number', {
-            typeCheck: (value) => (typeof value === 'number' || !isNaN(parseFloat(value))),
+            typeCheck: (value) => (typeof value === 'number' || (typeof value === 'string' && (value === '' || !isNaN(parseFloat(value))))),
             min: (value, { min }) => (parseFloat(value) >= min),
             max: (value, { max }) => (parseFloat(value) <= max),
         });
@@ -233,14 +237,24 @@ const installType = {
             required: (value) => value.length > 0,
             min: (value, { min }) => value.length >= min,
             max: (value, { max }) => value.length <= max,
-            equal: (value, { equal }) => value.sort().toString() === equal.sort().toString(),
+            equal: (value, { equal }) => {
+                if (isFunction(equal)) {
+                    return equal(value);
+                }
+                return value.sort().toString() === equal.sort().toString();
+            },
             includes: (value, { includes }) => value.includes(includes)
         });
     },
 };
 const installRule = {
     equal: () => {
-        ensureRule('equal', (value, { equal }) => (value === equal));
+        ensureRule('equal', (value, { equal }) => {
+            if (isFunction(equal)) {
+                return equal(value);
+            }
+            return value === equal;
+        });
     },
     match: () => {
         ensureRule('match', (value, { match }) => !!(String(value)).match(match));
@@ -376,28 +390,37 @@ const createValidation = (opts) => {
     let phase = ListenInputEventsEnum.never;
     const entries = [];
     const options = Object.assign({
-        validateOn: ['change'],
-        clearOn: ['reset'],
         listenInputEvents: ListenInputEventsEnum.afterValidation,
         presence: 'optional',
-        trim: false
+        trim: false,
+        includeAllEntries: false,
+        validateOnEvents: {
+            input: false,
+            change: true,
+            blur: false
+        },
+        clearErrorsOnEvents: {
+            focus: false,
+            reset: true
+        }
     }, opts);
-    // ensure options as array
-    if (!Array.isArray(options.clearOn)) {
-        options.clearOn = [];
+    if (typeof options.validateOnEvents !== 'object' || options.validateOnEvents === null) {
+        options.validateOnEvents = {};
     }
-    if (!Array.isArray(options.validateOn)) {
-        options.validateOn = [];
+    if (typeof options.clearErrorsOnEvents !== 'object' || options.clearErrorsOnEvents === null) {
+        options.clearErrorsOnEvents = {};
     }
     const createEntry = (createEntryParams) => {
         const { value = '', ...params } = createEntryParams;
-        const store = writable({ value, errors: [] });
+        const store = {
+            errors: writable([]),
+            value: writable(value)
+        };
         const entry = { store, params };
         const useInput = (inputNode, useOptions) => {
             const formElementOptions = Object.assign({}, options, useOptions, {
-                onClear: () => updateStoreErrors(store, []),
-                onValidate: () => validateStore(store),
-                clearOn: options.clearOn.filter(event => event !== 'reset')
+                onClear: () => store.errors.set([]),
+                onValidate: () => validateValueStore(store.value)
             });
             if (!entry.formElements) {
                 entry.formElements = [];
@@ -405,8 +428,23 @@ const createValidation = (opts) => {
             const newElement = new FormElement(inputNode, formElementOptions);
             newElement.setPhase(phase);
             entry.formElements.push(newElement);
+            let subscribeEvent = true;
+            const unsubscribe = formElementOptions.validateOnEvents.input && store.value.subscribe(() => {
+                if (subscribeEvent) {
+                    subscribeEvent = false;
+                    return;
+                }
+                if (phase === ListenInputEventsEnum.always
+                    || phase !== ListenInputEventsEnum.never
+                    || phase > options.listenInputEvents) {
+                    validateValueStore(store.value);
+                }
+            });
             return {
                 destroy: () => {
+                    if (isFunction(unsubscribe)) {
+                        unsubscribe();
+                    }
                     for (let i = 0; i < entry.formElements.length; i++) {
                         const formElement = entry.formElements[i];
                         if (formElement.node === inputNode) {
@@ -422,7 +460,7 @@ const createValidation = (opts) => {
             };
         };
         entries.push(entry);
-        return [store, useInput];
+        return [store.errors, store.value, useInput];
     };
     const createEntries = (data) => {
         if (Array.isArray(data)) {
@@ -450,7 +488,7 @@ const createValidation = (opts) => {
             }
         };
         formNode.addEventListener('submit', onSubmit);
-        if (options.clearOn.indexOf('reset') > -1) {
+        if (options.clearErrorsOnEvents.reset) {
             formNode.addEventListener('reset', onReset);
         }
         return {
@@ -460,13 +498,13 @@ const createValidation = (opts) => {
             }
         };
     };
-    const validateStore = (store) => {
-        const entry = entries.find(entry => (entry.store === store));
+    const validateValueStore = (value) => {
+        const entry = entries.find(entry => (entry.store.value === value));
         if (entry) {
-            const { value } = get(store);
+            const value = get(entry.store.value);
             const errors = validate(value, prepareBaseParams(entry.params, options));
             if (Array.isArray(errors)) {
-                updateStoreErrors(store, errors);
+                entry.store.errors.set(errors);
                 return errors;
             }
         }
@@ -474,8 +512,8 @@ const createValidation = (opts) => {
     };
     const validate$1 = (includeNoFormElements = false) => {
         const errors = entries.reduce((errors, entry) => {
-            if (entry.formElements || includeNoFormElements) {
-                const storeErrors = validateStore(entry.store);
+            if (entry.formElements || includeNoFormElements || options.includeAllEntries) {
+                const storeErrors = validateValueStore(entry.store.value);
                 if (storeErrors.length) {
                     errors.push({ [entry.params.type]: storeErrors });
                 }
@@ -488,15 +526,8 @@ const createValidation = (opts) => {
     };
     const clearErrors = (includeNoFormElements = false) => {
         entries.forEach(entry => {
-            if (entry.formElements || includeNoFormElements) {
-                updateStoreErrors(entry.store, []);
-            }
-        });
-    };
-    const destroy = () => {
-        entries.forEach(entry => {
-            if (entry.formElements) {
-                entry.formElements.forEach(formElement => formElement.destroy());
+            if (entry.formElements || includeNoFormElements || options.includeAllEntries) {
+                entry.store.errors.set([]);
             }
         });
     };
@@ -504,10 +535,9 @@ const createValidation = (opts) => {
         createEntry,
         createEntries,
         createForm,
-        validateStore,
+        validateValueStore,
         validate: validate$1,
         clearErrors,
-        destroy
     };
 };
 

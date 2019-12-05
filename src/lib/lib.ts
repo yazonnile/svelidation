@@ -1,9 +1,14 @@
 import {
-  SvelidationCreateEntriesData, SvelidationEntry,
-  SvelidationEntryParams, SvelidationFormEvents,
-  SvelidationOptions, SvelidationUseFunctionReturn,
-  ListenInputEventsEnum, SvelidationUseInputFunction,
-  ListenInputEventsType, SvelidationStoreType
+  ListenInputEventsEnum,
+  ListenInputEventsType,
+  SvelidationCreateEntriesData,
+  SvelidationEntry,
+  SvelidationEntryParams,
+  SvelidationFormEvents,
+  SvelidationOptions,
+  SvelidationStoreType,
+  SvelidationUseFunctionReturn,
+  SvelidationUseInputFunction
 } from 'lib/typing/typing';
 import { get, Writable, writable } from 'svelte/store';
 import isFunction from 'lib/is-function/is-function';
@@ -74,7 +79,11 @@ const createValidation = (opts?: SvelidationOptions) => {
           return;
         }
 
-        validateValueStore(store.value);
+        if (phase === ListenInputEventsEnum.always
+          || phase !== ListenInputEventsEnum.never
+          || phase > options.listenInputEvents) {
+          validateValueStore(store.value);
+        }
       });
 
       return {
@@ -183,14 +192,6 @@ const createValidation = (opts?: SvelidationOptions) => {
     });
   };
 
-  const destroy = () => {
-    entries.forEach(entry => {
-      if (entry.formElements) {
-        entry.formElements.forEach(formElement => formElement.destroy());
-      }
-    });
-  };
-
   return {
     createEntry,
     createEntries,
@@ -198,7 +199,6 @@ const createValidation = (opts?: SvelidationOptions) => {
     validateValueStore,
     validate,
     clearErrors,
-    destroy
   }
 };
 

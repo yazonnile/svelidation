@@ -32,12 +32,13 @@ const [ errorsStore, valueStore, useInput ] = createEntry({
   <button type="submit">Submit</button>
 </form>
 ```
-Check this and more on the [demo page](http://yazonnile.github.io/svelidation/)
+Check more examples on the [demo page](http://yazonnile.github.io/svelidation/)
 
 # install
 `npm i -S svelidation`
 
 # basic types/rules
+Combination of type/rules are using in [here](#createEntryParams)
 - `string` type
   - `{ type: 'string', min: 3 }`
   - `{ type: 'string', max: 3 }`
@@ -94,6 +95,7 @@ createSvelidation({
 
 - `presence: string`
   - Default inputs presence. If we set it to `required` - all inputs will be validated as required by default
+  - This options equals `optional` by default, this means that all fields in validation are optional and will be validated in case of having value, or having another validation rules
 
 - `trim: boolean`
   - allow validator trim textual values before check
@@ -115,16 +117,108 @@ const {
   validateValueStore,
   validate,
   clearErrors,
-  destroy
 } = createSvelidation();
 ```
- ## createEntry
-  - createEntries
-  - createForm
-  - validateValueStore
-  - validate
-  - clearErrors
-  - destroy
+
+### `createEntry`
+Create validation entry
+```js
+const [ errorsStore, valueStore, inputFunctionForUse ] = createEntry(createEntryParams);
+```
+
+`errorsStore`, `valueStore` used for bind errors and value store in templates
+
+`inputFunctionForUse` function for `use` svelte directive on input, to assign its events to validation process
+
+#### createEntryParams
+Check list of types/rules [here](#basic-typesrules)
+
+```js
+// createEntryParams
+{
+  type, // required
+  value, // initial value, required for some types of fields
+
+  // other rules, like min/max/required...
+
+  trim, // works like trim option for createSvelidation function, but on input level
+  required,
+  optional // makes possible to override presence option of createSvelidation function
+}
+```
+
+
+### `createEntries`
+Additional way to create a few entries at the time
+```js
+const {
+  first: [firstErrorsStore, firstValueStore, firstInput],
+  second: [secondErrorsStore, secondValueStore, secondInput]
+} = createEntries({
+  first: {
+    // createEntryParams
+  },
+  second: {
+    // createEntryParams
+  },
+})
+```
+```js
+const [
+  [firstErrorsStore, firstValueStore, firstInput],
+  [secondErrorsStore, secondValueStore, secondInput]
+] = createEntries([
+  {
+    // createEntryParams
+  }, {
+    // createEntryParams
+  },
+])
+```
+
+### `createForm`
+
+Function for form `use`
+
+By default this function makes subscribe on submit/reset form events for validation/clearErrors
+```html
+<form use:createForm></form>
+<!-- or -->
+<form use:createForm={{ onSubmit, onFail, onSuccess }}></form>
+```
+As options in use function could be use an object with callbacks.
+
+`onSubmit(submitEvent, errors[])` - every form submit attempt. `errors[]` - array of all errors store values
+
+`onFail(errors[])` - on every failed validation (when `errors.length > 0`)
+
+`onSuccess()` - when there aren't any errors
+
+### `clearErrors`
+Manually clear all errors stores
+```js
+clearErrors(includeNoFormElements = false);
+```
+Only argument same as in [validate](#validate)
+
+### `validate`
+Manually validate stores
+```js
+const allErrors = validate(includeNoFormElements = false);
+```
+Only argument makes possible to validate all created entries.
+
+Without arguments it will validate only inputs assigned to nodes with `inputFunctionForUse` ([check here](#createEntry))
+
+Return array of all errors store values
+
+### `validateValueStore`
+Manually validate value store
+```js
+const [ emailErrorsStore, emailValueStore ] = createEntry({ type: 'email' });
+const errors = validateValueStore(emailValueStore);
+```
+Returns errors store value
 
 # global level API
 ```js
@@ -137,11 +231,12 @@ import {
   removeSpies
 } from 'svelidation';
 ```
-  - addSpy
-  - ensureRule, ensureType
-  - resetType, resetRule
-  - removeSpies
-
+### `addSpy`
+### `ensureRule`
+### `ensureType`
+### `resetType`
+### `resetRule`
+### `removeSpies`
 
 # scripts
 - `npm run build` - build demo and library files into `dist`
