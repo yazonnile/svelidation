@@ -10,7 +10,7 @@
   const { createEntry: createEntry2, createForm: createForm2 } = createValidation({ validateOnEvents: { input: true } });
   const [ errors, value, input ] = createEntry1({
     type: 'array',
-    required: true,
+    min: 2,
     value: []
   });
 
@@ -25,7 +25,7 @@
   <h1>array checkbox</h1>
   <Code html={`const [ errors, value, input ] = createEntry({
   type: 'array',
-  required: true,
+  min: 2,
   value: []
 });`} />
   <Code html={`&lt;input use:input bind:group={$value} value={1} type="checkbox" /> First option
@@ -37,7 +37,7 @@
     <label><input use:input bind:group={$value} value={2} class="input-choice" type="checkbox" /> Second option</label>
     <label><input use:input bind:group={$value} value={3} class="input-choice" type="checkbox" /> Third option</label>
   </Cells>
-  <Error {errors} errorCode="required" errorText="Pick something please" />
+  <Error {errors} errorCode="min" errorText="Pick at least 2, please" />
 </Form>
 <Form createForm={createForm2}>
   <h1>array select</h1>

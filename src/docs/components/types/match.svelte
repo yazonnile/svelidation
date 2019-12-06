@@ -19,7 +19,7 @@
   <Code html={`&lt;input use:input bind:value={$value} />
 {#if $errors.includes('match')}Should start from 'A' letter and ends with 'B' letter{/if}`} />
   <Row labelText="Type something like AxxxxxxB">
-    <input use:input bind:value={$value} class="input-text" type="text" />
+    <input use:input bind:value={$value} class="input-text" type="text" placeholder="type: 'string', match: /^A.*B$/" />
     <Error {errors} errorCode="match" errorText="Should start from 'A' letter and ends with 'B' letter" />
   </Row>
 </Form>

@@ -19,7 +19,7 @@
   <Code html={`&lt;input use:input bind:value={$value} />
 {#if $errors.includes('equal')}Should be equal to 'qwerty'{/if}`} />
   <Row labelText="Type 'qwerty'">
-    <input use:input bind:value={$value} class="input-text" type="text" />
+    <input use:input bind:value={$value} class="input-text" type="text" placeholder="type: 'string', equal: 'qwerty'" />
     <Error {errors} errorCode="equal" errorText="Should be equal to 'qwerty'" />
   </Row>
 </Form>

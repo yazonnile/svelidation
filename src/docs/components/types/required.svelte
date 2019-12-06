@@ -29,12 +29,12 @@ const [ errors, value, input ] = createEntry({
 &lt;input use:input bind:value={$value} type="email" />
 {#if $errors.includes('typeCheck')}Use valid email{/if}`} />
   <Row labelText="Type your email (required)">
-    <input use:inputRequired bind:value={$valueRequired} class="input-text" type="email" />
+    <input use:inputRequired bind:value={$valueRequired} class="input-text" type="email" placeholder="type: 'email', required: true" />
     <Error errors={errorsRequired} errorCode="typeCheck" errorText="Use valid email" />
     <Error errors={errorsRequired} errorCode="required" />
   </Row>
   <Row labelText="Type your email (optional)">
-    <input use:input bind:value={$value} class="input-text" type="email" />
+    <input use:input bind:value={$value} class="input-text" type="email" placeholder="type: 'email'" />
     <Error {errors} errorCode="typeCheck" errorText="Use valid email" />
   </Row>
 </Form>

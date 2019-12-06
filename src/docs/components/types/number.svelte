@@ -37,7 +37,7 @@
   Not for boomers!
 {/if}`} />
   <Row labelText="Type your age #1">
-    <input use:inputMin bind:value={$valueMin} class="input-text" type="number" />
+    <input use:inputMin bind:value={$valueMin} class="input-text" type="number" placeholder="type: 'number', min: 18, required: true" />
     {#if $errorsMin.includes('required')}
       <Error errors={errorsMin} errorCode="required" />
     {:else}
@@ -45,7 +45,7 @@
     {/if}
   </Row>
   <Row labelText="Type your age #2">
-    <input use:inputMax bind:value={$valueMax} class="input-text" type="number" />
+    <input use:inputMax bind:value={$valueMax} class="input-text" type="number" placeholder="type: 'number', max: 18, required: true" />
     {#if $errorsMax.includes('required')}
       <Error errors={errorsMin} errorCode="required" />
     {:else}

@@ -38,13 +38,13 @@
 {#if $errorsF2.includes('equal')}Should be equal with second one{/if}`} />
   <Row>
     Type your password
-    <input use:inputF1 bind:value={$valueF1} class="input-text" type="password" />
+    <input use:inputF1 bind:value={$valueF1} class="input-text" type="password" placeholder="type: 'string', min: 6, match: /d+/" />
     <Error errors={errorsF1} errorCode="min" errorText="At least 6 symbols" />
     <Error errors={errorsF1} errorCode="match" errorText="Use at one digit" />
   </Row>
   <Row>
     Confirm your password
-    <input use:inputF2 bind:value={$valueF2} class="input-text" type="password" />
+    <input use:inputF2 bind:value={$valueF2} class="input-text" type="password" placeholder="type: 'string', required: true, equal: function" />
     <Error errors={errorsF2} errorCode="required" />
     <Error errors={errorsF2} errorCode="equal" errorText="Should be equal with second one" />
   </Row>

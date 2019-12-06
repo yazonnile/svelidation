@@ -19,6 +19,10 @@
     margin-bottom: 10px;
   }
 
+  .row:last-child {
+    margin-bottom: 0;
+  }
+
   label {
     display: block;
   }

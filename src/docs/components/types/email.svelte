@@ -19,7 +19,7 @@
   <Code html={`&lt;input use:input bind:value={$value} />
 {#if $errors.includes('typeCheck')}Use valid email{/if}`} />
   <Row labelText="Type your email">
-    <input use:input bind:value={$value} class="input-text" type="email" />
+    <input use:input bind:value={$value} class="input-text" type="email" placeholder="type: 'email', required: true" />
     <Error {errors} errorCode="typeCheck" errorText="Use valid email" />
   </Row>
 </Form>

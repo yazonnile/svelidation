@@ -1,6 +1,6 @@
 <script>
   import { fade } from 'svelte/transition';
-  import Editor from './editor.svelte';
+  import Editor from './editor/editor.svelte';
   import String from './components/types/string.svelte';
   import Email from './components/types/email.svelte';
   import Number from './components/types/number.svelte';
@@ -12,7 +12,7 @@
   import ArraySumOfPoints from './components/advanced/array-sum-of-points.svelte';
   import FieldConfirm from './components/advanced/field-confirm.svelte';
 
-  let barId = 2;
+  let barId = 1;
   let pageId = barId;
   let transitionActive = false;
 
@@ -29,10 +29,9 @@
 </a>
 
 <div class="tabs">
-  <button class:tabs--active={pageId === 0} class="tabs--button" on:click={() => switchPages(0)} disabled={pageId === 0}>Simple</button>
-  <button class:tabs--active={pageId === 1} class="tabs--button" on:click={() => switchPages(1)} disabled={pageId === 1}>Advanced</button>
-  <button class:tabs--active={pageId === 2} class="tabs--button" on:click={() => switchPages(2)} disabled={pageId === 2}>Editor</button>
-  <i class="tabs--bar" style={`left: ${100 * barId / 3}%`}></i>
+  <button class:tabs--active={pageId === 0} class="tabs--button" on:click={() => switchPages(0)} disabled={pageId === 0}>Examples</button>
+  <button class:tabs--active={pageId === 1} class="tabs--button" on:click={() => switchPages(1)} disabled={pageId === 1}>Editor</button>
+  <i class="tabs--bar" style={`transform: translateX(${100 * barId}%)`}></i>
 </div>
 
 {#if !transitionActive}
@@ -49,7 +48,6 @@
       <Required />
       <Match />
       <Equal />
-    {:else if pageId === 1}
       <ArraySumOfPoints />
       <FieldConfirm />
     {:else}
@@ -70,10 +68,11 @@
   .tabs--bar {
     background: var(--mainColor);
     height: 5px;
+    left: 0;
     position: absolute;
     top: 100%;
-    transition: left .5s cubic-bezier(0.86, 0, 0.07, 1);
-    width: 33.333%;
+    transition: transform .5s cubic-bezier(0.86, 0, 0.07, 1);
+    width: 50%;
   }
 
   .tabs--button {
@@ -145,7 +144,7 @@
 
   .input-text,
   select {
-    border: 1px solid var(--greyLight);
+    border: 1px solid #333;
     border-radius: 3px;
     font-size: 14px;
     height: 40px;
