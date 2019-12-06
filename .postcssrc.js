@@ -7,7 +7,7 @@ module.exports = {
     },
     'postcss-custom-properties': {
       preserve: false,
-      importFrom: path.resolve(__dirname, 'src/docs/variables.css')
+      importFrom: path.resolve(__dirname, 'src/docs/ui/variables.css')
     }
   }
 };

@@ -37,7 +37,7 @@ Check more examples on the [demo page](http://yazonnile.github.io/svelidation/)
 # install
 `npm i -S svelidation`
 
-# basic types/rules
+# basic types
 Combination of type/rules is using in [here](#createEntryParams)
 - `string` type
   - `{ type: 'string', min: 3 }`
@@ -60,7 +60,7 @@ Combination of type/rules is using in [here](#createEntryParams)
   - `{ type: 'array', includes: 3 }`
    - check array includes element
 
-- global rules
+# global rules
   - `equal` - equality with value (in case of array it sort and stringify it), could take a function as equal value
   - `{ type: 'string', equal: 'my-custrom-string' }`
   - `{ type: 'string', equal: value => (value === myFunction()) }`

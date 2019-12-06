@@ -1,18 +1,18 @@
 <script>
   import { fade } from 'svelte/transition';
-  import Editor from './editor/editor.svelte';
-  import String from './components/types/string.svelte';
-  import Email from './components/types/email.svelte';
-  import Number from './components/types/number.svelte';
-  import Boolean from './components/types/boolean.svelte';
-  import Array from './components/types/array.svelte';
-  import Required from './components/types/required.svelte';
-  import Match from './components/types/match.svelte';
-  import Equal from './components/types/equal.svelte';
-  import ArraySumOfPoints from './components/advanced/array-sum-of-points.svelte';
-  import FieldConfirm from './components/advanced/field-confirm.svelte';
+  import Editor from './builder/builder.svelte';
+  import String from './examples/string.svelte';
+  import Email from './examples/email.svelte';
+  import Number from './examples/number.svelte';
+  import Boolean from './examples/boolean.svelte';
+  import Array from './examples/array.svelte';
+  import Required from './examples/required.svelte';
+  import Match from './examples/match.svelte';
+  import Equal from './examples/equal.svelte';
+  import ArraySumOfPoints from './examples/array-sum-of-points.svelte';
+  import FieldConfirm from './examples/field-confirm.svelte';
 
-  let barId = 1;
+  let barId = 0;
   let pageId = barId;
   let transitionActive = false;
 
@@ -29,8 +29,8 @@
 </a>
 
 <div class="tabs">
-  <button class:tabs--active={pageId === 0} class="tabs--button" on:click={() => switchPages(0)} disabled={pageId === 0}>Examples</button>
-  <button class:tabs--active={pageId === 1} class="tabs--button" on:click={() => switchPages(1)} disabled={pageId === 1}>Editor</button>
+  <button class="tabs--button" on:click={() => switchPages(0)} disabled={pageId === 0}>Examples</button>
+  <button class="tabs--button" on:click={() => switchPages(1)} disabled={pageId === 1}>Editor</button>
   <i class="tabs--bar" style={`transform: translateX(${100 * barId}%)`}></i>
 </div>
 
@@ -58,6 +58,8 @@
 
 
 <style global>
+  @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+
   .tabs {
     border-bottom: 5px solid var(--mainColorLight);
     display: flex;
@@ -92,7 +94,7 @@
   }
 
   .tabs--button:disabled {
-    color: inherit;
+    color: var(--mainColor);
   }
 
   .logo {
@@ -125,21 +127,12 @@
   }
 
   h1 {
+    color: var(--mainColor);
     font-size: 24px;
     line-height: 28px;
-    margin-bottom: 1em;
-  }
-
-  mark, pre {
-    background: #ddd;
-    border-radius: 3px;
-    font-weight: normal;
-    font-family: monospace;
-    padding: 0 5px;
-  }
-
-  pre {
-    padding: 5px 10px;
+    margin-bottom: .5em;
+    overflow: hidden;
+    text-transform: uppercase;
   }
 
   .input-text,
@@ -160,9 +153,46 @@
     padding: 5px;
   }
 
+  .input-text:focus,
+  select:focus {
+    border-color: var(--mainColor);
+    box-shadow: 0 0 3px var(--mainColor);
+  }
+
   .input-choice {
     display: inline-block;
     margin: 4px 10px 0 0;
     vertical-align: top;
+  }
+
+  .cells {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    align-items: flex-start;
+    padding: 10px;
+    justify-content: center;
+  }
+
+  .cells > * {
+    background: #fff;
+    border: 1px solid var(--grey);
+    box-shadow: 0 0 5px var(--grey);
+    border-radius: 3px;
+    cursor: pointer;
+    margin: 0 5px 10px;
+    overflow: hidden;
+    padding: 5px;
+    text-align: center;
+    width: 150px;
+  }
+
+  .cells input {
+    display: block;
+    margin: 0 auto 5px;
+  }
+
+  code {
+    outline: 0;
   }
 </style>

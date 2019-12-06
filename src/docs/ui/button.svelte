@@ -1,18 +1,10 @@
 <script>
-  export let labelText = '';
-  export let buttons = false;
+  export let type = 'button';
 </script>
 
-<div class="row">
-  {#if !buttons}
-    <label>
-      <span class="label">{labelText}</span>
-      <slot />
-    </label>
-  {:else}
-    <button type="submit">validate</button>
-  {/if}
-</div>
+<button {type} on:click>
+  <slot>validate</slot>
+</button>
 
 <style>
   .row {
@@ -28,12 +20,15 @@
   }
 
   button {
-    background: none;
-    border: 1px solid var(--mainColorLight);
+    background: var(--mainColorLight);
     border-radius: 3px;
+    border: 1px solid var(--grey);
+    box-shadow: 0 0 5px var(--grey);
+    color: inherit;
     cursor: pointer;
     height: 40px;
     font-size: inherit;
+    font-weight: bold;
     margin-right: 5px;
     line-height: 28px;
     outline: 0;
@@ -42,6 +37,6 @@
   }
 
   button:hover {
-    border-color: var(--mainColor);
+    background-color: #fff;
   }
 </style>
