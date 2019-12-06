@@ -40,37 +40,36 @@ Check more examples on the [demo page](http://yazonnile.github.io/svelidation/)
 # basic types
 Combination of type/rules is using in [here](#createEntryParams)
 ## `string`
+check string length
   - `{ type: 'string', min: 3 }`
   - `{ type: 'string', max: 3 }`
   - `{ type: 'string', between: [4, 10] }`
-    - rules to check string length
 ## `email`
   - `{ type: 'email' }`
 ## `number`
+check number value
   - `{ type: 'number', min: 3 }`
   - `{ type: 'number', max: 3 }`
   - `{ type: 'number', between: [4, 10] }`
-    - rules to check number value
 ## `boolean`
   - `{ type: 'boolean' }`
 ## `array`
+check array length and specific element
   - `{ type: 'array', min: 3 }`
   - `{ type: 'array', max: 3 }`
-    - rules to check array length value
   - `{ type: 'array', includes: 3 }`
-    - check array includes element
 
 # global rules
 ## `equal`
+equality with value (in case of array it sorta and stringifies it), could take a function as equal value
   - `{ type: 'string', equal: 'my-custrom-string' }`
   - `{ type: 'string', equal: value => (value === myFunction()) }`
-    - equality with value (in case of array it sort and stringify it), could take a function as equal value
 ## `match`
+match textual value form by regExp
   - `{ type: 'number', match: '202\d' }`
-    - match textual value form by regExp
 ## `required`
+check value exists
   - `{ type: 'email', required: true }`
-    - check value exists
 
 # options
 ```js
