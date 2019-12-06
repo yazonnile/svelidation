@@ -39,35 +39,38 @@ Check more examples on the [demo page](http://yazonnile.github.io/svelidation/)
 
 # basic types
 Combination of type/rules is using in [here](#createEntryParams)
-- `string` type
+## `string`
   - `{ type: 'string', min: 3 }`
   - `{ type: 'string', max: 3 }`
   - `{ type: 'string', between: [4, 10] }`
-  - rules to check string length
-- `email` type
+    - rules to check string length
+## `email`
   - `{ type: 'email' }`
-- `number` type
+## `number`
   - `{ type: 'number', min: 3 }`
   - `{ type: 'number', max: 3 }`
   - `{ type: 'number', between: [4, 10] }`
-  - rules to check number value
-- `boolean` type
+    - rules to check number value
+## `boolean`
   - `{ type: 'boolean' }`
-- `array` type
+## `array`
   - `{ type: 'array', min: 3 }`
   - `{ type: 'array', max: 3 }`
-  - rules to check array length value
+    - rules to check array length value
   - `{ type: 'array', includes: 3 }`
-   - check array includes element
+    - check array includes element
 
 # global rules
-  - `equal` - equality with value (in case of array it sort and stringify it), could take a function as equal value
+## `equal`
   - `{ type: 'string', equal: 'my-custrom-string' }`
   - `{ type: 'string', equal: value => (value === myFunction()) }`
-  - `match` - match textual value form by regExp
+    - equality with value (in case of array it sort and stringify it), could take a function as equal value
+## `match`
   - `{ type: 'number', match: '202\d' }`
-  - `required` - check value exists
+    - match textual value form by regExp
+## `required`
   - `{ type: 'email', required: true }`
+    - check value exists
 
 # options
 ```js
