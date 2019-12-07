@@ -2,6 +2,8 @@
 
 Easily customizable library for `validation` scenarios in `svelte` components
 
+![NPM](https://img.shields.io/npm/l/svelidation) ![npm](https://img.shields.io/npm/v/svelidation)
+
 # Quick example
 ```js
 import createSvelidation from 'svelidation';
