@@ -12,7 +12,7 @@
   import ArraySumOfPoints from './examples/array-sum-of-points.svelte';
   import FieldConfirm from './examples/field-confirm.svelte';
 
-  let barId = 1;
+  let barId = 0;
   let pageId = barId;
   let transitionActive = false;
 

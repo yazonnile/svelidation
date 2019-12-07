@@ -5878,7 +5878,7 @@ function create_fragment$h(ctx) {
 }
 
 function instance$g($$self, $$props, $$invalidate) {
-	let barId = 1;
+	let barId = 0;
 	let pageId = barId;
 	let transitionActive = false;
 
