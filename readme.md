@@ -1,260 +1,453 @@
 ![Svelidation](https://svgshare.com/i/GUq.svg)
 
-Easily customizable library for `validation` scenarios in `svelte` components 
+Easily customizable library for `validation` scenarios in `svelte` components
 
-## Quick example
+# Quick example
 ```js
-import Svelidation from 'svelidation';
+import createSvelidation from 'svelidation';
 
 // 1. create an instance
-const validation = new Svelidation();
-const { createForm } = validation;
+const { createForm, createEntry } = createSvelidation();
 
 // 2. create a validation model
-const [ loginStore, loginInput ] = validation.createEntry({
+const [ errorsStore, valueStore, useInput ] = createEntry({
   type: 'string',
-  minLength: 3,
-  maxLength: 15
+  min: 3,
+  max: 15
 });
 ```
 ```html
 <!-- 3. use it in template  -->
 <form use:createForm>
-  <input type="text" use:loginInput bind:value={$loginStore.value} />
+  <input type="text" use:useInput bind:value={$valueStore} />
 
-  {#if $loginStore.errors.includes('minLength')}
+  {#if $errorsStore.includes('min')}
     Login should be at least 3 symbols long
   {/if}
 
-  {#if $loginStore.errors.includes('maxLength')}
+  {#if $errorsStore.includes('max')}
     Login should be not longer than 15 symbols
   {/if}
 
   <button type="submit">Submit</button>
 </form>
 ```
-Check this and more on the [demo page](http://yazonnile.github.io/svelidation/)
+Check more examples on the [demo page](http://yazonnile.github.io/svelidation/)
 
-## Install
+# install
 `npm i -S svelidation`
 
-## Class options (all options are optional)
+# basic types
+Combination of type/rules is using in [here](#createEntryParams)
+## `string`
+check string length
+  - `{ type: 'string', min: 3 }`
+  - `{ type: 'string', max: 3 }`
+  - `{ type: 'string', between: [4, 10] }`
+## `email`
+  - `{ type: 'email' }`
+## `number`
+check number value
+  - `{ type: 'number', min: 3 }`
+  - `{ type: 'number', max: 3 }`
+  - `{ type: 'number', between: [4, 10] }`
+## `boolean`
+  - `{ type: 'boolean' }`
+## `array`
+check array length and specific element
+  - `{ type: 'array', min: 3 }`
+  - `{ type: 'array', max: 3 }`
+  - `{ type: 'array', includes: 3 }`
+
+# global rules
+## `equal`
+equality with value (in case of array it sorta and stringifies it), could take a function as equal value
+  - `{ type: 'string', equal: 'my-custrom-string' }`
+  - `{ type: 'string', equal: value => (value === myFunction()) }`
+## `match`
+match textual value form by regExp
+  - `{ type: 'number', match: '202\d' }`
+## `required`
+check value exists
+  - `{ type: 'email', required: true }`
+
+# options
 ```js
-new Svelidation({
-  validateOn,
-  clearOn,
-  inputValidationPhase
+// default values
+createSvelidation({
+  validateOnEvents: { change: true, input: false, blur: false },
+  clearErrorsOnEvents: { reset: true, focus: false },
+  listenInputEvents: 2,
+  presence: 'optional',
+  trim: false,
+  includeAllEntries: false
 });
 ```
-`validateOn (string[]: ['change'])`: array of input events to validate input value
+- `validateOnEvents: { [key: string]: boolean }`
+  - object of input events to validate input value
+  - possible events: `change`, `input`, `blur`
 
-`clearOn (string[]: ['reset'])`: array of input and form events to clear errors. All events except `reset` will be applied to input. `reset` to form 
+- `clearErrorsOnEvents: { [key: string]: boolean }`
+  - object of events to clear errors
+  - possible events: `reset`, `focus`
 
-`inputValidationPhase (number: 0)`: specific option for control input events
-  - `0`: dont allow input events
-  - `1`: allow input events always
-  - `2`: allow input events after first form validation
-    
-#### Example #1
-Inputs will remove errors on focus and validate value on blur only after first form validation. Form `reset` has no effect to errors
+- `listenInputEvents: number`
+  - specific option for control input events
+    - `0`: dont allow input events
+    - `1`: allow input events always
+    - `2`: allow input events after first validation run
+
+- `presence: string`
+  - Default inputs presence. If we set it to `required` - all inputs will be validated as required by default
+  - This options equals `optional` by default, this means that all fields in validation are optional and will be validated in case of having value, or having another validation rules
+
+- `trim: boolean`
+  - allow validator trim textual values before check
+  - *(!!!) it doesn't trim value itself, just for check purpose*
+
+- `includeAllEntries: boolean`
+  - By default validation works for entries that were assigned with inputs by `use` svelte directive. This option makes possible to validate ALL entries in validation
+
+
+`validateOnEvents`, `clearErrorsOnEvents`, `presence` and `trim` behavior could be overrided by any input for itself ([check here](#createEntry))
+
+# validation level API
 ```js
-new Svelidation({
-  validateOn: ['blur'],
-  clearOn: ['focus']
-});
+import createSvelidation from 'svelidation';
+const {
+  createEntry,
+  createEntries,
+  createForm,
+  validateValueStore,
+  validate,
+  clearErrors,
+} = createSvelidation();
 ```
-    
-#### Example #2
-Inputs events will not affect validation, but `reset` form event will
+
+### `createEntry`
+Create validation entry
 ```js
-new Svelidation({
-  inputValidationPhase: 0
-});
+const [ errorsStore, valueStore, inputFunctionForUse ] = createEntry(createEntryParams);
 ```
 
-## Validators
- - `base`
-   - optional
-   - match
-   - equal
- - `string` extends `base`
-   - type
-   - minLength
-   - maxLength
- - `number` extends `base`
-   - type
-   - minValue
-   - maxValue
- - `email` extends `base`
-   - type
+`errorsStore`, `valueStore` used for bind errors and value stores in templates. One more time. THIS IS SVELTE STORES. You might see something like `errors[]` below in this readme - this is just a array with strings
 
-## API
+`inputFunctionForUse` function for `use` svelte directive on input, to assign its events to validation process
 
-### `this.createEntry`
+```html
+<input use:inputFunctionForUse />
+<!-- or -->
+<input use:inputFunctionForUse={{ clearErrorsOnEvents, clearErrorsOnEvents }}></input>
+```
+This is the place where `clearErrorsOnEvents` and `clearErrorsOnEvents` options could be overrided for specific input
+
+#### createEntryParams
+Check list of types/rules [here](#basic-typesrules)
+
 ```js
-const instance = new Svelidation();
-const [ store, inputFunctionForUse ] = instance.createEntry({
+// createEntryParams
+{
   type, // required
-  
-  minLength,
-  maxLength,
-  minValue,
-  maxValue,
-  match,
-  equal,
+  value, // initial value, required for some types of fields
 
-  optional,
-  trim,
-  value,
-})
+  // other rules, like min/max/required...
+
+  trim, // works like trim option for createSvelidation function, but on input level
+  required,
+  optional // makes possible to override presence option of createSvelidation function
+}
 ```
-`type (string)`: specific validator name (`string`, `number`, `email`). The only required param
 
-`maxLength | minLength (number)`: `string` specific rules for value length 
 
-`maxValue | minValue (number)`: `number` specific rules for value
-
-`match (regExp)`
-
-`equal (any)`
-
-`optional (boolean)`: is field optional. If optional and empty - it is valid.
-
-`trim (boolean)`: does validation need to trim value before check
-
-`value (string)`: initial value of input
-
-### `this.createEntries`
+### `createEntries`
 Additional way to create a few entries at the time
 ```js
-const instance = new Svelidation();
 const {
-  first: [firstStore, firstInput],
-  second: [secondStore, secondInput]
-} = instance.createEntries({
+  first: [firstErrorsStore, firstValueStore, firstInput],
+  second: [secondErrorsStore, secondValueStore, secondInput]
+} = createEntries({
   first: {
-    // createEntry params
+    // createEntryParams
   },
   second: {
-    // createEntry params
+    // createEntryParams
   },
 })
 ```
 ```js
-const instance = new Svelidation();
 const [
-  [firstStore, firstInput],
-  [secondStore, secondInput]
-] = instance.createEntries([
+  [firstErrorsStore, firstValueStore, firstInput],
+  [secondErrorsStore, secondValueStore, secondInput]
+] = createEntries([
   {
-    // createEntry params
+    // createEntryParams
   }, {
-    // createEntry params
+    // createEntryParams
   },
 ])
 ```
 
-### `this.createForm`
+### `createForm`
+
 Function for form `use`
-```js
-const instance = new Svelidation();
-const { createForm } = instance;
-```
+
+This function makes subscribe on submit/reset form events for validation/clearErrors by default
 ```html
 <form use:createForm></form>
 <!-- or -->
 <form use:createForm={{ onSubmit, onFail, onSuccess }}></form>
 ```
-Callbacks for form validation on submit 
+An object with callbacks could be used as param in `use` function
 
-`onSubmit(submitEvent, errors[])`
+`onSubmit(submitEvent, errors[])` - every form submit attempt. `errors[]` - array of all errors store values. Not array of stores, but array of store errors.
 
-`onFail(errors[])`
+`onFail(errors[])` - on every failed validation (when `errors.length > 0`)
 
-`onSuccess()`
+`onSuccess()` - when there aren't any errors
 
-### `this.validate`
+### `clearErrors`
+Manually clear all errors stores
+```js
+clearErrors(includeNoFormElements = false);
+```
+Only argument same as in [validate](#validate)
+
+### `validate: allValidationErrors[]`
 Manually validate stores
 ```js
-const instance = new Svelidation();
-instance.validate(); // just input used stores
-instance.validate(true); // all stores
+const allErrors = validate(includeNoFormElements = false);
 ```
+Only argument makes possible to validate all created entries.
 
-### `this.clearErrors`
-Clear errors in stores
+Without this params validation will check inputs assigned to nodes only (`inputFunctionForUse` ([check here](#createEntry)))
+
+Return array of all errors store values
+
+### `validateValueStore: errors[]`
+Manually validate value store
 ```js
-const instance = new Svelidation();
-instance.clearErrors(); // just input based stores
-instance.clearErrors(true); // all stores
+const [ emailErrorsStore, emailValueStore ] = createEntry({ type: 'email' });
+const errors = validateValueStore(emailValueStore); // array of string, not errorsStores!!!
 ```
+Returns errors store value
 
-### `this.validateStore`
-Manually validate store
+# advanced API
 ```js
-const instance = new Svelidation();
-const [ emailStore ] = instance.createEntry({ type: 'email' });
-instance.validateStore(emailStore);
+import {
+  ensureRule,
+  resetRule,
+  ensureType,
+  resetType,
+  addSpy,
+  removeSpies
+} from 'svelidation';
 ```
-
-## Advanced API
-Add custom or modify current validators
-### `addValidator`
+### `ensureRule(ruleName: string, ruleFunction)`
+  - `ruleFunction: (value, entryParams): boolean`
+Allows to add your own global (will be available for any type) rules
 ```js
-import Validation, { StringType, BaseType, addValidator } from 'svelidation';
+import createValidation, { ensureRule } from 'svelidation';
+const { createEntry, validate } = createValidation();
 
-addValidator('newTypeByRule', class extends StringType {
-  newTypeParamRule() {
-    return this.getValue() === this.params.newTypeParam;
+const myRuleFunction = (value, entryParams) => {
+  // entryParams === { type: 'string'... }
+  // entryParams.myRule === 'my rule value...'
+  return entryParams.type === 'string';
+}
+
+ensureRule('myRule', myRuleFunction);
+
+const [ stringErrors, stringValue ] = createEntry({
+  type: 'string',
+  myRule: 'my rule value for string'
+});
+
+const [ numberErrors, numberValue ] = createEntry({
+  type: 'number',
+  myRule: 'my rule value for email'
+});
+
+console.log(validate(true)); // [{ number: ['myRule'] }]
+```
+### `resetRule(ruleName?: string)`
+Remove custom rule. If calls without `ruleName` - it will remove all custom global rules
+```js
+import createValidation, { ensureRule, resetRule } from 'svelidation';
+const { createEntry, validate } = createValidation();
+
+ensureRule('myRule', (value, { myRule, type }) => {
+  // myRule === 'my rule value...'
+  return type === 'string';
+});
+
+const [ numberErrors, numberValue ] = createEntry({
+  type: 'number',
+  myRule: 'my rule value for email'
+});
+
+console.log(validate(true)); // [{ number: ['myRule'] }]
+resetRule('myRule');
+console.log(validate(true)); // [] - there in no rule like myRule, so no validation, no errors
+```
+### `ensureType(typeName: string, typeRules)`
+  - `typeRules: { [key: string]: ruleFunction }`
+    - `ruleFunction: (value, entryParams): boolean`
+
+Extend existing/add new type to validator. In case of creating new type, there is one clause. `typeRules` has to have method named `typeCheck`. This is a basic and required method for every type and it calls everytime we validate type. And if it return `false` - current entry validation stops with `typeCheck` error
+```js
+import createValidation, { ensureType } from 'svelidation';
+const { createEntry, validate, validateValueStore } = createValidation();
+
+// extend existing type with custom rule
+ensureType('string', {
+  between5and10: (value) => {
+    console.log('extended!');
+    return value.length >= 5 && value.length <= 10;
   }
 });
 
-addValidator('newTypeByType', class extends BaseType {
-  typeValidation() {
-    return super.typeValidation(/AAA/);
+const [ stringErrors, stringValue ] = createEntry({
+  type: 'string',
+  between5and10: true,
+  value: 'asdf'
+});
+
+console.log(validateValueStore(stringValue)); // ['between5and10']
+
+// create new type with its own rules
+ensureType('myNewType', {
+  typeCheck: (value) => {
+    return value === 'custom!!!';
+  },
+  anotherRule: (value, { anotherRule }) => {
+    return false;
+  },
+  min: 'string.min' // yes, we can take some existing rules from another types
+});
+
+const [ myErrors, myValue ] = createEntry({
+  type: 'myNewType',
+  anotherRule: 'something',
+  min: 10,
+  value: 'custom!!!'
+});
+
+console.log(validateValueStore(myValue)); // ['anotherRule', 'min']
+```
+### `resetType(typeName?: string)`
+Work same as `resetRule`, but on the type level
+
+~~omg :) I hope noone will need to use methods below~~
+### Ok, so what you are saying? Spies? O_o
+
+Yes. Spies. Spy.
+
+By design, this is a function to observe validation process and get into it, if it needs.
+
+Spy can observe types, global rules, specific rule of type. Spy can observe everything! Literally. Just create a global spy and every validation rule, every type, everything will be in its hands.
+
+You need to know one thing. Spy has god power, but it has to give this power to the next spy. And there will always be **next** spy, even if its not a spy, but rule.
+
+So, lets dive into examples
+
+### `addSpy(spyFunction, spyParams?): removeSpyFunction`
+Method to add spy in the validation process
+
+  - `spyFunction(value, entryParams, next, abort): errors[]`
+    - `next(nextValue, mixedParams?: entryParamsLike)`
+    - `abort()`
+  - `spyParams?: { ruleName?: string, type?: string }`
+
+```js
+import createValidation, { addSpy } from 'svelidation';
+const { createEntry, validateValueStore } = createValidation();
+
+const [ stringErrors, stringValue ] = createEntry({
+  type: 'string',
+  value: '...',
+  min: 5,
+  max: 10,
+});
+
+const removeSpy = addSpy((value, params, next, abort) => {
+  console.log('spying!');
+  next(value);
+}, { type: 'string', ruleName: 'min' });
+
+validateValueStore(stringValue);
+// LOG: >> 'spying!'
+```
+
+First of all, take a look at the line with `next(value)` call. This is VERY IMPORTANT LINE in spies paradigm. Remember? Spy has god power, but it has to give this power to next spy. This.
+
+`next(value, params)` - is the function witch spy have to call with any value spy wants. This new value will be taken next validation rules or another spies. Almost same with the params. This params will be merged with original for next validators.
+
+And it can returns errors, that will be merged with validation errors
+
+```js
+import createValidation, { addSpy, ensureType } from 'svelidation';
+const { createEntry, validateValueStore } = createValidation();
+
+const [ stringErrors, stringValue ] = createEntry({
+  type: 'string',
+  value: '...',
+  myRule: 'hello'
+});
+
+const removeSpy = addSpy((value, params, next, abort) => {
+  console.log('spying!');
+  next(value, { somethingFromSpy: 'world' });
+  return ['error-from-spy'];
+}, { type: 'string', ruleName: 'myRule' });
+
+ensureType('string', {
+  myRule: (value, { myRule, somethingFromSpy }) => {
+    console.log(myRule, somethingFromSpy); // 'hello', 'world'
+    return false;
   }
 });
 
-const validation = new Validation();
-const { createForm } = validation;
-
-const [ firstStore, firstInput ] = validation.createEntry({
-  type: 'newTypeByRule',
-  newTypeParam: 'AAA'
-});
-
-const [ secondStore, secondInput ] = validation.createEntry({
-  type: 'newTypeByType'
-});
-```
-```html
-<form use:createForm>
-  <h1>Custom example</h1>
-  <label>
-    Type 'AAA' (by rule)
-    <input type="email" use:firstInput bind:value={$firstStore.value} />
-    {#if $firstStore.errors.includes('newTypeParam')}
-      <p class="error">OMG, you've messed up</p>
-    {/if}
-  </label>
-  <label>
-    Type 'AAA' (by type)
-    <input type="email" use:secondInput bind:value={$secondStore.value} />
-    {#if $secondStore.errors.includes('type')}
-      <p class="error">OMG, you've messed up</p>
-    {/if}
-  </label>
-  <button type="submit">submit</button>
-</form>
+console.log(validateValueStore(stringValue));
+// ["error-from-spy", "myRule"]
+// first is from spy, second from our rule, that always return false
 ```
 
-## `npm scripts`
+What happens if we will not call `next`? Validation process will stop and return existing errors for the moment.
+
+`abort()` method - its an emergency brake. If it calls - validation stop and return nothing.
+
+And last, but not least `spyParams?: { ruleName?: string, type?: string }`. This is an optional object to describe spy's field of responsibilty.
+  - `{ ruleName: 'min', type: 'string' }` - spy for specific rule in specific type
+  - `{ ruleName: 'match' }` - spy for specific rule (global and from type)
+  - `{ type: 'array' }` - spy for EVERY rule in specific type
+  - `undefined` - spy will be called for every rule, every type
+
+Last thing about the spies. If you create a spy that will observe `typeCheck` method of any type - remember, that returning an error from that spy will stop current entry validation because `typeCheck` fails.
+
+To remove your spy - just call `removeSpyFunction` that returns `addSpy` method.
+
+And to remove all spies...
+
+### `removeSpies(params?: { type?: string, ruleName?: string })`
+This is an easy one after `addSpy` :). It just removes all spies depends on params.
+  - `{type: 'string', ruleName: 'min'}` - remove all spies for specific rule in specific type
+  - `{runeName: 'match'}` - remove all spies for specific global rule
+  - `{type: 'string'}` - remove all spies for specific type
+  - `undefined` - remove all spies at all
+
+# scripts
 - `npm run build` - build demo and library files into `dist`
 - `npm run dev` - run dev server from dist folder with demo page by default
-- `npm run test:e2e` - e2e testing of lib file from `dist`
-- `npm run test:e2e:dev` - dev server from `e2e/dist` folder with tests name in params
-- `npm run test:unit` - unit testing of `spec.js` files in `lib`
-- `npm run test:unit:dev` - dev server for unit testing
+- `npm run test` - run all tests on production version of build
+- `npm run e2e` - e2e testing of lib file from `dist`
+- `npm run e2e:dev` - dev server from `e2e/dist` folder with tests name in params
+- `npm run unit` - unit testing of `spec.js` files in `lib`
+- `npm run unit:dev` - dev server for unit testing
 
 # TODO
-- eslints
+- [x] demo examples
+- [x] complete readme
+- [x] unit tests
+- [x] e2e tests
+- [ ] builder demo
+- [ ] eslint

@@ -2,11 +2,11 @@
   import { getValidation, Form, Slide, Entry } from 'helpers/helpers';
 
   const getConfig = () => {
-    return { entries: [{ type: 'email' }] }
+    return { entries: [{ type: 'email', required: true }] }
   };
 
   const {
-    entries: [[ typeStore, typeInput ]],
+    entries: [entry],
     createForm: typeCreateForm
   } = getValidation(getConfig());
 
@@ -15,6 +15,6 @@
 
 <Slide id="type" bind:activeId>
   <Form createForm={typeCreateForm}>
-    <Entry store={typeStore} input={typeInput} />
+    <Entry {entry} />
   </Form>
 </Slide>

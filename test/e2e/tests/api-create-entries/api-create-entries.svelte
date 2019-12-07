@@ -2,21 +2,21 @@
   import { getValidation, Form, Slide, Entry } from 'helpers/helpers';
 
   const getConfig = (entriesCount) => {
-    return { entries: Array(entriesCount).fill({ type: 'string', minLength: 4 }) }
+    return { entries: Array(entriesCount).fill({ type: 'string', min: 4 }) }
   };
 
   const {
     entries: [
-      [ arrayFirstStore, arrayFirstInput ],
-      [ arraySecondStore, arraySecondInput ],
+      arrayFirstEntry,
+      arraySecondEntry,
     ],
     createForm: arrayCreateForm
   } = getValidation(getConfig(2));
 
   const {
     entries: [
-      [ objectFirstStore, objectFirstInput ],
-      [ objectSecondStore, objectSecondInput ],
+      objectFirstEntry,
+      objectSecondEntry,
     ],
     createForm: objectCreateForm
   } = getValidation(getConfig(2));
@@ -26,14 +26,14 @@
 
 <Slide id="array" bind:activeId>
   <Form createForm={arrayCreateForm}>
-    <Entry store={arrayFirstStore} input={arrayFirstInput} />
-    <Entry store={arraySecondStore} input={arraySecondInput} />
+    <Entry entry={arrayFirstEntry} />
+    <Entry entry={arraySecondEntry} />
   </Form>
 </Slide>
 
 <Slide id="object" bind:activeId>
   <Form createForm={objectCreateForm}>
-    <Entry store={objectFirstStore} input={objectFirstInput} />
-    <Entry store={objectSecondStore} input={objectSecondInput} />
+    <Entry entry={objectFirstEntry} />
+    <Entry entry={objectSecondEntry} />
   </Form>
 </Slide>

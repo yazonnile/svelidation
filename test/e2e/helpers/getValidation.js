@@ -1,24 +1,18 @@
-import Validation from 'dist';
+import createValidation from 'dist';
 
 export default ({
   entries,
   options = {},
-  validateOn
+  validateOnEvents
 }) => {
-  if (typeof validateOn !== 'undefined') {
-    options.vaidateOn = validateOn;
+  if (typeof validateOnEvents !== 'undefined') {
+    options.validateOnEvents = validateOnEvents;
   }
 
-  const validation = new Validation(options);
-  let { createForm, validate, clearErrors, validateStore, createEntry } = validation;
-
-  validate = validate.bind(validation);
-  clearErrors = clearErrors.bind(validation);
-  validateStore = validateStore.bind(validation);
-  createEntry = createEntry.bind(validation);
+  const { createForm, validate, clearErrors, validateValueStore, createEntry, createEntries } = createValidation(options);
 
   return {
-    entries: validation.createEntries(entries),
-    createForm, validate, clearErrors, validateStore, createEntry
+    entries: createEntries(entries),
+    createForm, validate, clearErrors, validateValueStore, createEntry
   }
 }

@@ -4,9 +4,9 @@ const page = new Page();
 fixture `type string`
   .page `http://localhost:4411/?test=type-string`;
 
-test('minLength rule', async t => {
+test('min rule', async t => {
   await t
-    .click(page.slideButton.withExactText('minLength'))
+    .click(page.slideButton.withExactText('min'))
     .expect(page.forms.exists).ok()
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
@@ -17,15 +17,19 @@ test('minLength rule', async t => {
     .expect(page.errors.exists).notOk();
 });
 
-test('maxLength rule', async t => {
+test('between rule', async t => {
   await t
-    .click(page.slideButton.withExactText('maxLength'))
+    .click(page.slideButton.withExactText('between'))
     .expect(page.forms.exists).ok()
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
-    .expect(page.errors.exists).notOk()
-    .typeText(page.inputs, '1234567');
+    .expect(page.errors.exists).ok()
+    .typeText(page.inputs, '1');
   await blur();
   await t
-    .expect(page.errors.exists).ok();
+    .expect(page.errors.exists).ok()
+    .typeText(page.inputs, '1');
+  await blur();
+  await t
+    .expect(page.errors.exists).notOk();
 });

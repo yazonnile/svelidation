@@ -8,7 +8,7 @@
     "target": "esnext",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "types": ["@pyoner/svelte-types", "@types/jasmine"],
+    "types": ["@pyoner/svelte-types", "@types/jasmine", "@types/node"],
     "lib": [ "es2015", "dom" ]
   },
   "include": [

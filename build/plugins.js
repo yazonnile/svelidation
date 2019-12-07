@@ -1,5 +1,3 @@
-const path = require('path');
-
 const devServerOptions = {
   protocol: 'http',
   host: 'localhost',
@@ -12,12 +10,17 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
       return require('@rollup/plugin-alias')({
         entries: {
           lib: paths.lib,
-          demo: paths.demo,
+          docs: paths.docs,
           dist: paths.dist,
           helpers: `${paths.e2e}/helpers`
         },
         resolve: ['.ts', '.js', '.svelte']
       });
+    },
+    replace: () => {
+      return require('@rollup/plugin-replace')({
+        'process.env.DEV': JSON.stringify(!production)
+      })
     },
     resolve: () => {
       return require('rollup-plugin-node-resolve')({
@@ -36,14 +39,17 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
     },
     svelte: (type, production) => {
       return require('rollup-plugin-svelte')({
-        dev: !production
+        dev: !production,
+        preprocess: require('svelte-preprocess')({
+          postcss: true
+        })
       });
     },
     liveReload: (type, production) => {
       let liveReloadFolder;
       switch (type) {
-        case types.demo:
-          liveReloadFolder = paths.docs;
+        case types.docs:
+          liveReloadFolder = paths.docsDist;
           break;
 
         case types.e2e:
@@ -60,27 +66,26 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
     serve: (type, production) => {
       let opts;
       switch (type) {
-        case types.demo:
+        case types.docs:
           opts = {
-            open: true,
-            contentBase: paths.docs,
-            host: devServerOptions.host,
-            port: devServerOptions.port,
+            contentBase: paths.docsDist,
           };
           break;
 
         case types.e2e:
           opts = {
-            open: true,
             contentBase: paths.e2eDist,
-            host: devServerOptions.host,
-            port: devServerOptions.port,
             openPage: '?test=default',
           };
           break;
       }
 
-      return !production && require('rollup-plugin-serve')(opts);
+      return !production && require('rollup-plugin-serve')({
+        ...opts,
+        open: true,
+        host: devServerOptions.host,
+        port: devServerOptions.port,
+      });
     },
     globFiles: () => {
       return require('rollup-plugin-glob-files').default([{
@@ -88,7 +93,7 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
         include: [`**/*.spec.js`],
         justImport: true
       }]);
-    }
+    },
   };
 
   return pluginsNames.reduce((list, name) => {

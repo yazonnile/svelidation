@@ -2,26 +2,29 @@
   import { getValidation, Form, Slide, Entry } from 'helpers/helpers';
 
   const getConfig = () => {
-    return { entries: [{ type: 'string', minLength: 4 }, { type: 'string', minLength: 4 }] }
+    return { entries: [{ type: 'string', min: 4 }, { type: 'string', min: 4 }] }
   };
 
   const {
-    entries: [[ submitStore, submitInput ]],
+    entries: [submitEntry],
     createForm: submitCreateForm
   } = getValidation(getConfig());
 
   const {
-    entries: [[ successFailStore, successFailInput ]],
+    entries: [successFailEntry],
     createForm: successFailCreateForm
   } = getValidation(getConfig());
 
   const {
-    entries: [[ reset1Store, reset1Input ], [ reset2Store ]],
+    entries: [
+      reset1Entry,
+      reset2Entry,
+    ],
     createForm: resetCreateForm,
-    validateStore
+    validateValueStore
   } = getValidation(getConfig());
 
-  validateStore(reset2Store);
+  validateValueStore(reset2Entry[1]);
 
   let activeId = 'submit';
   $: log = activeId && [];
@@ -32,21 +35,21 @@
 
 <Slide id="submit" bind:activeId>
   <Form createForm={submitCreateForm} createFormParams={{ onSubmit }}>
-    <Entry store={submitStore} input={submitInput} />
+    <Entry entry={submitEntry} />
   </Form>
   <div class="log">{#each log as item}{item},{/each}</div>
 </Slide>
 
 <Slide id="successFail" bind:activeId>
   <Form createForm={successFailCreateForm} createFormParams={{ onFail, onSuccess}}>
-    <Entry store={successFailStore} input={successFailInput} />
+    <Entry entry={successFailEntry} />
     <div class="log">{#each log as item}{item},{/each}</div>
   </Form>
 </Slide>
 
 <Slide id="reset" bind:activeId>
   <Form createForm={resetCreateForm}>
-    <Entry store={reset1Store} input={reset1Input} />
-    <Entry store={reset2Store} />
+    <Entry entry={reset1Entry} />
+    <Entry entry={reset2Entry} noInput />
   </Form>
 </Slide>

@@ -2,19 +2,17 @@
   import { getValidation, Form, Entry } from 'helpers/helpers';
 
   const {
-    entries: [
-      [ store, input ]
-    ],
+    entries: [ entry ],
     createForm
   } = getValidation({
     entries: [{
       type: 'string',
-      minLength: 4,
-      maxLength: 6
+      min: 4,
+      max: 6
     }]
   });
 </script>
 
 <Form {createForm}>
-  <Entry {store} {input} />
+  <Entry {entry} />
 </Form>

@@ -1,5 +1,39 @@
 # Svelidation changelog
 
+# 1.0.0
+
+* unit tests for types and spies
+* `abort` method for spies
+* `addSpy` will now return `removeSpy` function
+* adding extending to `ensureType`
+* unit tests for validator
+* add `presence` options
+* add `trim` option
+* add `boolean` type
+* renamed/refactored `input` -> `form-element`
+* allowed entry has a multi inputs
+* add radio demo
+* add `array` type
+* replaced lib class with closure
+* merge `typeCheck` flow with all rules
+* rename phaseEnum with `ListenInputEventsEnum`
+* rename `min/maxLength` into `min/max`
+* moved `demo` to `docs`
+* add `postcss` for demo purpose
+* renamed `validateOn` (array) option to `validateOnEvents` (object)
+* renamed `clearOn` (array) option to `clearErrorsOnEvents` (object)
+* `formElement` has specific events. Not all are supported
+* `optional` `number` with empty string is `valid`
+* renamed `validateStore` to `validateValueStore`
+* **split store to two stores (errors, value), so increased createEntry return array by one**
+* **input event now works as subscription on value store**
+* add `includeAllEntries` option
+* function into `equal` rule
+* **remove destroy api method because opf useless**
+* add between rule to string and number
+* update demo page
+* add builder
+
 ## 0.1.0
 
 * update default validateOn event from `input` to `change` (updated big amount of e2e tests)

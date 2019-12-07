@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-  <title>Svelidation demo</title>
+  <title>Svelidation</title>
   <style>
     * {
       box-sizing: border-box;
@@ -14,106 +14,23 @@
 
     body {
       color: #333;
-      font: 18px/22px Arial, sans-serif;
+      font: 14px/20px 'Open Sans', Arial, sans-serif;
+      overflow-y: scroll;
     }
 
     #app {
       margin: 0 auto;
-      max-width: 600px;
-      padding: 10px;
+      max-width: 1000px;
+      padding: 20px;
     }
 
-    form {
-      background: #c3ebff;
-      border: 1px solid #333;
-      border-radius: 10px;
-      margin-bottom: 30px;
-      padding: 30px;
-    }
-
-    pre {
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      font-size: 24px;
-      line-height: 28px;
-      margin-bottom: 20px;
-    }
-
-    .readme {
-      margin-bottom: 40px;
-      text-align: center;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 20px;
-      padding-bottom: 20px;
-    }
-
-    input {
-      display: block;
-      margin-top: 5px;
-      width: 100%;
-    }
-
-    button {
-      background: #fff;
-      cursor: pointer;
-    }
-
-    input, button {
-      background: #fff;
-      border: 1px solid #333;
-      border-radius: 3px;
-      color: inherit;
-      font-size: inherit;
-      line-height: 22px;
-      padding: 5px 10px;
-    }
-
-    .button-active,
-    button:hover {
-      background: #333;
-      color: #fff;
-    }
-
-    .error {
-      color: #f00;
-      margin-bottom: -22px;
-    }
-
-    .success {
-      background: #c3ffc5;
-    }
-
-    .row {
-      margin-bottom: 20px;
-    }
-
-    mark, pre {
-      background: #ddd;
-      border: 1px solid #333;
-      border-radius: 3px;
-      font-weight: normal;
-      font-family: monospace;
-      padding: 0 5px;
-    }
-
-    pre {
-      padding: 5px 10px;
-    }
-
-    .logo {
-      display: block;
-      max-width: 100%;
-      margin: 0 auto 20px;
+    input, button, select {
+      font-family: 'Open Sans', Arial, sans-serif;
     }
   </style>
   <script>
     const url = new URL(location.href);
-    const testName = url.searchParams.get('test') || 'demo';
+    const testName = url.searchParams.get('test') || 'docs';
     const scriptUrl = `${testName}.js`;
     const script = document.createElement('script');
 
@@ -125,9 +42,7 @@
 </head>
 <body>
 
-<div id="app">
-  <img src="./logo.svg" alt="svelidation" class="logo" />
-</div>
+<div id="app"></div>
 
 </body>
 </html>

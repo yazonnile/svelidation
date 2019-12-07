@@ -1,96 +1,135 @@
-import { writable, get } from 'svelte/store';
-import validateValueByParams from 'lib/validation/validation';
-import updateStoreErrors from 'lib/update-store-errors/update-store-errors';
-import Input from 'lib/input/input';
-import isFunction from 'lib/is-function/is-function';
 import {
-  EntryParamsInterface, EntryInterface,
-  PhaseEnum, PhaseEnumType,
-  OptionsInterface, ErrorsType, StoreType,
-  UseInputFunctionInterface, UseFunctionReturn,
-  CreateEntriesDataInterface, FormEventsInterface
+  ListenInputEventsEnum,
+  ListenInputEventsType,
+  SvelidationCreateEntriesData,
+  SvelidationEntry,
+  SvelidationEntryParams,
+  SvelidationFormEvents,
+  SvelidationOptions,
+  SvelidationStoreType,
+  SvelidationUseFunctionReturn,
+  SvelidationUseInputFunction
 } from 'lib/typing/typing';
+import { get, Writable, writable } from 'svelte/store';
+import isFunction from 'lib/is-function/is-function';
+import FormElement from 'lib/form-element/form-element';
+import prepareBaseParams from 'lib/prepare-base-params/prepare-base-params';
+import { validate as validateValueByParams } from 'lib/validator/validator';
 
-export { addValidator, BaseType, StringType, NumberType, EmailType } from 'lib/validation/validation';
-export { PhaseEnum } from 'lib/typing/typing';
-
-export default class Validation {
-  entries: EntryInterface[];
-  options: OptionsInterface;
-  phase: PhaseEnumType;
-
-  constructor(options?: OptionsInterface) {
-    this.entries = [];
-    this.options = Object.assign({
-      validateOn: ['change'],
-      clearOn: ['reset'],
-      inputValidationPhase: PhaseEnum.afterFirstValidation
-    }, options);
-
-    // ensure options as array
-    if (!this.options.clearOn) {
-      this.options.clearOn = [];
+const setValidationPhase = (entries: SvelidationEntry[], phase: ListenInputEventsType) => {
+  entries.forEach(({ formElements }) => {
+    if (formElements) {
+      formElements.forEach(formElement => formElement.setPhase(phase));
     }
+  });
+};
 
-    if (!this.options.validateOn) {
-      this.options.validateOn = [];
+const createValidation = (opts?: SvelidationOptions) => {
+  let phase: ListenInputEventsType = ListenInputEventsEnum.never;
+  const entries: SvelidationEntry[] = [];
+  const options: SvelidationOptions = Object.assign({
+    listenInputEvents: ListenInputEventsEnum.afterValidation,
+    presence: 'optional',
+    trim: false,
+    includeAllEntries: false,
+    validateOnEvents: {
+      input: false,
+      change: true,
+      blur: false
+    },
+    clearErrorsOnEvents: {
+      focus: false,
+      reset: true
     }
+  }, opts);
 
-    this.phase = PhaseEnum.never;
-    this.createForm = this.createForm.bind(this);
+  if (typeof options.validateOnEvents !== 'object' || options.validateOnEvents === null) {
+    options.validateOnEvents = {};
   }
 
-  createEntry(params: EntryParamsInterface): [StoreType, UseInputFunctionInterface] {
-    const store: StoreType = writable({ value: params.value || '', errors: [] });
-    const entry: EntryInterface = { store, params };
-    const useInput: UseInputFunctionInterface = (inputNode, useOptions) => {
-      const inputOptions = Object.assign({}, this.options, useOptions, {
-        onClear: () => {
-          updateStoreErrors(store, []);
-        },
-        onValidate: () => {
-          this.validateStore(store);
-        },
-        clearOn: this.options.clearOn.filter(event => event !== 'reset')
+  if (typeof options.clearErrorsOnEvents !== 'object' || options.clearErrorsOnEvents === null) {
+    options.clearErrorsOnEvents = {};
+  }
+
+  const createEntry = (createEntryParams: SvelidationEntryParams): [Writable<any[]>, Writable<any>, SvelidationUseInputFunction] => {
+    const { value = '', ...params } = createEntryParams;
+    const store: SvelidationStoreType = {
+      errors: writable([]),
+      value: writable(value)
+    };
+    const entry: SvelidationEntry = { store, params };
+    const useInput: SvelidationUseInputFunction = (inputNode, useOptions) => {
+      const formElementOptions = Object.assign({}, options, useOptions, {
+        onClear: () => store.errors.set([]),
+        onValidate: () => validateValueStore(store.value)
       });
 
-      entry.input = new Input(inputNode, inputOptions);
-      entry.input.setPhase(this.phase);
+      if (!entry.formElements) {
+        entry.formElements = [];
+      }
+
+      const newElement = new FormElement(inputNode, formElementOptions);
+      newElement.setPhase(phase);
+      entry.formElements.push(newElement);
+
+      let subscribeEvent = true;
+      const unsubscribe = formElementOptions.validateOnEvents.input && store.value.subscribe(() => {
+        if (subscribeEvent) {
+          subscribeEvent = false;
+          return;
+        }
+
+        if (phase === ListenInputEventsEnum.always
+          || phase !== ListenInputEventsEnum.never
+          || phase > options.listenInputEvents) {
+          validateValueStore(store.value);
+        }
+      });
 
       return {
         destroy: () => {
-          entry.input.destroy();
-          delete entry.input;
+          if (isFunction(unsubscribe)) {
+            unsubscribe();
+          }
+
+          for (let i = 0; i < entry.formElements.length; i++) {
+            const formElement = entry.formElements[i];
+            if (formElement.node === inputNode) {
+              entry.formElements.splice(i, 1);
+              formElement.destroy();
+              break;
+            }
+          }
+
+          if (!entry.formElements.length) {
+            delete entry.formElements;
+          }
         }
       };
     };
 
-    this.entries.push(entry);
+    entries.push(entry);
 
-    return [ store, useInput ];
-  }
+    return [ store.errors, store.value, useInput ];
+  };
 
-  createEntries(data: CreateEntriesDataInterface) {
+  const createEntries = (data: SvelidationCreateEntriesData) => {
     if (Array.isArray(data)) {
-      return data.map(_ => this.createEntry(_));
+      return data.map(createEntry);
     } else {
       return Object.keys(data).reduce((sum, currentKey) => {
         return Object.assign(sum, {
-          [currentKey]: this.createEntry(data[currentKey])
+          [currentKey]: createEntry(data[currentKey])
         });
       }, {});
     }
-  }
+  };
 
-  removeEntry(entry: EntryInterface) {
-    this.entries = this.entries.filter(_ => entry !== _);
-  }
-
-  createForm(formNode: HTMLFormElement, events: FormEventsInterface = {}): UseFunctionReturn {
+  const createForm = (formNode: HTMLFormElement, events: SvelidationFormEvents = {}): SvelidationUseFunctionReturn => {
     const { onFail: fail, onSubmit: submit, onSuccess: success } = events;
-    const onReset = () => this.clearErrors();
+    const onReset = () => clearErrors();
     const onSubmit = e => {
-      const errors = this.validate();
+      const errors = validate();
       isFunction(submit) && submit(e, errors);
       if (errors.length) {
         isFunction(fail) && fail(errors);
@@ -100,7 +139,7 @@ export default class Validation {
     };
 
     formNode.addEventListener('submit', onSubmit);
-    if (this.options.clearOn.indexOf('reset') > -1) {
+    if (options.clearErrorsOnEvents.reset) {
       formNode.addEventListener('reset', onReset);
     }
 
@@ -110,24 +149,27 @@ export default class Validation {
         formNode.removeEventListener('reset', onReset);
       }
     };
-  }
+  };
 
-  validateStore(store: StoreType): ErrorsType {
-    const entry = this.entries.find(entry => (entry.store === store));
+  const validateValueStore = (value: Writable<any>): any[] => {
+    const entry = entries.find(entry => (entry.store.value === value));
     if (entry) {
-      const { value } = get(store);
-      const errors = validateValueByParams(value, entry.params);
-      updateStoreErrors(store, errors);
-      return errors;
+      const value = get(entry.store.value);
+      const errors = validateValueByParams(value, prepareBaseParams(entry.params, options));
+
+      if (Array.isArray(errors)) {
+        entry.store.errors.set(errors);
+        return errors;
+      }
     }
 
     return [];
-  }
+  };
 
-  validate(includeNoInputs = false): ErrorsType[] {
-    const errors = this.entries.reduce((errors, entry) => {
-      if (entry.input || includeNoInputs) {
-        const storeErrors = this.validateStore(entry.store);
+  const validate = (includeNoFormElements = false): any[] => {
+    const errors = entries.reduce((errors, entry) => {
+      if (entry.formElements || includeNoFormElements || options.includeAllEntries) {
+        const storeErrors = validateValueStore(entry.store.value);
         if (storeErrors.length) {
           errors.push({ [entry.params.type]: storeErrors });
         }
@@ -136,34 +178,31 @@ export default class Validation {
       return errors;
     }, []);
 
-    this.setValidationPhase(PhaseEnum.afterFirstValidation);
+    phase = ListenInputEventsEnum.afterValidation;
+    setValidationPhase(entries, ListenInputEventsEnum.afterValidation);
 
     return errors;
-  }
+  };
 
-  setValidationPhase(phase: PhaseEnumType) {
-    this.phase = phase;
-
-    this.entries.forEach(({ input }) => {
-      if (input) {
-        input.setPhase(phase);
+  const clearErrors = (includeNoFormElements = false) => {
+    entries.forEach(entry => {
+      if (entry.formElements || includeNoFormElements || options.includeAllEntries) {
+        entry.store.errors.set([]);
       }
     });
-  }
+  };
 
-  clearErrors(includeNoInputs = false) {
-    this.entries.forEach(entry => {
-      if (entry.input || includeNoInputs) {
-        updateStoreErrors(entry.store, []);
-      }
-    });
+  return {
+    createEntry,
+    createEntries,
+    createForm,
+    validateValueStore,
+    validate,
+    clearErrors,
   }
+};
 
-  destroy() {
-    this.entries.forEach(entry => {
-      if (entry.input) {
-        entry.input.destroy();
-      }
-    });
-  }
-}
+export default createValidation;
+export { ListenInputEventsEnum };
+export { addSpy, removeSpies } from 'lib/validator/spy/spy';
+export { ensureRule, ensureType, resetType, resetRule } from 'lib/validator/types/types';

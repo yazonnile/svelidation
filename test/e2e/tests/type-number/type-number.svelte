@@ -6,37 +6,48 @@
   };
 
   const {
-    entries: [[ typeStore, typeInput ]],
+    entries: [typeEntry],
     createForm: typeCreateForm
-  } = getValidation(getConfig());
+  } = getValidation(getConfig({ required: true }));
 
   const {
-    entries: [[ minValueStore, minValueInput ]],
-    createForm: minValueCreateForm
-  } = getValidation(getConfig({ minValue: 22 }));
+    entries: [minEntry],
+    createForm: minCreateForm
+  } = getValidation(getConfig({ min: 22 }));
 
   const {
-    entries: [[ maxValueStore, maxValueInput ]],
-    createForm: maxValueCreateForm
-  } = getValidation(getConfig({ maxValue: 22 }));
+    entries: [maxEntry],
+    createForm: maxCreateForm
+  } = getValidation(getConfig({ max: 22 }));
+
+  const {
+    entries: [betweenEntry],
+    createForm: betweenCreateForm
+  } = getValidation(getConfig({ between: [2,5] }));
 
   let activeId = 'type';
 </script>
 
 <Slide id="type" bind:activeId>
   <Form createForm={typeCreateForm}>
-    <Entry store={typeStore} input={typeInput} />
+    <Entry entry={typeEntry} />
   </Form>
 </Slide>
 
-<Slide id="minValue" bind:activeId>
-  <Form createForm={minValueCreateForm}>
-    <Entry store={minValueStore} input={minValueInput} />
+<Slide id="min" bind:activeId>
+  <Form createForm={minCreateForm}>
+    <Entry entry={minEntry} />
   </Form>
 </Slide>
 
-<Slide id="maxValue" bind:activeId>
-  <Form createForm={maxValueCreateForm}>
-    <Entry store={maxValueStore} input={maxValueInput} />
+<Slide id="max" bind:activeId>
+  <Form createForm={maxCreateForm}>
+    <Entry entry={maxEntry} />
+  </Form>
+</Slide>
+
+<Slide id="between" bind:activeId>
+  <Form createForm={betweenCreateForm}>
+    <Entry entry={betweenEntry} />
   </Form>
 </Slide>

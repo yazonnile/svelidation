@@ -5,7 +5,7 @@ export default class Page {
     this.forms = Selector('form');
     this.labels = Selector('label');
     this.inputs = this.labels.find('input');
-    this.errors = this.labels.find('p.error');
+    this.errors = Selector('p.error');
     this.submitButton = this.forms.find('[type="submit"]');
     this.resetButton = this.forms.find('[type="reset"]');
     this.slideButton = Selector('button.slide-button');
