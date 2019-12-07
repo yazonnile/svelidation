@@ -380,7 +380,7 @@ validateValueStore(stringValue);
 
 First of all, take a look at the line with `next(value)` call. This is VERY IMPORTANT LINE in spies paradigm. Remember? Spy has god power, but it has to give this power to next spy. This.
 
-`next(value, params)` - is the function witch spy have to call with any value spy wants. This new value will be taken next validation rules or another spies. Almost same with the params. This params will be merged with original for next validators.
+`next(value, params)` - is the function witch spy have to call with any value spy wants. This new value will be taken by next validation rules or another spies. Almost same with the params. But params will be merged with original for next validators. So the value will replace the original one, params will be ,merged
 
 And it can returns errors, that will be merged with validation errors
 
