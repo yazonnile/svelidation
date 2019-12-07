@@ -80,6 +80,6 @@
 
   .error:hover,
   .error:hover span::after{
-    transition-delay: .01s;
+    transition-delay: .3s;
   }
 </style>

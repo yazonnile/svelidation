@@ -12,7 +12,7 @@
   import ArraySumOfPoints from './examples/array-sum-of-points.svelte';
   import FieldConfirm from './examples/field-confirm.svelte';
 
-  let barId = 0;
+  let barId = 1;
   let pageId = barId;
   let transitionActive = false;
 
@@ -30,7 +30,7 @@
 
 <div class="tabs">
   <button class="tabs--button" on:click={() => switchPages(0)} disabled={pageId === 0}>Examples</button>
-  <button class="tabs--button" on:click={() => switchPages(1)} disabled={pageId === 1}>Editor</button>
+  <button class="tabs--button" on:click={() => switchPages(1)} disabled={pageId === 1}>Builder</button>
   <i class="tabs--bar" style={`transform: translateX(${100 * barId}%)`}></i>
 </div>
 
@@ -73,7 +73,7 @@
     left: 0;
     position: absolute;
     top: 100%;
-    transition: transform .5s cubic-bezier(0.86, 0, 0.07, 1);
+    transition: .5s transform cubic-bezier(0.86, 0, 0.07, 1);
     width: 50%;
   }
 
@@ -119,7 +119,7 @@
   }
 
   .pages {
-    transition: opacity .3s ease;
+    transition: .3s opacity ease;
   }
 
   .pages.transition--active {

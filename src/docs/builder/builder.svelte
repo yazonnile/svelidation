@@ -1,22 +1,13 @@
 <script>
-
-  let num = 0;
-  const useFunction = () => {
-    console.log('INIT');
-  };
-
-  const reset = () => {
-    num++;
-  };
+  import NewField from 'docs/builder/components/new-field.svelte';
+  import Widget from 'docs/ui/widget.svelte';
 </script>
 
-{#if num%2}
-  <div use:useFunction>DIV</div>
-{:else}
-  <div use:useFunction>DIV</div>
-{/if}
-<button on:click={reset}>RESET</button>
+<Widget>
 
-<style>
+  in progress
+<!--  form options like required, trim etc-->
+<!--  <hr>-->
 
-</style>
+<!--  <NewField />-->
+</Widget>

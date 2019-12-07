@@ -445,4 +445,9 @@ This is an easy one after `addSpy` :). It just removes all spies depends on para
 - `npm run unit:dev` - dev server for unit testing
 
 # TODO
-- eslints
+- [x] demo examples
+- [x] complete readme
+- [x] unit tests
+- [x] e2e tests
+- [ ] builder demo
+- [ ] eslint

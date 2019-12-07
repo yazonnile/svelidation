@@ -7,10 +7,12 @@
 
   import Row from 'docs/examples/components/row.svelte';
   import Button from 'docs/ui/button.svelte';
+  import Widget from 'docs/ui/widget.svelte';
 </script>
 
-<form novalidate use:createForm on:submit|preventDefault>
-  <h1>
+<Widget>
+  <form novalidate use:createForm on:submit|preventDefault>
+    <h1>
     <span>
       {title}
       {#if subtitle}
@@ -18,21 +20,14 @@
       {/if}
     </span>
 
-    {#if type}<i class="barge">type</i>{/if}
-    {#if rule}<i class="barge">rule</i>{/if}
-  </h1>
-  <slot />
-</form>
+      {#if type}<i class="barge">type</i>{/if}
+      {#if rule}<i class="barge">rule</i>{/if}
+    </h1>
+    <slot />
+  </form>
+</Widget>
 
 <style>
-  form {
-    border: 5px solid var(--mainColorLight);
-    box-shadow: 0 0 3px #000;
-    border-radius: 3px;
-    margin-bottom: 20px;
-    padding: 10px;
-  }
-
   h1 {
     border-bottom: 1px solid var(--mainColor);
     color: #fff;
