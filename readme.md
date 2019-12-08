@@ -1,6 +1,7 @@
 ![Svelidation](https://svgshare.com/i/GUq.svg)
 
-Easily customizable library for `validation` scenarios in `svelte` components
+Easily customizable library for `validation` scenarios in `svelte` components.
+Need to validate just few simple inputs? Or need to build huge form with dynamic steps? No problems. Svelidation was born for it!
 
 ![NPM](https://img.shields.io/npm/l/svelidation) ![npm](https://img.shields.io/npm/v/svelidation)
 

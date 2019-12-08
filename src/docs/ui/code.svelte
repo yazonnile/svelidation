@@ -1,12 +1,13 @@
 <script>
   export let code = '';
+  export let builderMode = false;
 
   const addCode = (node) => {
     node.textContent = code;
   };
 </script>
 
-<pre><code use:addCode></code></pre>
+<pre class:builderMode><code use:addCode></code></pre>
 
 <style>
   pre {
@@ -20,5 +21,11 @@
     margin-bottom: 10px;
     overflow-x: auto;
     padding: 5px 10px;
+  }
+
+  .builderMode {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
   }
 </style>

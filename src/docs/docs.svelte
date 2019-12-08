@@ -11,6 +11,7 @@
   import Equal from './examples/equal.svelte';
   import ArraySumOfPoints from './examples/array-sum-of-points.svelte';
   import FieldConfirm from './examples/field-confirm.svelte';
+  import DynamicSteps from './examples/dynamic-steps.svelte';
 
   let barId = 0;
   let pageId = barId;
@@ -48,6 +49,7 @@
       <Required />
       <Match />
       <Equal />
+      <DynamicSteps />
       <ArraySumOfPoints />
       <FieldConfirm />
     {:else}
@@ -170,6 +172,7 @@
     flex-wrap: wrap;
     align-content: flex-start;
     align-items: flex-start;
+    margin-top: -10px;
     padding: 10px;
     justify-content: center;
   }
@@ -180,7 +183,7 @@
     box-shadow: 0 0 5px var(--grey);
     border-radius: 3px;
     cursor: pointer;
-    margin: 0 5px 10px;
+    margin: 10px 5px 0;
     overflow: hidden;
     padding: 5px;
     text-align: center;

@@ -8,6 +8,7 @@
     box-shadow: 0 0 3px #000;
     border-radius: 3px;
     margin-bottom: 20px;
+    overflow: hidden;
     padding: 10px;
   }
 </style>

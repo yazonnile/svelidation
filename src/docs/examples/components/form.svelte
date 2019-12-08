@@ -1,5 +1,6 @@
 <script>
   export let createForm;
+  export let createFormOpts = {};
   export let title;
   export let subtitle = '';
   export let type = false;
@@ -11,7 +12,7 @@
 </script>
 
 <Widget>
-  <form novalidate use:createForm on:submit|preventDefault>
+  <form novalidate use:createForm={createFormOpts} on:submit|preventDefault>
     <h1>
     <span>
       {title}

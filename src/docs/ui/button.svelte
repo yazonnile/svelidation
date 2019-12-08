@@ -36,6 +36,10 @@
     text-transform: uppercase;
   }
 
+  button:only-child {
+    margin-right: 0;
+  }
+
   button:hover {
     background-color: #fff;
   }
