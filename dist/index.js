@@ -59,7 +59,7 @@ class FormElement {
     destroy() {
         this.node.removeEventListener('change', this.onValidate);
         this.node.removeEventListener('blur', this.onValidate);
-        this.node.removeEventListener('blur', this.onClear);
+        this.node.removeEventListener('focus', this.onClear);
     }
 }
 
@@ -430,15 +430,14 @@ const createValidation = (opts) => {
             const newElement = new FormElement(inputNode, formElementOptions);
             newElement.setPhase(phase);
             entry.formElements.push(newElement);
-            let subscribeEvent = true;
+            let preventFirstSubscriberEvent = true;
             const unsubscribe = formElementOptions.validateOnEvents.input && store.value.subscribe(() => {
-                if (subscribeEvent) {
-                    subscribeEvent = false;
+                if (preventFirstSubscriberEvent) {
+                    preventFirstSubscriberEvent = false;
                     return;
                 }
-                if (phase === ListenInputEventsEnum.always
-                    || phase !== ListenInputEventsEnum.never
-                    || phase > options.listenInputEvents) {
+                if (options.listenInputEvents === ListenInputEventsEnum.always
+                    || (options.listenInputEvents !== ListenInputEventsEnum.never && phase >= options.listenInputEvents)) {
                     validateValueStore(store.value);
                 }
             });

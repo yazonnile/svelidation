@@ -72,16 +72,16 @@ const createValidation = (opts?: SvelidationOptions) => {
       newElement.setPhase(phase);
       entry.formElements.push(newElement);
 
-      let subscribeEvent = true;
+      let preventFirstSubscriberEvent = true;
       const unsubscribe = formElementOptions.validateOnEvents.input && store.value.subscribe(() => {
-        if (subscribeEvent) {
-          subscribeEvent = false;
+        if (preventFirstSubscriberEvent) {
+          preventFirstSubscriberEvent = false;
           return;
         }
 
-        if (phase === ListenInputEventsEnum.always
-          || phase !== ListenInputEventsEnum.never
-          || phase > options.listenInputEvents) {
+        if (options.listenInputEvents === ListenInputEventsEnum.always
+          || (options.listenInputEvents !== ListenInputEventsEnum.never && phase >= options.listenInputEvents)
+        ) {
           validateValueStore(store.value);
         }
       });

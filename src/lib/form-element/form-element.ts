@@ -60,6 +60,6 @@ export default class FormElement implements SvelidationFormElement {
   destroy() {
     this.node.removeEventListener('change', this.onValidate);
     this.node.removeEventListener('blur', this.onValidate);
-    this.node.removeEventListener('blur', this.onClear);
+    this.node.removeEventListener('focus', this.onClear);
   }
 }

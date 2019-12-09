@@ -12,6 +12,8 @@
   import ArraySumOfPoints from './examples/array-sum-of-points.svelte';
   import FieldConfirm from './examples/field-confirm.svelte';
   import DynamicSteps from './examples/dynamic-steps.svelte';
+  import UseWithParams from './examples/use-with-params.svelte';
+  import WithoutInputs from './examples/without-inputs.svelte';
 
   let barId = 0;
   let pageId = barId;
@@ -50,6 +52,8 @@
       <Required />
       <Match />
       <Equal />
+      <UseWithParams />
+      <WithoutInputs />
       <DynamicSteps />
       <ArraySumOfPoints />
       <FieldConfirm />

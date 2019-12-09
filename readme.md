@@ -140,7 +140,7 @@ const [ errorsStore, valueStore, inputFunctionForUse ] = createEntry(createEntry
 ```html
 <input use:inputFunctionForUse />
 <!-- or -->
-<input use:inputFunctionForUse={{ clearErrorsOnEvents, validateOnEvents }}></input>
+<input use:inputFunctionForUse={{ clearErrorsOnEvents, validateOnEvents }} />
 ```
 This is the place where `clearErrorsOnEvents` and `validateOnEvents` options could be overrided for specific input
 
