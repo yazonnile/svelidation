@@ -3265,17 +3265,17 @@ const getEntryHTML = (id, { type }) => {
     const typeClass = getWithFirstUpper(type);
     switch (true) {
         case type === 'boolean':
-            return `<label><input bind:checked={$value${typeClass}${id}} use:input${typeClass}${id} class="input-choice" type="checkbox" /> Are you agree?</label>`;
+            return `<label><input bind:checked={$value${typeClass}${id}} use:input${typeClass}${id} type="checkbox" /> Are you agree?</label>`;
         case type === 'array':
-            return `<label><input bind:group={$value${typeClass}${id}} use:input${typeClass}${id} class="input-choice" type="checkbox" value="Lorem" /> Lorem</label>
-<label><input bind:group={$value${typeClass}${id}} use:input${typeClass}${id} class="input-choice" type="checkbox" value="ipsum" /> Ipsum</label>
-<label><input bind:group={$value${typeClass}${id}} use:input${typeClass}${id} class="input-choice" type="checkbox" value="dolor" /> Dolor?</label>`;
+            return `<label><input bind:group={$value${typeClass}${id}} use:input${typeClass}${id} type="checkbox" value="Lorem" /> Lorem</label>
+<label><input bind:group={$value${typeClass}${id}} use:input${typeClass}${id} type="checkbox" value="ipsum" /> Ipsum</label>
+<label><input bind:group={$value${typeClass}${id}} use:input${typeClass}${id} type="checkbox" value="dolor" /> Dolor?</label>`;
         case type === 'email':
-            return `<input type="email" bind:value={$value${typeClass}${id}} use:input${typeClass}${id} class="input-text" />`;
+            return `<input type="email" bind:value={$value${typeClass}${id}} use:input${typeClass}${id} />`;
         case type === 'number':
-            return `<input type="number" bind:value={$value${typeClass}${id}} use:input${typeClass}${id} class="input-text" />`;
+            return `<input type="number" bind:value={$value${typeClass}${id}} use:input${typeClass}${id} />`;
         default:
-            return `<input type="text" bind:value={$value${typeClass}${id}} use:input${typeClass}${id} class="input-text" />`;
+            return `<input type="text" bind:value={$value${typeClass}${id}} use:input${typeClass}${id} />`;
     }
 };
 const getEntryErrors = (id, { type }) => {
