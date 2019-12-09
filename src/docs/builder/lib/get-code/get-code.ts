@@ -28,17 +28,17 @@ export const getEntryErrors = (id, { type }) => {
 export const getEntryJS = (id, params) => {
   const { type, ...rest } = params;
   const typeClass = getWithFirstUpper(type);
-  let paramsObject = `type: ${type}`;
+  let paramsObject = `type: '${type}'`;
   Object.keys(rest).forEach(ruleKey => {
     const paramValue = ruleKey === 'match' ? `/${rest[ruleKey]}/` : (rest[ruleKey] === '' ? "''" : JSON.stringify(rest[ruleKey]));
-    paramsObject += `\n  ${ruleKey}: ${paramValue}`;
+    paramsObject += `,\n  ${ruleKey}: ${paramValue}`;
   });
 
   return `<script>
 const [ errors${typeClass}${id}, value${typeClass}${id}, input${typeClass}${id} ] = createEntry({
   ${paramsObject}
-);
-</scr`+`ipt>`;
+});
+</script>`;
 };
 
 

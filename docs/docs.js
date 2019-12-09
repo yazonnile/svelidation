@@ -1574,7 +1574,7 @@ function create_else_block(ctx) {
 	};
 }
 
-// (36:32) 
+// (36:32)
 function create_if_block_2(ctx) {
 	let input;
 	let input_disabled_value;
@@ -3125,7 +3125,7 @@ function create_else_block$2(ctx) {
 	};
 }
 
-// (21:26) 
+// (21:26)
 function create_if_block_2$2(ctx) {
 	let t;
 
@@ -3289,16 +3289,16 @@ const getEntryErrors = (id, { type }) => {
 const getEntryJS = (id, params) => {
     const { type, ...rest } = params;
     const typeClass = getWithFirstUpper(type);
-    let paramsObject = `type: ${type}`;
+    let paramsObject = `type: '${type}'`;
     Object.keys(rest).forEach(ruleKey => {
         const paramValue = ruleKey === 'match' ? `/${rest[ruleKey]}/` : (rest[ruleKey] === '' ? "''" : JSON.stringify(rest[ruleKey]));
-        paramsObject += `\n  ${ruleKey}: ${paramValue}`;
+        paramsObject += `,\n  ${ruleKey}: ${paramValue}`;
     });
     return `<script>
 const [ errors${typeClass}${id}, value${typeClass}${id}, input${typeClass}${id} ] = createEntry({
   ${paramsObject}
-);
-</scr` + `ipt>`;
+});
+</script>`;
 };
 const getFormCode = ({ validateOnEvents, clearErrorsOnEvents, listenInputEvents, presence, trim, includeAllEntries }) => {
     const options = [];
@@ -3399,7 +3399,7 @@ function create_else_block$3(ctx) {
 	};
 }
 
-// (34:33) 
+// (34:33)
 function create_if_block_3$1(ctx) {
 	let input_1;
 	let input_action;
@@ -3469,7 +3469,7 @@ function create_if_block_2$3(ctx) {
 	};
 }
 
-// (27:31) 
+// (27:31)
 function create_if_block_1$3(ctx) {
 	let label0;
 	let input0;
@@ -9437,7 +9437,7 @@ function create_else_block$6(ctx) {
 	};
 }
 
-// (57:23) 
+// (57:23)
 function create_if_block_1$8(ctx) {
 	let t;
 	let current;
@@ -9750,7 +9750,7 @@ const onSuccess = () => step++;`
 
 	const code1 = new Code({
 			props: {
-				code: `<form use:createForm={{ onSuccess }}>
+				code: `<form use:createForm={{ onSuccess }} on:submit|preventDefault>
   <p>current step is #{step+1}</p>
   {#if step === 0}
     <input use:step1Input bind:value={$step1Value} />
