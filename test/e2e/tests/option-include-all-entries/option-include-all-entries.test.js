@@ -15,6 +15,6 @@ const runTest = (btnName, errorsCount) => {
   });
 };
 
-runTest('default', 1);
-runTest('true', 2);
-runTest('false', 1);
+runTest('default', 2);
+runTest('true', 4);
+runTest('false', 2);

@@ -348,8 +348,8 @@ const validate = (value, validateParams) => {
     if (!isFunction(scope.typeCheck)) {
         return [];
     }
-    // skip for empty and optional fields with no other rules except typeCheck provided
-    if (skipValidation(value, { required, optional }) && Object.keys(scope).length === 1) {
+    // skip for empty and optional fields
+    if (skipValidation(value, { required, optional })) {
         return [];
     }
     const result = [];

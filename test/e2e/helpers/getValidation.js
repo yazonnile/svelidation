@@ -9,7 +9,10 @@ export default ({
     options.validateOnEvents = validateOnEvents;
   }
 
-  const { createForm, validate, clearErrors, validateValueStore, createEntry, createEntries } = createValidation(options);
+  const { createForm, validate, clearErrors, validateValueStore, createEntry, createEntries } = createValidation({
+    presence: 'required', // set required for e2e testing
+    ...options
+  });
 
   return {
     entries: createEntries(entries),

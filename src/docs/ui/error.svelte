@@ -2,6 +2,7 @@
   export let errors;
   export let errorCode;
   export let errorText = '';
+  export let fromLoop = false;
 
   import { slide } from 'svelte/transition';
 
@@ -15,10 +16,12 @@
 {#if $errors.includes(errorCode)}
   <div class="error" transition:slide|local={{ delay: 0, duration: 400 }} on:click={removeError}>
     <span>
-      {#if errorCode === 'required' && !errorText}
+      {#if errorCode === 'required' && !errorText && !fromLoop}
         This field is required
-      {:else}
+      {:else if errorText}
         {errorText}
+      {:else}
+        {errorCode} rule validation error
       {/if}
     </span>
   </div>

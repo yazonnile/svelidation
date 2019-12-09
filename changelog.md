@@ -1,5 +1,9 @@
 # Svelidation changelog
 
+# 1.0.2
+* add builder on demo page
+* **FIXED** optional-required-presence behavior
+
 # 1.0.0
 
 * unit tests for types and spies

@@ -3,7 +3,7 @@
   export let id = false;
 </script>
 
-<label class="toggle" class:checked>
+<label class="toggle" class:checked on:click|stopPropagation>
   <input type="checkbox" bind:checked on:change {id} />
 </label>
 
@@ -46,8 +46,10 @@
   }
 
   input {
-    left: -9999px;
+    left: 0;
+    opacity: 0;
     position: absolute;
-    top: -9999px;
+    visibility: hidden;
+    top: 0;
   }
 </style>

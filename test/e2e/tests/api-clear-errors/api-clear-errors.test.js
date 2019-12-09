@@ -13,7 +13,7 @@ test('should clear errors', async t => {
     .expect(customError.exists).ok()
     .expect(page.inputs.count).eql(3)
     .click(page.submitButton)
-    .expect(page.errors.count).eql(2)
+    .expect(page.errors.count).eql(4)
     .expect(customError.exists).ok()
     .click(page.primaryButton)
     .expect(page.errors.count).eql(0)

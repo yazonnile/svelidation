@@ -8,7 +8,7 @@
   const {
     entries: [defaultEntry],
     createForm: defaultCreateForm
-  } = getValidation(getConfig());
+  } = getValidation(getConfig({ optional: true }));
 
   const {
     entries: [requiredEntry],

@@ -27,5 +27,7 @@
     border: 0;
     border-radius: 0;
     box-shadow: none;
+    margin-bottom: 0;
+    min-height: 100%;
   }
 </style>

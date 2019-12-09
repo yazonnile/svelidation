@@ -37,6 +37,7 @@
 
 {#if !transitionActive}
   <div
+    class="docs"
     transition:fade={{ delay: 0, duration: 250 }}
     on:outroend={() => (pageId = barId, transitionActive = false)}
   >
@@ -120,12 +121,8 @@
     color: var(--mainColor);
   }
 
-  .pages {
-    transition: .3s opacity ease;
-  }
-
-  .pages.transition--active {
-    opacity: 0;
+  .docs {
+    padding-bottom: 300px;
   }
 
   h1 {

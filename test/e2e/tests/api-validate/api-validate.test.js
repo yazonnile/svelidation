@@ -9,7 +9,7 @@ test('should validate only stores witch is in use', async t => {
     .expect(page.inputs.count).eql(4)
     .expect(page.errors.exists).notOk()
     .click(page.primaryButton)
-    .expect(page.errors.count).eql(2)
+    .expect(page.errors.count).eql(4)
     .click(page.secondaryButton)
-    .expect(page.errors.count).eql(4);
+    .expect(page.errors.count).eql(8);
 });

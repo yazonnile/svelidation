@@ -12,7 +12,7 @@ const run = (id) => {
       .expect(page.inputs.count).eql(2)
       .expect(page.errors.exists).notOk()
       .click(page.submitButton)
-      .expect(page.errors.count).eql(2);
+      .expect(page.errors.count).eql(4);
   });
 };
 

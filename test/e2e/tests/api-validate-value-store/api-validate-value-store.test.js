@@ -8,5 +8,5 @@ test('should validate store without submit', async t => {
   await t
     .expect(page.errors.exists).notOk()
     .click(page.primaryButton)
-    .expect(page.errors.count).eql(1);
+    .expect(page.errors.count).eql(2);
 });

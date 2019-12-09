@@ -11,7 +11,7 @@ test('should validate only input with use', async t => {
     .expect(page.inputs.count).eql(3)
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
-    .expect(page.errors.count).eql(2)
+    .expect(page.errors.count).eql(4)
     .typeText(page.inputs.nth(2), '123456')
-    .expect(page.errors.count).eql(1);
+    .expect(page.errors.count).eql(2);
 });

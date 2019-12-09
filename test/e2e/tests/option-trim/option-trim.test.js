@@ -29,7 +29,7 @@ test('mix', async t => {
     .expect(page.forms.exists).ok()
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
-    .expect(page.errors.count).eql(2)
+    .expect(page.errors.count).eql(4)
     .typeText(page.inputs.nth(0), '  345')
     .typeText(page.inputs.nth(1), '  345');
   await blur();

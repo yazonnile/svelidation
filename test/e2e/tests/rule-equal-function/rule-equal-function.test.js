@@ -9,10 +9,10 @@ test('fields equal', async t => {
     .expect(page.forms.exists).ok()
     .expect(page.errors.exists).notOk()
     .click(page.submitButton)
-    .expect(page.errors.count).eql(2)
+    .expect(page.errors.count).eql(3)
     .typeText(page.inputs.nth(0), '122')
     .click(page.submitButton)
-    .expect(page.errors.count).eql(1)
+    .expect(page.errors.count).eql(2)
     .typeText(page.inputs.nth(1), '122')
     .click(page.submitButton)
     .expect(page.errors.count).eql(0);
