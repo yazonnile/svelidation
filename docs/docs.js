@@ -1895,7 +1895,7 @@ function add_css$3() {
 	append(document.head, style);
 }
 
-// (79:0) {:else}
+// (81:0) {:else}
 function create_else_block$1(ctx) {
 	let div;
 	let select;
@@ -2072,7 +2072,7 @@ function create_else_block$1(ctx) {
 	};
 }
 
-// (76:0) {#if initialState}
+// (78:0) {#if initialState}
 function create_if_block$1(ctx) {
 	let t;
 	let current;
@@ -2135,7 +2135,7 @@ function create_if_block$1(ctx) {
 	};
 }
 
-// (89:4) {#if selectedType}
+// (91:4) {#if selectedType}
 function create_if_block_3(ctx) {
 	let div;
 	let current;
@@ -2185,7 +2185,7 @@ function create_if_block_3(ctx) {
 	};
 }
 
-// (91:8) <Button on:click={onChangeType}>
+// (93:8) <Button on:click={onChangeType}>
 function create_default_slot_3(ctx) {
 	let t;
 
@@ -2202,7 +2202,7 @@ function create_default_slot_3(ctx) {
 	};
 }
 
-// (96:2) {#if selectedType}
+// (98:2) {#if selectedType}
 function create_if_block_2$1(ctx) {
 	let div;
 	let updating_model;
@@ -2530,7 +2530,7 @@ function create_if_block_2$1(ctx) {
 	};
 }
 
-// (146:2) {#if selectedType}
+// (148:2) {#if selectedType}
 function create_if_block_1$1(ctx) {
 	let t;
 	let current;
@@ -2600,7 +2600,7 @@ function create_if_block_1$1(ctx) {
 	};
 }
 
-// (147:4) <Button on:click={onSave}>
+// (149:4) <Button on:click={onSave}>
 function create_default_slot_2(ctx) {
 	let t;
 
@@ -2617,7 +2617,7 @@ function create_default_slot_2(ctx) {
 	};
 }
 
-// (148:4) <Button on:click={onCancel}>
+// (150:4) <Button on:click={onCancel}>
 function create_default_slot_1(ctx) {
 	let t;
 
@@ -2634,7 +2634,7 @@ function create_default_slot_1(ctx) {
 	};
 }
 
-// (78:2) <Button on:click={() => (initialState = false)}>
+// (80:2) <Button on:click={() => (initialState = false)}>
 function create_default_slot(ctx) {
 	let t;
 
@@ -2771,6 +2771,8 @@ function instance$3($$self, $$props, $$invalidate) {
 					return result;
 				} else if (ruleName === "equal" && selectedType === "array") {
 					result[ruleName] = rule.value.split(",").map(eval);
+				} else if (ruleName === "equal" && selectedType === "number") {
+					result[ruleName] = parseFloat(rule.value);
 				} else if (Array.isArray(rule.value)
 				? isDefined(rule.value[0]) && isDefined(rule.value[1])
 				: isDefined(rule.value)) {

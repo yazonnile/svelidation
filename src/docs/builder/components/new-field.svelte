@@ -50,6 +50,8 @@
         return result;
       } else if (ruleName === 'equal' && selectedType === 'array') {
         result[ruleName] = rule.value.split(',').map(eval);
+      } else if (ruleName === 'equal' && selectedType === 'number') {
+        result[ruleName] = parseFloat(rule.value);
       } else if (Array.isArray(rule.value) ? (isDefined(rule.value[0]) && isDefined(rule.value[1])) : isDefined(rule.value)) {
         result[ruleName] = rule.value;
       }
