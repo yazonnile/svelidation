@@ -1,5 +1,7 @@
+const getWithFirstUpper = (s) => s[0].toUpperCase() + s.slice(1);
+
 export const getEntryHTML = (id, { type }) => {
-  const typeClass = type[0].toUpperCase() + type.slice(1);
+  const typeClass = getWithFirstUpper(type);
   switch (true) {
     case type === 'boolean':
       return `<label><input bind:checked={$value${typeClass}${id}} use:input${typeClass}${id} class="input-choice" type="checkbox" /> Are you agree?</label>`;
@@ -17,7 +19,7 @@ export const getEntryHTML = (id, { type }) => {
 };
 
 export const getEntryErrors = (id, { type }) => {
-  const typeClass = type[0].toUpperCase() + type.slice(1);
+  const typeClass = getWithFirstUpper(type);
   return `{#each $errors${typeClass}${id} as errorCode}
   <p>{errorCode} rule validation error</p>
 {/each}`
@@ -25,7 +27,7 @@ export const getEntryErrors = (id, { type }) => {
 
 export const getEntryJS = (id, params) => {
   const { type, ...rest } = params;
-  const typeClass = type[0].toUpperCase() + type.slice(1);
+  const typeClass = getWithFirstUpper(type);
   let paramsObject = `type: ${type}`;
   Object.keys(rest).forEach(ruleKey => {
     const paramValue = ruleKey === 'match' ? `/${rest[ruleKey]}/` : (rest[ruleKey] === '' ? "''" : JSON.stringify(rest[ruleKey]));

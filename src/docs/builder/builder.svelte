@@ -10,32 +10,14 @@
   import { getFormCode } from 'docs/builder/lib/get-code/get-code';
 
   let id = 0;
-  let fields = [
-    {
-      id: id++,
-      params: {
-        type: 'string',
-        value: '',
-        min: 2
-      }
-    }, {
-      id: id++,
-      params: {
-        type: 'string',
-        value: '',
-        min: 2,
-        required: true
-      }
-    }, {
-      id: id++,
-      params: {
-        type: 'string',
-        value: '',
-        min: 2,
-        optional: true
-      }
+  let fields = [{
+    id: id++,
+    params: {
+      type: 'string',
+      value: '',
+      min: 2
     }
-  ];
+  }];
 
   const onNewField = ({ detail: params }) => {
     fields = [
@@ -52,7 +34,7 @@
     validateOnEvents: { change: true, input: false, blur: false },
     clearErrorsOnEvents: { reset: true, focus: false },
     listenInputEvents: 2,
-    presence: 'required',
+    presence: 'optional',
     trim: false,
     includeAllEntries: false
   };

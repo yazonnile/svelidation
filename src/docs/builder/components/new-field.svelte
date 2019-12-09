@@ -156,6 +156,10 @@
     overflow: hidden;
   }
 
+  .type:only-child {
+    margin-bottom: 0;
+  }
+
   .type select {
     border: 1px solid var(--grey);
     border-radius: 3px;

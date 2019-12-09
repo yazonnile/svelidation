@@ -1890,8 +1890,8 @@ class New_field_rule extends SvelteComponent {
 
 function add_css$3() {
 	var style = element("style");
-	style.id = "svelte-4srbam-style";
-	style.textContent = ".type.svelte-4srbam{display:flex;margin-bottom:10px;overflow:hidden}.type.svelte-4srbam select.svelte-4srbam{border:1px solid #bbb;border-radius:3px;font-size:16px;height:40px;outline:0;padding:0 3px}.type.svelte-4srbam .button.svelte-4srbam{flex:1;margin-left:10px}.type.svelte-4srbam select.svelte-4srbam:disabled{background:#fff;color:inherit}.type select:disabled+.button.svelte-4srbam{margin-right:0;transition-delay:.5s}.rules.svelte-4srbam{display:flex;flex-wrap:wrap;width:calc(100% + 10px)}";
+	style.id = "svelte-i1wrzb-style";
+	style.textContent = ".type.svelte-i1wrzb{display:flex;margin-bottom:10px;overflow:hidden}.type.svelte-i1wrzb:only-child{margin-bottom:0}.type.svelte-i1wrzb select.svelte-i1wrzb{border:1px solid #bbb;border-radius:3px;font-size:16px;height:40px;outline:0;padding:0 3px}.type.svelte-i1wrzb .button.svelte-i1wrzb{flex:1;margin-left:10px}.type.svelte-i1wrzb select.svelte-i1wrzb:disabled{background:#fff;color:inherit}.type select:disabled+.button.svelte-i1wrzb{margin-right:0;transition-delay:.5s}.rules.svelte-i1wrzb{display:flex;flex-wrap:wrap;width:calc(100% + 10px)}";
 	append(document.head, style);
 }
 
@@ -1953,9 +1953,9 @@ function create_else_block$1(ctx) {
 			option5.__value = "array";
 			option5.value = option5.__value;
 			select.disabled = ctx.selectedType;
-			attr(select, "class", "svelte-4srbam");
+			attr(select, "class", "svelte-i1wrzb");
 			if (ctx.selectedType === void 0) add_render_callback(() => ctx.select_change_handler.call(select));
-			attr(div, "class", "type svelte-4srbam");
+			attr(div, "class", "type svelte-i1wrzb");
 			dispose = listen(select, "change", ctx.select_change_handler);
 		},
 		m(target, anchor) {
@@ -2153,7 +2153,7 @@ function create_if_block_3(ctx) {
 		c() {
 			div = element("div");
 			create_component(button.$$.fragment);
-			attr(div, "class", "button svelte-4srbam");
+			attr(div, "class", "button svelte-i1wrzb");
 		},
 		m(target, anchor) {
 			insert(target, div, anchor);
@@ -2374,7 +2374,7 @@ function create_if_block_2$1(ctx) {
 			create_component(rule6.$$.fragment);
 			t6 = space();
 			create_component(rule7.$$.fragment);
-			attr(div, "class", "rules svelte-4srbam");
+			attr(div, "class", "rules svelte-i1wrzb");
 		},
 		m(target, anchor) {
 			insert(target, div, anchor);
@@ -2878,7 +2878,7 @@ function instance$3($$self, $$props, $$invalidate) {
 class New_field extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-4srbam-style")) add_css$3();
+		if (!document.getElementById("svelte-i1wrzb-style")) add_css$3();
 		init(this, options, instance$3, create_fragment$3, safe_not_equal, {});
 	}
 }
@@ -3260,8 +3260,9 @@ class Error$1 extends SvelteComponent {
 	}
 }
 
+const getWithFirstUpper = (s) => s[0].toUpperCase() + s.slice(1);
 const getEntryHTML = (id, { type }) => {
-    const typeClass = type[0].toUpperCase() + type.slice(1);
+    const typeClass = getWithFirstUpper(type);
     switch (true) {
         case type === 'boolean':
             return `<label><input bind:checked={$value${typeClass}${id}} use:input${typeClass}${id} class="input-choice" type="checkbox" /> Are you agree?</label>`;
@@ -3278,14 +3279,14 @@ const getEntryHTML = (id, { type }) => {
     }
 };
 const getEntryErrors = (id, { type }) => {
-    const typeClass = type[0].toUpperCase() + type.slice(1);
+    const typeClass = getWithFirstUpper(type);
     return `{#each $errors${typeClass}${id} as errorCode}
   <p>{errorCode} rule validation error</p>
 {/each}`;
 };
 const getEntryJS = (id, params) => {
     const { type, ...rest } = params;
-    const typeClass = type[0].toUpperCase() + type.slice(1);
+    const typeClass = getWithFirstUpper(type);
     let paramsObject = `type: ${type}`;
     Object.keys(rest).forEach(ruleKey => {
         const paramValue = ruleKey === 'match' ? `/${rest[ruleKey]}/` : (rest[ruleKey] === '' ? "''" : JSON.stringify(rest[ruleKey]));
@@ -4905,7 +4906,7 @@ function get_each_context$1(ctx, list, i) {
 	return child_ctx;
 }
 
-// (91:6) {:else}
+// (73:6) {:else}
 function create_else_block$5(ctx) {
 	let div;
 	let t;
@@ -4971,7 +4972,7 @@ function create_else_block$5(ctx) {
 	};
 }
 
-// (85:6) {#if formOptionsMode}
+// (67:6) {#if formOptionsMode}
 function create_if_block_1$5(ctx) {
 	let current;
 	const formoptions = new Form_options({ props: { formOptions: ctx.formOptions } });
@@ -5006,7 +5007,7 @@ function create_if_block_1$5(ctx) {
 	};
 }
 
-// (95:8) <Button on:click={() => (formOptionsMode = true)}>
+// (77:8) <Button on:click={() => (formOptionsMode = true)}>
 function create_default_slot_5(ctx) {
 	let t;
 
@@ -5023,7 +5024,7 @@ function create_default_slot_5(ctx) {
 	};
 }
 
-// (101:8) <Field {params} {createEntry} {id} {validateValueStore}>
+// (83:8) <Field {params} {createEntry} {id} {validateValueStore}>
 function create_default_slot_4(ctx) {
 	let button;
 	let dispose;
@@ -5051,7 +5052,7 @@ function create_default_slot_4(ctx) {
 	};
 }
 
-// (99:4) {#each fields as { id, params }
+// (81:4) {#each fields as { id, params }
 function create_each_block$1(key_1, ctx) {
 	let div;
 	let current;
@@ -5110,7 +5111,7 @@ function create_each_block$1(key_1, ctx) {
 	};
 }
 
-// (109:8) {#if fields.length}
+// (91:8) {#if fields.length}
 function create_if_block$6(ctx) {
 	let current;
 
@@ -5145,7 +5146,7 @@ function create_if_block$6(ctx) {
 	};
 }
 
-// (110:10) <Button type="submit">
+// (92:10) <Button type="submit">
 function create_default_slot_3$1(ctx) {
 	let t;
 
@@ -5162,7 +5163,7 @@ function create_default_slot_3$1(ctx) {
 	};
 }
 
-// (108:6) <NewField on:newField={onNewField}>
+// (90:6) <NewField on:newField={onNewField}>
 function create_default_slot_2$1(ctx) {
 	let if_block_anchor;
 	let current;
@@ -5214,7 +5215,7 @@ function create_default_slot_2$1(ctx) {
 	};
 }
 
-// (82:2) <Reset n={formReset}>
+// (64:2) <Reset n={formReset}>
 function create_default_slot_1$2(ctx) {
 	let form;
 	let div0;
@@ -5364,7 +5365,7 @@ function create_default_slot_1$2(ctx) {
 	};
 }
 
-// (81:0) <Widget>
+// (63:0) <Widget>
 function create_default_slot$2(ctx) {
 	let current;
 
@@ -5458,24 +5459,6 @@ function instance$b($$self, $$props, $$invalidate) {
 		{
 			id: id++,
 			params: { type: "string", value: "", min: 2 }
-		},
-		{
-			id: id++,
-			params: {
-				type: "string",
-				value: "",
-				min: 2,
-				required: true
-			}
-		},
-		{
-			id: id++,
-			params: {
-				type: "string",
-				value: "",
-				min: 2,
-				optional: true
-			}
 		}
 	];
 
@@ -5491,7 +5474,7 @@ function instance$b($$self, $$props, $$invalidate) {
 		validateOnEvents: { change: true, input: false, blur: false },
 		clearErrorsOnEvents: { reset: true, focus: false },
 		listenInputEvents: 2,
-		presence: "required",
+		presence: "optional",
 		trim: false,
 		includeAllEntries: false
 	};
