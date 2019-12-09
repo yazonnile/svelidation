@@ -1,5 +1,8 @@
 # Svelidation changelog
 
+# 1.0.3
+* fixed preventing validation in store input event
+
 # 1.0.2
 * add builder on demo page
 * **FIXED** optional-required-presence behavior
