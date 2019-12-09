@@ -4907,7 +4907,7 @@ function get_each_context$1(ctx, list, i) {
 	return child_ctx;
 }
 
-// (73:6) {:else}
+// (74:6) {:else}
 function create_else_block$5(ctx) {
 	let div;
 	let t;
@@ -4973,7 +4973,7 @@ function create_else_block$5(ctx) {
 	};
 }
 
-// (67:6) {#if formOptionsMode}
+// (68:6) {#if formOptionsMode}
 function create_if_block_1$5(ctx) {
 	let current;
 	const formoptions = new Form_options({ props: { formOptions: ctx.formOptions } });
@@ -5008,7 +5008,7 @@ function create_if_block_1$5(ctx) {
 	};
 }
 
-// (77:8) <Button on:click={() => (formOptionsMode = true)}>
+// (78:8) <Button on:click={() => (formOptionsMode = true)}>
 function create_default_slot_5(ctx) {
 	let t;
 
@@ -5025,7 +5025,7 @@ function create_default_slot_5(ctx) {
 	};
 }
 
-// (83:8) <Field {params} {createEntry} {id} {validateValueStore}>
+// (84:8) <Field {params} {createEntry} {id} {validateValueStore}>
 function create_default_slot_4(ctx) {
 	let button;
 	let dispose;
@@ -5053,7 +5053,7 @@ function create_default_slot_4(ctx) {
 	};
 }
 
-// (81:4) {#each fields as { id, params }
+// (82:4) {#each fields as { id, params }
 function create_each_block$1(key_1, ctx) {
 	let div;
 	let current;
@@ -5112,7 +5112,7 @@ function create_each_block$1(key_1, ctx) {
 	};
 }
 
-// (91:8) {#if fields.length}
+// (92:8) {#if fields.length}
 function create_if_block$6(ctx) {
 	let current;
 
@@ -5147,7 +5147,7 @@ function create_if_block$6(ctx) {
 	};
 }
 
-// (92:10) <Button type="submit">
+// (93:10) <Button type="submit">
 function create_default_slot_3$1(ctx) {
 	let t;
 
@@ -5164,7 +5164,7 @@ function create_default_slot_3$1(ctx) {
 	};
 }
 
-// (90:6) <NewField on:newField={onNewField}>
+// (91:6) <NewField on:newField={onNewField}>
 function create_default_slot_2$1(ctx) {
 	let if_block_anchor;
 	let current;
@@ -5216,7 +5216,7 @@ function create_default_slot_2$1(ctx) {
 	};
 }
 
-// (64:2) <Reset n={formReset}>
+// (65:2) <Reset n={formReset}>
 function create_default_slot_1$2(ctx) {
 	let form;
 	let div0;
@@ -5366,7 +5366,7 @@ function create_default_slot_1$2(ctx) {
 	};
 }
 
-// (63:0) <Widget>
+// (64:0) <Widget>
 function create_default_slot$2(ctx) {
 	let current;
 
@@ -5459,7 +5459,12 @@ function instance$b($$self, $$props, $$invalidate) {
 	let fields = [
 		{
 			id: id++,
-			params: { type: "string", value: "", min: 2 }
+			params: {
+				type: "string",
+				value: "",
+				min: 2,
+				required: true
+			}
 		}
 	];
 
@@ -10283,7 +10288,7 @@ function add_css$c() {
 	append(document.head, style);
 }
 
-// (37:2) <Button on:click={() => ($value--, validateValueStore(value))}>
+// (36:2) <Button on:click={() => ($value--, validateValueStore(value))}>
 function create_default_slot_2$9(ctx) {
 	let t;
 
@@ -10300,7 +10305,7 @@ function create_default_slot_2$9(ctx) {
 	};
 }
 
-// (39:2) <Button on:click={() => ($value++, validateValueStore(value))}>
+// (38:2) <Button on:click={() => ($value++, validateValueStore(value))}>
 function create_default_slot_1$d(ctx) {
 	let t;
 
@@ -10317,7 +10322,7 @@ function create_default_slot_1$d(ctx) {
 	};
 }
 
-// (21:0) <Form {createForm} title="Without inputs">
+// (20:0) <Form {createForm} title="Without inputs">
 function create_default_slot$g(ctx) {
 	let t0;
 	let t1;

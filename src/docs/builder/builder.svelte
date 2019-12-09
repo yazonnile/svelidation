@@ -15,7 +15,8 @@
     params: {
       type: 'string',
       value: '',
-      min: 2
+      min: 2,
+      required: true
     }
   }];
 
