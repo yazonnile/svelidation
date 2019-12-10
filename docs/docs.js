@@ -965,8 +965,7 @@ const installType = {
     },
     email: () => {
         ensureType('email', {
-            typeCheck: (value) => (typeof value === 'string'
-                && !!(String(value)).match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/))
+            typeCheck: (value) => (typeof value === 'string' && (value === '' || !!(String(value)).match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)))
         });
     },
     number: () => {
@@ -6254,11 +6253,19 @@ class String$1 extends SvelteComponent {
 function create_default_slot_1$4(ctx) {
 	let input_1;
 	let input_action;
-	let t;
+	let t0;
+	let t1;
 	let current;
 	let dispose;
 
-	const error = new Error$1({
+	const error0 = new Error$1({
+			props: {
+				errors: ctx.errors,
+				errorCode: "required"
+			}
+		});
+
+	const error1 = new Error$1({
 			props: {
 				errors: ctx.errors,
 				errorCode: "typeCheck",
@@ -6269,8 +6276,10 @@ function create_default_slot_1$4(ctx) {
 	return {
 		c() {
 			input_1 = element("input");
-			t = space();
-			create_component(error.$$.fragment);
+			t0 = space();
+			create_component(error0.$$.fragment);
+			t1 = space();
+			create_component(error1.$$.fragment);
 			attr(input_1, "class", "input-text");
 			attr(input_1, "type", "email");
 			attr(input_1, "placeholder", "type: 'email', required: true");
@@ -6280,8 +6289,10 @@ function create_default_slot_1$4(ctx) {
 			insert(target, input_1, anchor);
 			set_input_value(input_1, ctx.$value);
 			input_action = ctx.input.call(null, input_1) || ({});
-			insert(target, t, anchor);
-			mount_component(error, target, anchor);
+			insert(target, t0, anchor);
+			mount_component(error0, target, anchor);
+			insert(target, t1, anchor);
+			mount_component(error1, target, anchor);
 			current = true;
 		},
 		p(changed, ctx) {
@@ -6291,18 +6302,22 @@ function create_default_slot_1$4(ctx) {
 		},
 		i(local) {
 			if (current) return;
-			transition_in(error.$$.fragment, local);
+			transition_in(error0.$$.fragment, local);
+			transition_in(error1.$$.fragment, local);
 			current = true;
 		},
 		o(local) {
-			transition_out(error.$$.fragment, local);
+			transition_out(error0.$$.fragment, local);
+			transition_out(error1.$$.fragment, local);
 			current = false;
 		},
 		d(detaching) {
 			if (detaching) detach(input_1);
 			if (input_action && is_function(input_action.destroy)) input_action.destroy();
-			if (detaching) detach(t);
-			destroy_component(error, detaching);
+			if (detaching) detach(t0);
+			destroy_component(error0, detaching);
+			if (detaching) detach(t1);
+			destroy_component(error1, detaching);
 			dispose();
 		}
 	};

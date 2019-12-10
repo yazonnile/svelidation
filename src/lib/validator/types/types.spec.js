@@ -82,7 +82,7 @@ describe('types', () => {
     describe('email', () => {
       it('typeCheck', () => {
         const { typeCheck } = getType('email');
-        expect(typeCheck('')).toBeFalse();
+        expect(typeCheck('')).toBeTrue();
         expect(typeCheck(undefined)).toBeFalse();
         expect(typeCheck(null)).toBeFalse();
         expect(typeCheck(' ')).toBeFalse();

@@ -24,6 +24,7 @@
   <Code code={jsCode} />
   <Row labelText="Type your email">
     <input use:input bind:value={$value} class="input-text" type="email" placeholder="type: 'email', required: true" />
+    <Error {errors} errorCode="required" />
     <Error {errors} errorCode="typeCheck" errorText="Use valid email" />
   </Row>
   <Button type="submit" />

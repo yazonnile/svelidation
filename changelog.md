@@ -1,5 +1,8 @@
 # Svelidation changelog
 
+# 1.0.4
+* makes `email` `typeCheck` valid on empty string
+
 # 1.0.3
 * fixed preventing validation in store input event
 
