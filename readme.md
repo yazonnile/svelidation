@@ -15,8 +15,7 @@ const { createForm, createEntry } = createSvelidation();
 // 2. create a validation model
 const [ errorsStore, valueStore, useInput ] = createEntry({
   type: 'string',
-  min: 3,
-  max: 15
+  required: true
 });
 ```
 ```html
