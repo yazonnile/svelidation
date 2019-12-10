@@ -16,7 +16,11 @@ describe('spy', () => {
 
   const runTests = (name, params) => {
     describe(`${name}`, () => {
-      afterEach(() => {
+      beforeEach(() => {
+        removeSpies(params);
+      });
+
+      afterAll(() => {
         removeSpies(params);
       });
 

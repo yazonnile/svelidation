@@ -971,6 +971,7 @@ const installType = {
     number: () => {
         ensureType('number', {
             typeCheck: (value) => (typeof value === 'number' || (typeof value === 'string' && (value === '' || !isNaN(parseFloat(value))))),
+            required: value => !isNaN(typeof value === 'number' ? value : parseFloat(value)),
             min: (value, { min }) => (parseFloat(value) >= min),
             max: (value, { max }) => (parseFloat(value) <= max),
             between: (value, { between }) => (value >= between[0] && value <= between[1])
@@ -1014,9 +1015,6 @@ const installRule = {
         ensureRule('required', (value) => {
             if (value === undefined || value === null) {
                 return false;
-            }
-            if (typeof value === 'number') {
-                return !isNaN(value);
             }
             return !!String(value);
         });

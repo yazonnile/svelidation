@@ -1,5 +1,8 @@
 # Svelidation changelog
 
+# 1.1.1
+* add number own required rule
+
 # 1.1.0
 * makes empty arrays optional by default
 

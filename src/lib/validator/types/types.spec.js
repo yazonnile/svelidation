@@ -26,7 +26,7 @@ describe('types', () => {
       expect(emailType).toBeDefined();
       expect(Object.keys(emailType).sort()).toEqual(['typeCheck'].sort());
       expect(numberType).toBeDefined();
-      expect(Object.keys(numberType).sort()).toEqual(['typeCheck', 'min', 'max', 'between'].sort());
+      expect(Object.keys(numberType).sort()).toEqual(['typeCheck', 'required', 'min', 'max', 'between'].sort());
       expect(booleanType).toBeDefined();
       expect(Object.keys(booleanType).sort()).toEqual(['typeCheck', 'required'].sort());
       expect(arrayType).toBeDefined();
