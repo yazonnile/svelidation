@@ -1,5 +1,8 @@
 # Svelidation changelog
 
+# 1.0.7
+* fix `main`/`module` fields in `package.json`
+
 # 1.0.4
 * makes `email` `typeCheck` valid on empty string
 
