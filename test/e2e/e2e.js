@@ -1,5 +1,6 @@
 const path = require('path');
-const fs = require('fs-extra');
+const fsExtra = require('fs-extra');
+const fs = require('fs');
 const StaticServer = require('static-server');
 const createTestCafe = require('testcafe');
 const globby = require('globby');
@@ -19,20 +20,31 @@ moduleAlias.addAliases({
 
 (async() => {
   log('remove old files');
-  await fs.remove(paths.e2eDist);
+  await fsExtra.remove(paths.e2eDist);
 
   log('copy new files');
-  await fs.copy(`${paths.docsDist}/index.html`, `${paths.e2eDist}/index.html`);
+  await fsExtra.copy(`${paths.docsDist}/index.html`, `${paths.e2eDist}/index.html`);
 
   log('build test bundles');
-  const entryPoints = globby.sync([`${paths.e2e}/tests/**/*.js`]).filter(item => !item.match(/\.test\.js$/));
+  fs.mkdirSync(path.join(paths.e2eDist, 'entries'));
+  const entryPoints = globby.sync([`${paths.e2e}/tests/**/*.test.js`]);
   for (let i = 0; i < entryPoints.length; i++) {
+    const testName = path.basename(entryPoints[i], '.test.js');
+    const entryPath = path.join(paths.e2eDist, `entries/${testName}.js`);
+
+    // create test entry
+    fs.writeFileSync(
+      entryPath,
+      `import A from 'e2e/tests/${testName}/${testName}.svelte';new A({ target: document.getElementById('app') });`,
+      'utf8'
+    );
+
     const config = buildConfig(types.e2e, {
       production,
       initServe: i === entryPoints.length - 1
     });
 
-    const input = { input: entryPoints[i], plugins: config.plugins };
+    const input = { input: entryPath, plugins: config.plugins };
     const { output } = config;
     const bundle = await rollup.rollup(input);
     await bundle.write(output);

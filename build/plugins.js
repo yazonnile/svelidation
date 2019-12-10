@@ -12,7 +12,8 @@ module.exports = ({ types, paths }) => (pluginsNames, { type, production }) => {
           lib: paths.lib,
           docs: paths.docs,
           dist: paths.dist,
-          helpers: `${paths.e2e}/helpers`
+          helpers: `${paths.e2e}/helpers`,
+          e2e: paths.e2e
         },
         resolve: ['.ts', '.js', '.svelte']
       });
