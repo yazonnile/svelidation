@@ -16,7 +16,8 @@
 });`;
 
   const jsCode = `<input use:input bind:value={$value} />
-{#if $errors.includes('typeCheck')}Use valid email{/if}`;
+{#if $errors.includes('typeCheck')}Use valid email{/if}
+{#if $errors.includes('required')}This field is required{/if}`;
 </script>
 
 <Form {createForm} title="email" type>

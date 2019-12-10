@@ -1080,7 +1080,7 @@ const getScope = ({ type, optional, ...rules }) => {
     }, {});
 };
 const skipValidation = (value, { optional, required = false }) => {
-    const valueIsAbsent = [undefined, null, ''].indexOf(value) > -1;
+    const valueIsAbsent = [undefined, null, ''].indexOf(value) > -1 || (Array.isArray(value) && !value.length);
     const valueIsOptional = typeof optional === 'boolean' ? optional : !required;
     return valueIsAbsent && valueIsOptional;
 };
@@ -5979,7 +5979,7 @@ function create_default_slot_2$2(ctx) {
 	};
 }
 
-// (35:2) <Row>
+// (36:2) <Row>
 function create_default_slot_1$3(ctx) {
 	let input;
 	let inputMax_action;
@@ -6077,7 +6077,8 @@ function create_default_slot$4(ctx) {
 				code: `<input use:inputMin bind:value={$valueMin} />
 {#if $errorsMin.includes('min')}Use at least 3 symbols{/if}
 <input use:inputMax bind:value={$valueMax} />
-{#if $errorsMax.includes('max')}Use 5 or less symbols{/if}`
+{#if $errorsMax.includes('max')}Use 5 or less symbols{/if}
+{#if $errorsMax.includes('required')}This field is required{/if}`
 			}
 		});
 
@@ -6329,7 +6330,7 @@ function create_default_slot_1$4(ctx) {
 	};
 }
 
-// (22:0) <Form {createForm} title="email" type>
+// (23:0) <Form {createForm} title="email" type>
 function create_default_slot$5(ctx) {
 	let t0;
 	let t1;
@@ -6460,7 +6461,8 @@ function instance$f($$self, $$props, $$invalidate) {
 });`;
 
 	const jsCode = `<input use:input bind:value={$value} />
-{#if $errors.includes('typeCheck')}Use valid email{/if}`;
+{#if $errors.includes('typeCheck')}Use valid email{/if}
+{#if $errors.includes('required')}This field is required{/if}`;
 
 	function input_1_input_handler() {
 		$value = this.value;
@@ -7073,12 +7075,20 @@ function create_default_slot_2$4(ctx) {
 	let t6;
 	let t7;
 	let t8;
+	let t9;
 	let current;
 	let dispose;
 	const code0 = new Code({ props: { code: ctx.js1 } });
 	const code1 = new Code({ props: { code: ctx.html1 } });
 
-	const error = new Error$1({
+	const error0 = new Error$1({
+			props: {
+				errors: ctx.errors,
+				errorCode: "required"
+			}
+		});
+
+	const error1 = new Error$1({
 			props: {
 				errors: ctx.errors,
 				errorCode: "min",
@@ -7107,8 +7117,10 @@ function create_default_slot_2$4(ctx) {
 			input2 = element("input");
 			t6 = text(" Third option");
 			t7 = space();
-			create_component(error.$$.fragment);
+			create_component(error0.$$.fragment);
 			t8 = space();
+			create_component(error1.$$.fragment);
+			t9 = space();
 			create_component(button.$$.fragment);
 			input0.__value = input0_value_value = 1;
 			input0.value = input0.__value;
@@ -7157,8 +7169,10 @@ function create_default_slot_2$4(ctx) {
 			input_action_2 = ctx.input.call(null, input2) || ({});
 			append(label2, t6);
 			insert(target, t7, anchor);
-			mount_component(error, target, anchor);
+			mount_component(error0, target, anchor);
 			insert(target, t8, anchor);
+			mount_component(error1, target, anchor);
+			insert(target, t9, anchor);
 			mount_component(button, target, anchor);
 			current = true;
 		},
@@ -7179,14 +7193,16 @@ function create_default_slot_2$4(ctx) {
 			if (current) return;
 			transition_in(code0.$$.fragment, local);
 			transition_in(code1.$$.fragment, local);
-			transition_in(error.$$.fragment, local);
+			transition_in(error0.$$.fragment, local);
+			transition_in(error1.$$.fragment, local);
 			transition_in(button.$$.fragment, local);
 			current = true;
 		},
 		o(local) {
 			transition_out(code0.$$.fragment, local);
 			transition_out(code1.$$.fragment, local);
-			transition_out(error.$$.fragment, local);
+			transition_out(error0.$$.fragment, local);
+			transition_out(error1.$$.fragment, local);
 			transition_out(button.$$.fragment, local);
 			current = false;
 		},
@@ -7203,15 +7219,17 @@ function create_default_slot_2$4(ctx) {
 			ctx.$$binding_groups[0].splice(ctx.$$binding_groups[0].indexOf(input2), 1);
 			if (input_action_2 && is_function(input_action_2.destroy)) input_action_2.destroy();
 			if (detaching) detach(t7);
-			destroy_component(error, detaching);
+			destroy_component(error0, detaching);
 			if (detaching) detach(t8);
+			destroy_component(error1, detaching);
+			if (detaching) detach(t9);
 			destroy_component(button, detaching);
 			run_all(dispose);
 		}
 	};
 }
 
-// (63:2) <Row labelText="Pick few options">
+// (67:2) <Row labelText="Pick few options">
 function create_default_slot_1$6(ctx) {
 	let select;
 	let option0;
@@ -7289,7 +7307,7 @@ function create_default_slot_1$6(ctx) {
 	};
 }
 
-// (60:0) <Form createForm={createForm2} title="array" subtitle="min, max, includes" type>
+// (64:0) <Form createForm={createForm2} title="array" subtitle="min, max, includes" type>
 function create_default_slot$8(ctx) {
 	let t0;
 	let t1;
@@ -7442,7 +7460,14 @@ function instance$i($$self, $$props, $$invalidate) {
 	let $valueSelect;
 	const { createEntry: createEntry1, createForm: createForm1 } = createValidation({ validateOnEvents: { input: true } });
 	const { createEntry: createEntry2, createForm: createForm2 } = createValidation({ validateOnEvents: { input: true } });
-	const [errors, value, input] = createEntry1({ type: "array", min: 2, value: [] });
+
+	const [errors, value, input] = createEntry1({
+		type: "array",
+		min: 2,
+		required: true,
+		value: []
+	});
+
 	component_subscribe($$self, value, value => $$invalidate("$value", $value = value));
 	const [errorsSelect, valueSelect, inputSelect] = createEntry2({ type: "array", required: true, value: [] });
 	component_subscribe($$self, valueSelect, value => $$invalidate("$valueSelect", $valueSelect = value));
@@ -7450,13 +7475,15 @@ function instance$i($$self, $$props, $$invalidate) {
 	const js1 = `const [ errors, value, input ] = createEntry({
   type: 'array',
   min: 2,
+  required: true,
   value: []
 });`;
 
 	const html1 = `<input use:input bind:group={$value} value={1} type="checkbox" /> First option
 <input use:input bind:group={$value} value={2} type="checkbox" /> Second option
 <input use:input bind:group={$value} value={3} type="checkbox" /> Third option
-{#if $errors.includes('min')}Pick something please{/if}`;
+{#if $errors.includes('required')}Pick something please{/if}
+{#if $errors.includes('min')}Pick at least 2, please{/if}`;
 
 	const js2 = `const [ errors, value, input ] = createEntry({
   type: 'array',

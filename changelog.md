@@ -1,5 +1,8 @@
 # Svelidation changelog
 
+# 1.1.0
+* makes empty arrays optional by default
+
 # 1.0.9
 * refactored spies paradigm. From now on global spies run once per type
 

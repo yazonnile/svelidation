@@ -27,7 +27,8 @@
   <Code code={`<input use:inputMin bind:value={$valueMin} />
 {#if $errorsMin.includes('min')}Use at least 3 symbols{/if}
 <input use:inputMax bind:value={$valueMax} />
-{#if $errorsMax.includes('max')}Use 5 or less symbols{/if}`} />
+{#if $errorsMax.includes('max')}Use 5 or less symbols{/if}
+{#if $errorsMax.includes('required')}This field is required{/if}`} />
   <Row>
     <input use:inputMin bind:value={$valueMin} class="input-text" placeholder="type: 'string', min: 3" />
     <Error errors={errorsMin} errorCode="min" errorText="Use at least 3 symbols" />

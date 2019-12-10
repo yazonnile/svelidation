@@ -330,7 +330,7 @@ const getScope = ({ type, optional, ...rules }) => {
     }, {});
 };
 const skipValidation = (value, { optional, required = false }) => {
-    const valueIsAbsent = [undefined, null, ''].indexOf(value) > -1;
+    const valueIsAbsent = [undefined, null, ''].indexOf(value) > -1 || (Array.isArray(value) && !value.length);
     const valueIsOptional = typeof optional === 'boolean' ? optional : !required;
     return valueIsAbsent && valueIsOptional;
 };

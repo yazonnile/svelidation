@@ -11,6 +11,7 @@
   const [ errors, value, input ] = createEntry1({
     type: 'array',
     min: 2,
+    required: true,
     value: []
   });
 
@@ -23,13 +24,15 @@
   const js1 = `const [ errors, value, input ] = createEntry({
   type: 'array',
   min: 2,
+  required: true,
   value: []
 });`;
 
   const html1 = `<input use:input bind:group={$value} value={1} type="checkbox" /> First option
 <input use:input bind:group={$value} value={2} type="checkbox" /> Second option
 <input use:input bind:group={$value} value={3} type="checkbox" /> Third option
-{#if $errors.includes('min')}Pick something please{/if}`;
+{#if $errors.includes('required')}Pick something please{/if}
+{#if $errors.includes('min')}Pick at least 2, please{/if}`;
 
   const js2 = `const [ errors, value, input ] = createEntry({
   type: 'array',
@@ -53,6 +56,7 @@
     <label><input use:input bind:group={$value} value={2} class="input-choice" type="checkbox" /> Second option</label>
     <label><input use:input bind:group={$value} value={3} class="input-choice" type="checkbox" /> Third option</label>
   </div>
+  <Error {errors} errorCode="required" />
   <Error {errors} errorCode="min" errorText="Pick at least 2, please" />
   <Button type="submit" />
 </Form>

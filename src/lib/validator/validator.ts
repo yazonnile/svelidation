@@ -94,7 +94,7 @@ const getScope = ({ type, optional, ...rules }: SvelidationValidatorParams): Sve
 };
 
 const skipValidation = (value: any, { optional, required = false }): boolean => {
-  const valueIsAbsent = [undefined, null, ''].indexOf(value) > -1;
+  const valueIsAbsent = [undefined, null, ''].indexOf(value) > -1 || (Array.isArray(value) && !value.length);
   const valueIsOptional = typeof optional === 'boolean' ? optional : !required;
   return valueIsAbsent && valueIsOptional;
 };
