@@ -1,6 +1,6 @@
 {
   "name": "svelidation",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Validate your svelte application easy",
   "keywords": [
     "svelte",
@@ -19,6 +19,7 @@
   "license": "MIT",
   "author": "yazonnile",
   "main": "build/index.js",
+  "module": "build/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yazonnile/svelidation.git"
