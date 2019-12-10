@@ -108,13 +108,13 @@ describe('validator', () => {
         next(value);
       });
       let remove = addSpy(first);
-      test('1234', 0); // 2 calls coz global spy
-      test('12', 1); // same
-      testWithUndefined('1'); // just one coz abort on typeCheck
-      expect(first).toHaveBeenCalledTimes(5);
+      test('1234', 0); // 1 calls coz global spy
+      test('12', 1); // 1 same
+      testWithUndefined('1'); // same
+      expect(first).toHaveBeenCalledTimes(3);
       remove();
       test('1', 1);
-      expect(first).toHaveBeenCalledTimes(5);
+      expect(first).toHaveBeenCalledTimes(3);
     });
 
     it('stop', () => {
@@ -149,10 +149,10 @@ describe('validator', () => {
       const remove = addSpy(spy);
       test(0);
       test(0);
-      expect(spy).toHaveBeenCalledTimes(4);
+      expect(spy).toHaveBeenCalledTimes(2);
       remove();
       test(0);
-      expect(spy).toHaveBeenCalledTimes(4);
+      expect(spy).toHaveBeenCalledTimes(2);
     });
 
 
@@ -207,7 +207,7 @@ describe('validator', () => {
       addSpy(typeSpy, { type: 'string' });
       addSpy(typeRuleSpy, { type: 'string', ruleName: 'min' });
       test();
-      expect(typeSpy).toHaveBeenCalledTimes(8);
+      expect(typeSpy).toHaveBeenCalledTimes(4);
       expect(typeRuleSpy).toHaveBeenCalledTimes(2);
     });
 
@@ -217,7 +217,7 @@ describe('validator', () => {
       addSpy(typeSpy, { type: 'string' });
       addSpy(ruleSpy, { ruleName: 'typeCheck' });
       test();
-      expect(typeSpy).toHaveBeenCalledTimes(8);
+      expect(typeSpy).toHaveBeenCalledTimes(4);
       expect(ruleSpy).toHaveBeenCalledTimes(5);
     });
 
@@ -231,20 +231,23 @@ describe('validator', () => {
       expect(ruleSpy).toHaveBeenCalledTimes(3);
     });
 
-    it('type/typeRule/rule', () => {
+    it('type/typeRule/rule/global', () => {
       const typeSpy = getSpy();
       const typeRuleSpy = getSpy();
       const ruleSpy1 = getSpy();
       const ruleSpy2 = getSpy();
+      const globalSpy = getSpy();
       addSpy(typeSpy, { type: 'number' });
       addSpy(typeRuleSpy, { type: 'string', ruleName: 'max' });
       addSpy(ruleSpy1, { ruleName: 'min' });
       addSpy(ruleSpy2, { ruleName: 'equal' });
+      addSpy(globalSpy);
       test();
-      expect(typeSpy).toHaveBeenCalledTimes(2);
+      expect(typeSpy).toHaveBeenCalledTimes(1);
       expect(typeRuleSpy).toHaveBeenCalledTimes(1);
       expect(ruleSpy1).toHaveBeenCalledTimes(3);
       expect(ruleSpy2).toHaveBeenCalledTimes(1);
+      expect(globalSpy).toHaveBeenCalledTimes(5);
     });
   });
 

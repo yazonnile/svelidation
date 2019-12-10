@@ -314,7 +314,7 @@ const runRuleWithSpies = ({ value, params: initialParams, rule, ruleName, spies 
     if (!stop && !rule(nextValue, nextParams)) {
         errors.push(ruleName);
     }
-    return { errors, stop };
+    return { errors, stop, nextValue, nextParams };
 };
 const getScope = ({ type, optional, ...rules }) => {
     const typeRules = getType(type);
@@ -335,7 +335,7 @@ const skipValidation = (value, { optional, required = false }) => {
     return valueIsAbsent && valueIsOptional;
 };
 const validate = (value, validateParams) => {
-    const { trim = false, ...params } = validateParams;
+    let { trim = false, ...params } = validateParams;
     if (trim && typeof value === 'string') {
         value = value.trim();
     }
@@ -358,11 +358,17 @@ const validate = (value, validateParams) => {
     for (let i = 0; i < ruleNames.length; i++) {
         const typeRuleSpies = getSpies({ type, ruleName: ruleNames[i] });
         const ruleSpies = getSpies({ ruleName: ruleNames[i] });
-        const { stop, errors, abort } = runRuleWithSpies({
-            value, params,
+        const spies = [];
+        if (i === 0) {
+            spies.push(...globalSpies);
+            spies.push(...typeSpies);
+        }
+        spies.push(...typeRuleSpies);
+        spies.push(...ruleSpies);
+        const { stop, errors, abort, nextValue, nextParams } = runRuleWithSpies({
+            value, params, spies,
             rule: scope[ruleNames[i]],
-            ruleName: ruleNames[i],
-            spies: [...globalSpies, ...typeSpies, ...typeRuleSpies, ...ruleSpies]
+            ruleName: ruleNames[i]
         });
         // exit validation with no errors in case of abort call
         if (abort) {
@@ -373,9 +379,9 @@ const validate = (value, validateParams) => {
         if (stop || (i === 0 && errors.length)) {
             return errors;
         }
-        else {
-            result.push(...errors);
-        }
+        result.push(...errors);
+        value = nextValue;
+        params = nextParams;
     }
     return result;
 };

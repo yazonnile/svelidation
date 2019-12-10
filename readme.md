@@ -378,7 +378,7 @@ validateValueStore(stringValue);
 
 First of all, take a look at the line with `next(value)` call. This is VERY IMPORTANT LINE in spies paradigm. Remember? Spy has god power, but it has to give this power to next spy. This.
 
-`next(value, params)` - is the function witch spy have to call with any value spy wants. This new value will be taken by next validation rules or another spies. Almost same with the params. But params will be merged with original for next validators. So the value will replace the original one, params will be ,merged
+`next(value, params)` - is the function witch spy have to call with any value spy wants. This new value will be taken by next validation rules or another spies (until type validation ends). Almost same with the params. But params will be merged with original for next validators. So the value will replace the original one, params will be merged
 
 And it can returns errors, that will be merged with validation errors
 
@@ -415,10 +415,36 @@ What happens if we will not call `next`? Validation process will stop and return
 `abort()` method - its an emergency brake. If it calls - validation stop and return nothing.
 
 And last, but not least `spyParams?: { ruleName?: string, type?: string }`. This is an optional object to describe spy's field of responsibilty.
-  - `{ ruleName: 'min', type: 'string' }` - spy for specific rule in specific type
-  - `{ ruleName: 'match' }` - spy for specific rule (global and from type)
-  - `{ type: 'array' }` - spy for EVERY rule in specific type
-  - `undefined` - spy will be called for every rule, every type
+  - `{ ruleName: 'min', type: 'string' }` - spy for specific rule in specific type. Will be called each time, when current pair rule-type calls
+  - `{ ruleName: 'match' }` - spy for specific rule (global and from type). Will be called with each `ruleName` check
+  - `{ type: 'array' }` - spy for EVERY rule in specific type. Will be called once per `type`.
+  - `undefined` - spy will be called for every rule, every type. Will be called once per every type.
+
+So, for example if you create spies:
+```js
+addSpy(() => {}); // 1
+addSpy(() => {}, { type: 'string' }); // 2
+addSpy(() => {}, { type: 'string', ruleName: 'min' }); // 3
+addSpy(() => {}, { ruleName: 'min' }); // 4
+// run validation for a { type: 'string', min: 5 }
+// each spy will be called once
+
+addSpy(() => {}); // 1
+addSpy(() => {}, { type: 'string' }); // 2
+addSpy(() => {}, { type: 'string', ruleName: 'min' }); // 3
+addSpy(() => {}, { ruleName: 'min' }); // 4
+// run validation for a { type: 'string', min: 5 }, { type: 'string', max: 5 }
+// 3 and 4 will be called once.
+// 1 and 2 - twice, because we validate 2 entries (1st spy), and 2 strings (2nd spy)
+
+addSpy(() => {}); // 1
+addSpy(() => {}, { type: 'string' }); // 2
+addSpy(() => {}, { type: 'string', ruleName: 'min' }); // 3
+addSpy(() => {}, { ruleName: 'min' }); // 4
+// run validation for a { type: 'string', min: 5 }, { type: 'email', required: true }
+// 1 - twice, because we validate 2 entries
+// 2, 3 and 4 will be called once
+```
 
 Last thing about the spies. If you create a spy that will observe `typeCheck` method of any type - remember, that returning an error from that spy will stop current entry validation because `typeCheck` fails.
 
