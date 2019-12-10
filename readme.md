@@ -23,12 +23,8 @@ const [ errorsStore, valueStore, useInput ] = createEntry({
 <form use:createForm>
   <input type="text" use:useInput bind:value={$valueStore} />
 
-  {#if $errorsStore.includes('min')}
-    Login should be at least 3 symbols long
-  {/if}
-
-  {#if $errorsStore.includes('max')}
-    Login should be not longer than 15 symbols
+  {#if $errorsStore.includes('required')}
+    This field is required
   {/if}
 
   <button type="submit">Submit</button>

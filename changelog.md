@@ -1,5 +1,8 @@
 # Svelidation changelog
 
+# 1.0.8
+* fix readme example
+
 # 1.0.7
 * fix `main`/`module` fields in `package.json`
 
