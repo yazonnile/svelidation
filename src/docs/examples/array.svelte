@@ -29,7 +29,7 @@
   const html1 = `<input use:input bind:group={$value} value={1} type="checkbox" /> First option
 <input use:input bind:group={$value} value={2} type="checkbox" /> Second option
 <input use:input bind:group={$value} value={3} type="checkbox" /> Third option
-{#if $errors.includes('required')}Pick something please{/if}`;
+{#if $errors.includes('min')}Pick something please{/if}`;
 
   const js2 = `const [ errors, value, input ] = createEntry({
   type: 'array',

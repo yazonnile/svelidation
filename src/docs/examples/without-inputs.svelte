@@ -9,7 +9,7 @@
     includeAllEntries: true
   });
 
-  let [ errors, value, input ] = createEntry({
+  let [ errors, value ] = createEntry({
     type: 'number',
     min: 3,
     max: 5,
@@ -22,7 +22,7 @@
   includeAllEntries: true
 });
 
-let [ errors, value, input ] = createEntry({
+let [ errors, value ] = createEntry({
   type: 'number',
   min: 3,
   max: 5,
@@ -45,7 +45,8 @@ let [ errors, value, input ] = createEntry({
     display: inline-block;
     font-size: 30px;
     line-height: 30px;
-    margin-top: 5px;
+    margin-top: 4px;
+    padding: 0 10px;
     vertical-align: top;
   }
 

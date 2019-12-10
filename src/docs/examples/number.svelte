@@ -24,19 +24,11 @@
 ]);`;
 
   const htmlCode = `<input use:inputMin bind:value={$valueMin} type="number" />
-{#if $errorsMin.includes('required')}
-  This field is required
-{/if}
-{if $errorsMin.includes('min')}
-  For boomers only!
-{/if}
+{#if $errorsMin.includes('required')}This field is required{/if}
+{#if $errorsMin.includes('min')}For boomers only!{/if}
 <input use:inputMax bind:value={$valueMax} type="number" />
-{#if $errorsMax.includes('required')}
-  This field is required
-{/if}
-{if $errorsMax.includes('max')}
-  Not for boomers!
-{/if}`;
+{#if $errorsMax.includes('required')}This field is required{/if}
+{#if $errorsMax.includes('max')}Not for boomers!{/if}`;
 </script>
 
 <Form {createForm} title="number" subtitle="min, max, between" type>

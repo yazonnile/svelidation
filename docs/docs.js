@@ -6548,7 +6548,7 @@ function create_default_slot_2$3(ctx) {
 	};
 }
 
-// (50:2) <Row labelText="Type your age #2">
+// (42:2) <Row labelText="Type your age #2">
 function create_default_slot_1$5(ctx) {
 	let input;
 	let input_updating = false;
@@ -6630,7 +6630,7 @@ function create_default_slot_1$5(ctx) {
 	};
 }
 
-// (42:0) <Form {createForm} title="number" subtitle="min, max, between" type>
+// (34:0) <Form {createForm} title="number" subtitle="min, max, between" type>
 function create_default_slot$6(ctx) {
 	let t0;
 	let t1;
@@ -6797,19 +6797,11 @@ function instance$g($$self, $$props, $$invalidate) {
 ]);`;
 
 	const htmlCode = `<input use:inputMin bind:value={$valueMin} type="number" />
-{#if $errorsMin.includes('required')}
-  This field is required
-{/if}
-{if $errorsMin.includes('min')}
-  For boomers only!
-{/if}
+{#if $errorsMin.includes('required')}This field is required{/if}
+{#if $errorsMin.includes('min')}For boomers only!{/if}
 <input use:inputMax bind:value={$valueMax} type="number" />
-{#if $errorsMax.includes('required')}
-  This field is required
-{/if}
-{if $errorsMax.includes('max')}
-  Not for boomers!
-{/if}`;
+{#if $errorsMax.includes('required')}This field is required{/if}
+{#if $errorsMax.includes('max')}Not for boomers!{/if}`;
 
 	function input_input_handler() {
 		$valueMin = to_number(this.value);
@@ -7443,7 +7435,7 @@ function instance$i($$self, $$props, $$invalidate) {
 	const html1 = `<input use:input bind:group={$value} value={1} type="checkbox" /> First option
 <input use:input bind:group={$value} value={2} type="checkbox" /> Second option
 <input use:input bind:group={$value} value={3} type="checkbox" /> Third option
-{#if $errors.includes('required')}Pick something please{/if}`;
+{#if $errors.includes('min')}Pick something please{/if}`;
 
 	const js2 = `const [ errors, value, input ] = createEntry({
   type: 'array',
@@ -9441,7 +9433,7 @@ function create_else_block$6(ctx) {
 	};
 }
 
-// (57:23) 
+// (56:23) 
 function create_if_block_1$8(ctx) {
 	let t;
 	let current;
@@ -9508,7 +9500,7 @@ function create_if_block_1$8(ctx) {
 	};
 }
 
-// (51:2) {#if step === 0}
+// (50:2) {#if step === 0}
 function create_if_block$9(ctx) {
 	let t;
 	let current;
@@ -9575,7 +9567,7 @@ function create_if_block$9(ctx) {
 	};
 }
 
-// (58:4) <Row>
+// (57:4) <Row>
 function create_default_slot_4$1(ctx) {
 	let input;
 	let step2Input_action;
@@ -9631,7 +9623,7 @@ function create_default_slot_4$1(ctx) {
 	};
 }
 
-// (62:4) <Button type="submit">
+// (61:4) <Button type="submit">
 function create_default_slot_3$2(ctx) {
 	let t;
 
@@ -9648,7 +9640,7 @@ function create_default_slot_3$2(ctx) {
 	};
 }
 
-// (52:4) <Row>
+// (51:4) <Row>
 function create_default_slot_2$7(ctx) {
 	let input;
 	let step1Input_action;
@@ -9704,7 +9696,7 @@ function create_default_slot_2$7(ctx) {
 	};
 }
 
-// (56:4) <Button type="submit">
+// (55:4) <Button type="submit">
 function create_default_slot_1$b(ctx) {
 	let t;
 
@@ -9747,7 +9739,6 @@ const [
 ]);
 
 let step = 0;
-
 const onSuccess = () => step++;`
 			}
 		});
@@ -10283,8 +10274,8 @@ class Use_with_params extends SvelteComponent {
 
 function add_css$c() {
 	var style = element("style");
-	style.id = "svelte-u4c6t2-style";
-	style.textContent = "span.svelte-u4c6t2{display:inline-block;font-size:30px;line-height:30px;margin-top:5px;vertical-align:top}button{min-width:40px}";
+	style.id = "svelte-1u74her-style";
+	style.textContent = "span.svelte-1u74her{display:inline-block;font-size:30px;line-height:30px;margin-top:4px;padding:0 10px;vertical-align:top}button{min-width:40px}";
 	append(document.head, style);
 }
 
@@ -10340,7 +10331,7 @@ function create_default_slot$g(ctx) {
   includeAllEntries: true
 });
 
-let [ errors, value, input ] = createEntry({
+let [ errors, value ] = createEntry({
   type: 'number',
   min: 3,
   max: 5,
@@ -10409,7 +10400,7 @@ let [ errors, value, input ] = createEntry({
 			create_component(error0.$$.fragment);
 			t6 = space();
 			create_component(error1.$$.fragment);
-			attr(span, "class", "svelte-u4c6t2");
+			attr(span, "class", "svelte-1u74her");
 		},
 		m(target, anchor) {
 			mount_component(code0, target, anchor);
@@ -10529,7 +10520,7 @@ function create_fragment$q(ctx) {
 function instance$q($$self, $$props, $$invalidate) {
 	let $value;
 	const { createEntry, createForm, validateValueStore } = createValidation({ includeAllEntries: true });
-	let [errors, value, input] = createEntry({ type: "number", min: 3, max: 5, value: 3 });
+	let [errors, value] = createEntry({ type: "number", min: 3, max: 5, value: 3 });
 	component_subscribe($$self, value, value => $$invalidate("$value", $value = value));
 	const click_handler = () => (set_store_value(value, $value--, $value), validateValueStore(value));
 	const click_handler_1 = () => (set_store_value(value, $value++, $value), validateValueStore(value));
@@ -10548,7 +10539,7 @@ function instance$q($$self, $$props, $$invalidate) {
 class Without_inputs extends SvelteComponent {
 	constructor(options) {
 		super();
-		if (!document.getElementById("svelte-u4c6t2-style")) add_css$c();
+		if (!document.getElementById("svelte-1u74her-style")) add_css$c();
 		init(this, options, instance$q, create_fragment$q, safe_not_equal, {});
 	}
 }

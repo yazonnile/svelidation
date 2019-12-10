@@ -31,7 +31,6 @@ const [
 ]);
 
 let step = 0;
-
 const onSuccess = () => step++;`} />
   <Code code={`<form use:createForm={{ onSuccess }} on:submit|preventDefault>
   <p>current step is #{step+1}</p>
