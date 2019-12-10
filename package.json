@@ -18,9 +18,8 @@
   },
   "license": "MIT",
   "author": "yazonnile",
-  "main": "build/index.js",
-  "module": "build/index.js",
-  "files": ["dist", "src"],
+  "main": "dist/index.js",
+  "module": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/yazonnile/svelidation.git"
