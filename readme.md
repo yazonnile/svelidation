@@ -415,10 +415,10 @@ What happens if we will not call `next`? Validation process will stop and return
 `abort()` method - its an emergency brake. If it calls - validation stop and return nothing.
 
 And last, but not least `spyParams?: { ruleName?: string, type?: string }`. This is an optional object to describe spy's field of responsibilty.
-  - `{ ruleName: 'min', type: 'string' }` - spy for specific rule in specific type. Will be called each time, when current pair rule-type calls
-  - `{ ruleName: 'match' }` - spy for specific rule (global and from type). Will be called with each `ruleName` check
-  - `{ type: 'array' }` - spy for EVERY rule in specific type. Will be called once per `type`.
-  - `undefined` - spy will be called for every rule, every type. Will be called once per every type.
+  - `{ ruleName: 'min', type: 'string' }` - spy for specific rule in specific type. Will be called each time, when current pair rule-type check
+  - `{ ruleName: 'match' }` - spy for specific rule. Will be called with each `ruleName` check
+  - `{ type: 'array' }` - spy for EVERY validation of specific type. Will be called once per `type`.
+  - `undefined` - spy for everything. Will be called once before every validation.
 
 So, for example if you create spies:
 ```js
