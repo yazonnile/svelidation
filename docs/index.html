@@ -31,7 +31,7 @@
   <script>
     const url = new URL(location.href);
     const testName = url.searchParams.get('test') || 'docs';
-    const scriptUrl = `${testName}.js`;
+    const scriptUrl = `${testName}.js?refresh=${Date.now()}`;
     const script = document.createElement('script');
 
     // load script immediately after this embed code is executed
