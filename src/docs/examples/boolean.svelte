@@ -19,8 +19,7 @@
   required: true
 });`;
 
-  const htmlCode = `<input use:inputMin bind:value={$valueMin} class="input-text" />
-<input use:input bind:checked={$value} type="checkbox" />
+  const htmlCode = `<input use:input bind:checked={$value} type="checkbox" />
 {#if $errors.includes('required')}Please check{/if}`;
 </script>
 

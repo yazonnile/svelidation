@@ -7020,8 +7020,7 @@ function instance$h($$self, $$props, $$invalidate) {
   required: true
 });`;
 
-	const htmlCode = `<input use:inputMin bind:value={$valueMin} class="input-text" />
-<input use:input bind:checked={$value} type="checkbox" />
+	const htmlCode = `<input use:input bind:checked={$value} type="checkbox" />
 {#if $errors.includes('required')}Please check{/if}`;
 
 	function input_1_change_handler() {
@@ -8457,7 +8456,7 @@ function create_if_block$8(ctx) {
 	};
 }
 
-// (73:71) {#if $score === 100}
+// (75:71) {#if $score === 100}
 function create_if_block_1$7(ctx) {
 	let t;
 
@@ -8474,75 +8473,65 @@ function create_if_block_1$7(ctx) {
 	};
 }
 
-// (57:0) <Form {createForm} title="Pick as much sportsman as you can">
+// (59:0) <Form {createForm} title="Pick as much sportsman as you can">
 function create_default_slot$c(ctx) {
 	let div;
 	let label0;
 	let input0;
-	let input0_disabled_value;
 	let input0_value_value;
 	let input_action;
 	let t0;
 	let t1;
 	let label1;
 	let input1;
-	let input1_disabled_value;
 	let input1_value_value;
 	let input_action_1;
 	let t2;
 	let t3;
 	let label2;
 	let input2;
-	let input2_disabled_value;
 	let input2_value_value;
 	let input_action_2;
 	let t4;
 	let t5;
 	let label3;
 	let input3;
-	let input3_disabled_value;
 	let input3_value_value;
 	let input_action_3;
 	let t6;
 	let t7;
 	let label4;
 	let input4;
-	let input4_disabled_value;
 	let input4_value_value;
 	let input_action_4;
 	let t8;
 	let t9;
 	let label5;
 	let input5;
-	let input5_disabled_value;
 	let input5_value_value;
 	let input_action_5;
 	let t10;
 	let t11;
 	let label6;
 	let input6;
-	let input6_disabled_value;
 	let input6_value_value;
 	let input_action_6;
 	let t12;
 	let t13;
 	let label7;
 	let input7;
-	let input7_disabled_value;
 	let input7_value_value;
 	let input_action_7;
 	let t14;
 	let t15;
 	let label8;
 	let input8;
-	let input8_disabled_value;
 	let input8_value_value;
 	let input_action_8;
 	let t16;
 	let t17;
 	let label9;
 	let input9;
-	let input9_disabled_value;
 	let input9_value_value;
 	let input_action_9;
 	let t18;
@@ -8615,61 +8604,61 @@ function create_default_slot$c(ctx) {
 			create_component(code0.$$.fragment);
 			t22 = space();
 			create_component(code1.$$.fragment);
-			input0.disabled = input0_disabled_value = ctx.$score === 100;
+			input0.disabled = ctx.disabled;
 			input0.__value = input0_value_value = 9;
 			input0.value = input0.__value;
 			attr(input0, "class", "input-choice");
 			attr(input0, "type", "checkbox");
 			ctx.$$binding_groups[0].push(input0);
-			input1.disabled = input1_disabled_value = ctx.$score === 100;
+			input1.disabled = ctx.disabled;
 			input1.__value = input1_value_value = -40;
 			input1.value = input1.__value;
 			attr(input1, "class", "input-choice");
 			attr(input1, "type", "checkbox");
 			ctx.$$binding_groups[0].push(input1);
-			input2.disabled = input2_disabled_value = ctx.$score === 100;
+			input2.disabled = ctx.disabled;
 			input2.__value = input2_value_value = 30;
 			input2.value = input2.__value;
 			attr(input2, "class", "input-choice");
 			attr(input2, "type", "checkbox");
 			ctx.$$binding_groups[0].push(input2);
-			input3.disabled = input3_disabled_value = ctx.$score === 100;
+			input3.disabled = ctx.disabled;
 			input3.__value = input3_value_value = -30;
 			input3.value = input3.__value;
 			attr(input3, "class", "input-choice");
 			attr(input3, "type", "checkbox");
 			ctx.$$binding_groups[0].push(input3);
-			input4.disabled = input4_disabled_value = ctx.$score === 100;
+			input4.disabled = ctx.disabled;
 			input4.__value = input4_value_value = 14;
 			input4.value = input4.__value;
 			attr(input4, "class", "input-choice");
 			attr(input4, "type", "checkbox");
 			ctx.$$binding_groups[0].push(input4);
-			input5.disabled = input5_disabled_value = ctx.$score === 100;
+			input5.disabled = ctx.disabled;
 			input5.__value = input5_value_value = 16;
 			input5.value = input5.__value;
 			attr(input5, "class", "input-choice");
 			attr(input5, "type", "checkbox");
 			ctx.$$binding_groups[0].push(input5);
-			input6.disabled = input6_disabled_value = ctx.$score === 100;
+			input6.disabled = ctx.disabled;
 			input6.__value = input6_value_value = 20;
 			input6.value = input6.__value;
 			attr(input6, "class", "input-choice");
 			attr(input6, "type", "checkbox");
 			ctx.$$binding_groups[0].push(input6);
-			input7.disabled = input7_disabled_value = ctx.$score === 100;
+			input7.disabled = ctx.disabled;
 			input7.__value = input7_value_value = -20;
 			input7.value = input7.__value;
 			attr(input7, "class", "input-choice");
 			attr(input7, "type", "checkbox");
 			ctx.$$binding_groups[0].push(input7);
-			input8.disabled = input8_disabled_value = ctx.$score === 100;
+			input8.disabled = ctx.disabled;
 			input8.__value = input8_value_value = 11;
 			input8.value = input8.__value;
 			attr(input8, "class", "input-choice");
 			attr(input8, "type", "checkbox");
 			ctx.$$binding_groups[0].push(input8);
-			input9.disabled = input9_disabled_value = ctx.$score === 100;
+			input9.disabled = ctx.disabled;
 			input9.__value = input9_value_value = -10;
 			input9.value = input9.__value;
 			attr(input9, "class", "input-choice");
@@ -8762,80 +8751,80 @@ function create_default_slot$c(ctx) {
 			current = true;
 		},
 		p(changed, ctx) {
-			if (!current || changed.$score && input0_disabled_value !== (input0_disabled_value = ctx.$score === 100)) {
-				input0.disabled = input0_disabled_value;
+			if (!current || changed.disabled) {
+				input0.disabled = ctx.disabled;
 			}
 
 			if (changed.$value) {
 				input0.checked = ~ctx.$value.indexOf(input0.__value);
 			}
 
-			if (!current || changed.$score && input1_disabled_value !== (input1_disabled_value = ctx.$score === 100)) {
-				input1.disabled = input1_disabled_value;
+			if (!current || changed.disabled) {
+				input1.disabled = ctx.disabled;
 			}
 
 			if (changed.$value) {
 				input1.checked = ~ctx.$value.indexOf(input1.__value);
 			}
 
-			if (!current || changed.$score && input2_disabled_value !== (input2_disabled_value = ctx.$score === 100)) {
-				input2.disabled = input2_disabled_value;
+			if (!current || changed.disabled) {
+				input2.disabled = ctx.disabled;
 			}
 
 			if (changed.$value) {
 				input2.checked = ~ctx.$value.indexOf(input2.__value);
 			}
 
-			if (!current || changed.$score && input3_disabled_value !== (input3_disabled_value = ctx.$score === 100)) {
-				input3.disabled = input3_disabled_value;
+			if (!current || changed.disabled) {
+				input3.disabled = ctx.disabled;
 			}
 
 			if (changed.$value) {
 				input3.checked = ~ctx.$value.indexOf(input3.__value);
 			}
 
-			if (!current || changed.$score && input4_disabled_value !== (input4_disabled_value = ctx.$score === 100)) {
-				input4.disabled = input4_disabled_value;
+			if (!current || changed.disabled) {
+				input4.disabled = ctx.disabled;
 			}
 
 			if (changed.$value) {
 				input4.checked = ~ctx.$value.indexOf(input4.__value);
 			}
 
-			if (!current || changed.$score && input5_disabled_value !== (input5_disabled_value = ctx.$score === 100)) {
-				input5.disabled = input5_disabled_value;
+			if (!current || changed.disabled) {
+				input5.disabled = ctx.disabled;
 			}
 
 			if (changed.$value) {
 				input5.checked = ~ctx.$value.indexOf(input5.__value);
 			}
 
-			if (!current || changed.$score && input6_disabled_value !== (input6_disabled_value = ctx.$score === 100)) {
-				input6.disabled = input6_disabled_value;
+			if (!current || changed.disabled) {
+				input6.disabled = ctx.disabled;
 			}
 
 			if (changed.$value) {
 				input6.checked = ~ctx.$value.indexOf(input6.__value);
 			}
 
-			if (!current || changed.$score && input7_disabled_value !== (input7_disabled_value = ctx.$score === 100)) {
-				input7.disabled = input7_disabled_value;
+			if (!current || changed.disabled) {
+				input7.disabled = ctx.disabled;
 			}
 
 			if (changed.$value) {
 				input7.checked = ~ctx.$value.indexOf(input7.__value);
 			}
 
-			if (!current || changed.$score && input8_disabled_value !== (input8_disabled_value = ctx.$score === 100)) {
-				input8.disabled = input8_disabled_value;
+			if (!current || changed.disabled) {
+				input8.disabled = ctx.disabled;
 			}
 
 			if (changed.$value) {
 				input8.checked = ~ctx.$value.indexOf(input8.__value);
 			}
 
-			if (!current || changed.$score && input9_disabled_value !== (input9_disabled_value = ctx.$score === 100)) {
-				input9.disabled = input9_disabled_value;
+			if (!current || changed.disabled) {
+				input9.disabled = ctx.disabled;
 			}
 
 			if (changed.$value) {
@@ -8926,7 +8915,7 @@ function create_fragment$m(ctx) {
 		p(changed, ctx) {
 			const form_changes = {};
 
-			if (changed.$$scope || changed.$value || changed.color || changed.$score) {
+			if (changed.$$scope || changed.$value || changed.color || changed.$score || changed.disabled) {
 				form_changes.$$scope = { changed, ctx };
 			}
 
@@ -8969,19 +8958,20 @@ const [ errors, value, input ] = createEntry({
 });
 
 $: $score = $value.reduce((a, b) => (a + b), 0);
-$: color = ($score < 0 ? 'red' : ($score < 50 ? 'inherit' : ($score < 100 ? '#768c7b' : '#32d75e')));`;
+$: color = ($score < 0 ? 'red' : ($score < 50 ? 'inherit' : ($score < 100 ? '#768c7b' : '#32d75e')));
+$: disabled = $score === 100;`;
 
 	const htmlCode = `<h1>Pick as much sportsman as you can</h1>
-<input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={9} /> Tom Brady
-<input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={-40} /> Isaac Newton
-<input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={30} /> Pete Carrol
-<input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={-30} /> Steve Jobs
-<input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={14} /> Paul Gascoigne
-<input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={16} /> Pele
-<input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={20} /> Albetro Contador
-<input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={-20} /> David Gilmour
-<input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={11} /> Georges St-Pierre
-<input disabled={$score === 100} use:input bind:group={$value} type="checkbox" value={-10} /> Rich Harris
+<input {disabled} use:input bind:group={$value} type="checkbox" value={9} /> Tom Brady
+<input {disabled} use:input bind:group={$value} type="checkbox" value={-40} /> Isaac Newton
+<input {disabled} use:input bind:group={$value} type="checkbox" value={30} /> Pete Carrol
+<input {disabled} use:input bind:group={$value} type="checkbox" value={-30} /> Steve Jobs
+<input {disabled} use:input bind:group={$value} type="checkbox" value={14} /> Paul Gascoigne
+<input {disabled} use:input bind:group={$value} type="checkbox" value={16} /> Pele
+<input {disabled} use:input bind:group={$value} type="checkbox" value={20} /> Albetro Contador
+<input {disabled} use:input bind:group={$value} type="checkbox" value={-20} /> David Gilmour
+<input {disabled} use:input bind:group={$value} type="checkbox" value={11} /> Georges St-Pierre
+<input {disabled} use:input bind:group={$value} type="checkbox" value={-10} /> Rich Harris
 
 {#if $errors.includes('required')}Pick something please{/if}
 {#if $value.length}
@@ -9041,6 +9031,7 @@ $: color = ($score < 0 ? 'red' : ($score < 50 ? 'inherit' : ($score < 100 ? '#76
 	}
 
 	let color;
+	let disabled;
 
 	$$self.$$.update = (changed = { $value: 1, $score: 1 }) => {
 		if (changed.$value) {
@@ -9053,6 +9044,10 @@ $: color = ($score < 0 ? 'red' : ($score < 50 ? 'inherit' : ($score < 100 ? '#76
 			: $score < 50
 				? "inherit"
 				: $score < 100 ? "#768c7b" : "#32d75e");
+		}
+
+		if (changed.$score) {
+			 $$invalidate("disabled", disabled = $score === 100);
 		}
 	};
 
@@ -9067,6 +9062,7 @@ $: color = ($score < 0 ? 'red' : ($score < 50 ? 'inherit' : ($score < 100 ? '#76
 		$score,
 		$value,
 		color,
+		disabled,
 		input0_change_handler,
 		input1_change_handler,
 		input2_change_handler,
