@@ -173,7 +173,7 @@ const ensureType = (typeName, typeRules) => {
         return obj;
     }, typeRules);
     if (!types$1[typeName]) {
-        if (!isFunction(typeRules.typeCheck)) {
+        if (!isFunction(typeRules.type)) {
             return;
         }
         types$1[typeName] = {};
@@ -207,7 +207,7 @@ const resetRule = (ruleName) => {
 const installType = {
     string: () => {
         ensureType('string', {
-            typeCheck: (value) => (typeof value === 'string'),
+            type: (value) => (typeof value === 'string'),
             min: (value, { min }) => (value.length >= min),
             max: (value, { max }) => (value.length <= max),
             between: (value, { between }) => (value.length >= between[0] && value.length <= between[1])
@@ -215,12 +215,12 @@ const installType = {
     },
     email: () => {
         ensureType('email', {
-            typeCheck: (value) => (typeof value === 'string' && (value === '' || !!(String(value)).match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)))
+            type: (value) => (typeof value === 'string' && (value === '' || !!(String(value)).match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)))
         });
     },
     number: () => {
         ensureType('number', {
-            typeCheck: (value) => (typeof value === 'number' || (typeof value === 'string' && (value === '' || !isNaN(parseFloat(value))))),
+            type: (value) => (typeof value === 'number' || (typeof value === 'string' && (value === '' || !isNaN(parseFloat(value))))),
             required: value => !isNaN(typeof value === 'number' ? value : parseFloat(value)),
             min: (value, { min }) => (parseFloat(value) >= min),
             max: (value, { max }) => (parseFloat(value) <= max),
@@ -229,13 +229,13 @@ const installType = {
     },
     boolean: () => {
         ensureType('boolean', {
-            typeCheck: (value) => typeof value === 'boolean',
+            type: (value) => typeof value === 'boolean',
             required: (value) => value,
         });
     },
     array: () => {
         ensureType('array', {
-            typeCheck: (value) => Array.isArray(value),
+            type: (value) => Array.isArray(value),
             required: (value) => value.length > 0,
             min: (value, { min }) => value.length >= min,
             max: (value, { max }) => value.length <= max,
@@ -319,7 +319,7 @@ const getScope = ({ type, optional, ...rules }) => {
     if (!typeRules) {
         return {};
     }
-    return [...Object.keys(rules), 'typeCheck'].reduce((obj, ruleName) => {
+    return [...Object.keys(rules), 'type'].reduce((obj, ruleName) => {
         const rule = typeRules[ruleName] || getRule(ruleName);
         if (rule) {
             obj[ruleName] = rule;
@@ -341,8 +341,8 @@ const validate = (value, validateParams) => {
     const globalSpies = getSpies();
     const typeSpies = getSpies({ type });
     const scope = getScope(params);
-    // no typeCheck - no party
-    if (!isFunction(scope.typeCheck)) {
+    // no type - no party
+    if (!isFunction(scope.type)) {
         return [];
     }
     // skip for empty and optional fields
@@ -350,9 +350,9 @@ const validate = (value, validateParams) => {
         return [];
     }
     const result = [];
-    // ensure typeCheck with first pick
-    const ruleNames = Object.keys(scope).filter(key => (key !== 'typeCheck'));
-    ruleNames.unshift('typeCheck');
+    // ensure type with first pick
+    const ruleNames = Object.keys(scope).filter(key => (key !== 'type'));
+    ruleNames.unshift('type');
     for (let i = 0; i < ruleNames.length; i++) {
         const typeRuleSpies = getSpies({ type, ruleName: ruleNames[i] });
         const ruleSpies = getSpies({ ruleName: ruleNames[i] });
@@ -373,7 +373,7 @@ const validate = (value, validateParams) => {
             return;
         }
         // stop validation with current errors in case of stop call
-        // or if there are errors on first (typeCheck) step
+        // or if there are errors on first (type) step
         if (stop || (i === 0 && errors.length)) {
             return errors;
         }
@@ -415,16 +415,21 @@ const createValidation = (opts) => {
     if (typeof options.clearErrorsOnEvents !== 'object' || options.clearErrorsOnEvents === null) {
         options.clearErrorsOnEvents = {};
     }
+    const buildErrorsStore = (errors, entryParams = null) => {
+        return typeof options.useCustomErrorsStore === 'function'
+            ? options.useCustomErrorsStore(errors, entryParams)
+            : errors;
+    };
     const createEntry = (createEntryParams) => {
         const { value = '', ...params } = createEntryParams;
         const store = {
-            errors: writable([]),
+            errors: writable(buildErrorsStore([])),
             value: writable(value)
         };
         const entry = { store, params };
         const useInput = (inputNode, useOptions) => {
             const formElementOptions = Object.assign({}, options, useOptions, {
-                onClear: () => store.errors.set([]),
+                onClear: () => store.errors.set(buildErrorsStore([])),
                 onValidate: () => validateValueStore(store.value)
             });
             if (!entry.formElements) {
@@ -506,13 +511,14 @@ const createValidation = (opts) => {
         const entry = entries.find(entry => (entry.store.value === value));
         if (entry) {
             const value = get(entry.store.value);
-            const errors = validate(value, prepareBaseParams(entry.params, options));
+            let errors = validate(value, prepareBaseParams(entry.params, options));
             if (Array.isArray(errors)) {
+                errors = buildErrorsStore(errors, prepareBaseParams(entry.params, options));
                 entry.store.errors.set(errors);
                 return errors;
             }
         }
-        return [];
+        return buildErrorsStore([]);
     };
     const validate$1 = (includeNoFormElements = false) => {
         const errors = entries.reduce((errors, entry) => {
@@ -531,7 +537,7 @@ const createValidation = (opts) => {
     const clearErrors = (includeNoFormElements = false) => {
         entries.forEach(entry => {
             if (entry.formElements || includeNoFormElements || options.includeAllEntries) {
-                entry.store.errors.set([]);
+                entry.store.errors.set(buildErrorsStore([]));
             }
         });
     };

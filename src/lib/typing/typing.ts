@@ -31,7 +31,8 @@ export interface SvelidationOptions {
   listenInputEvents?: ListenInputEventsType;
   presence?: SvelidationPresence.required | SvelidationPresence.optional,
   trim?: boolean,
-  includeAllEntries?: boolean;
+  includeAllEntries?: boolean,
+  useCustomErrorsStore?: (errors: string[], entryParams?: SvelidationEntryParams) => any
 }
 
 export interface SvelidationFormElement {
@@ -51,7 +52,7 @@ export interface SvelidationFormElementOptions extends SvelidationOptions {
 }
 
 export type SvelidationStoreType = {
-  errors: Writable<any[]>,
+  errors: Writable<any>,
   value: Writable<any>
 };
 
@@ -76,7 +77,7 @@ interface SvelidationCreateEntriesObject {
 export type SvelidationCreateEntriesData = SvelidationEntryParams[] | SvelidationCreateEntriesObject;
 
 export interface SvelidationFormEvents {
-  onSubmit?(e: Event, errors: any[]): void;
-  onFail?(errors: any[]): void;
+  onSubmit?(e: Event, errors: any): void;
+  onFail?(errors: any): void;
   onSuccess?(): void;
 }

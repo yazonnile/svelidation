@@ -51,16 +51,22 @@ const createValidation = (opts?: SvelidationOptions) => {
     options.clearErrorsOnEvents = {};
   }
 
-  const createEntry = (createEntryParams: SvelidationEntryParams): [Writable<any[]>, Writable<any>, SvelidationUseInputFunction] => {
+  const buildErrorsStore = (errors, entryParams = null) => {
+    return typeof options.useCustomErrorsStore === 'function'
+      ? options.useCustomErrorsStore(errors, entryParams)
+      : errors;
+  };
+
+  const createEntry = (createEntryParams: SvelidationEntryParams): [Writable<any>, Writable<any>, SvelidationUseInputFunction] => {
     const { value = '', ...params } = createEntryParams;
     const store: SvelidationStoreType = {
-      errors: writable([]),
+      errors: writable(buildErrorsStore([])),
       value: writable(value)
     };
     const entry: SvelidationEntry = { store, params };
     const useInput: SvelidationUseInputFunction = (inputNode, useOptions) => {
       const formElementOptions = Object.assign({}, options, useOptions, {
-        onClear: () => store.errors.set([]),
+        onClear: () => store.errors.set(buildErrorsStore([])),
         onValidate: () => validateValueStore(store.value)
       });
 
@@ -151,22 +157,23 @@ const createValidation = (opts?: SvelidationOptions) => {
     };
   };
 
-  const validateValueStore = (value: Writable<any>): any[] => {
+  const validateValueStore = (value: Writable<any>): any => {
     const entry = entries.find(entry => (entry.store.value === value));
     if (entry) {
       const value = get(entry.store.value);
-      const errors = validateValueByParams(value, prepareBaseParams(entry.params, options));
+      let errors = validateValueByParams(value, prepareBaseParams(entry.params, options));
 
       if (Array.isArray(errors)) {
+        errors = buildErrorsStore(errors, prepareBaseParams(entry.params, options));
         entry.store.errors.set(errors);
         return errors;
       }
     }
 
-    return [];
+    return buildErrorsStore([]);
   };
 
-  const validate = (includeNoFormElements = false): any[] => {
+  const validate = (includeNoFormElements = false): any => {
     const errors = entries.reduce((errors, entry) => {
       if (entry.formElements || includeNoFormElements || options.includeAllEntries) {
         const storeErrors = validateValueStore(entry.store.value);
@@ -187,7 +194,7 @@ const createValidation = (opts?: SvelidationOptions) => {
   const clearErrors = (includeNoFormElements = false) => {
     entries.forEach(entry => {
       if (entry.formElements || includeNoFormElements || options.includeAllEntries) {
-        entry.store.errors.set([]);
+        entry.store.errors.set(buildErrorsStore([]));
       }
     });
   };

@@ -4,7 +4,7 @@ type SvelidationRule<Type = any, R = boolean> = {
   (value: Type, params?: {
     [key: string]: any
   }): R
-} | string;
+};
 
 type SvelidationType<Type = any> = {
   type?: SvelidationRule<Type>;

@@ -144,5 +144,59 @@ describe('lib', () => {
       expect(entry1[0].set).toHaveBeenCalledTimes(2);
       expect(entry2[0].set).toHaveBeenCalledTimes(2);
     });
-  })
+  });
+
+  describe('useCustomErrorsStore', () => {
+    it('default', () => {
+      instance = createInstance({ presence: 'required', includeAllEntries: true });
+      const [ entry1, entry2, entry3 ] = instance.createEntries([
+        { type: 'number', min: 3, max: 7 },
+        { type: 'string', max: 7, value: '12345678' },
+        { type: 'string', max: 7, value: '1234' }
+      ]);
+      instance.validate();
+
+      const errorsStore1 = get(entry1[0]);
+      const errorsStore2 = get(entry2[0]);
+      const errorsStore3 = get(entry3[0]);
+
+      expect(Array.isArray(errorsStore1)).toBe(true);
+      expect(Array.isArray(errorsStore2)).toBe(true);
+      expect(Array.isArray(errorsStore3)).toBe(true);
+
+      expect(errorsStore1.sort()).toEqual(['min', 'max', 'required'].sort());
+      expect(errorsStore2).toEqual(['max']);
+      expect(errorsStore3).toEqual([]);
+    });
+
+    it('custom errors store', () => {
+      instance = createInstance({
+        presence: 'required', includeAllEntries: true,
+        useCustomErrorsStore: (errors, params) => {
+          return errors.reduce((result, ruleName) => {
+            result[ruleName] = params[ruleName];
+            return result;
+          }, {});
+        }
+      });
+      const [ entry1, entry2, entry3 ] = instance.createEntries([
+        { type: 'number', min: 3, max: 7 },
+        { type: 'string', max: 7, value: '12345678' },
+        { type: 'string', max: 7, value: '1234' }
+      ]);
+      instance.validate();
+
+      const errorsStore1 = get(entry1[0]);
+      const errorsStore2 = get(entry2[0]);
+      const errorsStore3 = get(entry3[0]);
+
+      expect(errorsStore1 instanceof Object).toBe(true);
+      expect(errorsStore2 instanceof Object).toBe(true);
+      expect(errorsStore3 instanceof Object).toBe(true);
+
+      expect(errorsStore1).toEqual({ min: 3, max: 7, required: true });
+      expect(errorsStore2).toEqual({ max: 7 });
+      expect(errorsStore3).toEqual({});
+    });
+  });
 });

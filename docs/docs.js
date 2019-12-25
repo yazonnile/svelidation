@@ -165,6 +165,9 @@ function set_input_value(input, value) {
         input.value = value;
     }
 }
+function set_style(node, key, value, important) {
+    node.style.setProperty(key, value, important ? 'important' : '');
+}
 function select_option(select, value) {
     for (let i = 0; i < select.options.length; i += 1) {
         const option = select.options[i];
@@ -499,6 +502,8 @@ function create_bidirectional_transition(node, fn, params, intro) {
         }
     };
 }
+
+const globals = (typeof window !== 'undefined' ? window : global);
 function outro_and_destroy_block(block, lookup) {
     transition_out(block, 1, 1, () => {
         lookup.delete(block.key);
@@ -872,13 +877,13 @@ const prepareBaseParams = (entryParams, validationOptions) => {
     return output;
 };
 
-let globals = [];
+let globals$1 = [];
 let typeRules = {};
 let types = {};
 let rules = {};
 const getSpies = (params) => {
     if (!params) {
-        return globals;
+        return globals$1;
     }
     try {
         const { type: typeName, ruleName } = params;
@@ -923,7 +928,7 @@ const ensureType = (typeName, typeRules) => {
         return obj;
     }, typeRules);
     if (!types$1[typeName]) {
-        if (!isFunction(typeRules.typeCheck)) {
+        if (!isFunction(typeRules.type)) {
             return;
         }
         types$1[typeName] = {};
@@ -957,7 +962,7 @@ const resetRule = (ruleName) => {
 const installType = {
     string: () => {
         ensureType('string', {
-            typeCheck: (value) => (typeof value === 'string'),
+            type: (value) => (typeof value === 'string'),
             min: (value, { min }) => (value.length >= min),
             max: (value, { max }) => (value.length <= max),
             between: (value, { between }) => (value.length >= between[0] && value.length <= between[1])
@@ -965,12 +970,12 @@ const installType = {
     },
     email: () => {
         ensureType('email', {
-            typeCheck: (value) => (typeof value === 'string' && (value === '' || !!(String(value)).match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)))
+            type: (value) => (typeof value === 'string' && (value === '' || !!(String(value)).match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)))
         });
     },
     number: () => {
         ensureType('number', {
-            typeCheck: (value) => (typeof value === 'number' || (typeof value === 'string' && (value === '' || !isNaN(parseFloat(value))))),
+            type: (value) => (typeof value === 'number' || (typeof value === 'string' && (value === '' || !isNaN(parseFloat(value))))),
             required: value => !isNaN(typeof value === 'number' ? value : parseFloat(value)),
             min: (value, { min }) => (parseFloat(value) >= min),
             max: (value, { max }) => (parseFloat(value) <= max),
@@ -979,13 +984,13 @@ const installType = {
     },
     boolean: () => {
         ensureType('boolean', {
-            typeCheck: (value) => typeof value === 'boolean',
+            type: (value) => typeof value === 'boolean',
             required: (value) => value,
         });
     },
     array: () => {
         ensureType('array', {
-            typeCheck: (value) => Array.isArray(value),
+            type: (value) => Array.isArray(value),
             required: (value) => value.length > 0,
             min: (value, { min }) => value.length >= min,
             max: (value, { max }) => value.length <= max,
@@ -1069,7 +1074,7 @@ const getScope = ({ type, optional, ...rules }) => {
     if (!typeRules) {
         return {};
     }
-    return [...Object.keys(rules), 'typeCheck'].reduce((obj, ruleName) => {
+    return [...Object.keys(rules), 'type'].reduce((obj, ruleName) => {
         const rule = typeRules[ruleName] || getRule(ruleName);
         if (rule) {
             obj[ruleName] = rule;
@@ -1091,8 +1096,8 @@ const validate = (value, validateParams) => {
     const globalSpies = getSpies();
     const typeSpies = getSpies({ type });
     const scope = getScope(params);
-    // no typeCheck - no party
-    if (!isFunction(scope.typeCheck)) {
+    // no type - no party
+    if (!isFunction(scope.type)) {
         return [];
     }
     // skip for empty and optional fields
@@ -1100,9 +1105,9 @@ const validate = (value, validateParams) => {
         return [];
     }
     const result = [];
-    // ensure typeCheck with first pick
-    const ruleNames = Object.keys(scope).filter(key => (key !== 'typeCheck'));
-    ruleNames.unshift('typeCheck');
+    // ensure type with first pick
+    const ruleNames = Object.keys(scope).filter(key => (key !== 'type'));
+    ruleNames.unshift('type');
     for (let i = 0; i < ruleNames.length; i++) {
         const typeRuleSpies = getSpies({ type, ruleName: ruleNames[i] });
         const ruleSpies = getSpies({ ruleName: ruleNames[i] });
@@ -1123,7 +1128,7 @@ const validate = (value, validateParams) => {
             return;
         }
         // stop validation with current errors in case of stop call
-        // or if there are errors on first (typeCheck) step
+        // or if there are errors on first (type) step
         if (stop || (i === 0 && errors.length)) {
             return errors;
         }
@@ -1165,16 +1170,21 @@ const createValidation = (opts) => {
     if (typeof options.clearErrorsOnEvents !== 'object' || options.clearErrorsOnEvents === null) {
         options.clearErrorsOnEvents = {};
     }
+    const buildErrorsStore = (errors, entryParams = null) => {
+        return typeof options.useCustomErrorsStore === 'function'
+            ? options.useCustomErrorsStore(errors, entryParams)
+            : errors;
+    };
     const createEntry = (createEntryParams) => {
         const { value = '', ...params } = createEntryParams;
         const store = {
-            errors: writable([]),
+            errors: writable(buildErrorsStore([])),
             value: writable(value)
         };
         const entry = { store, params };
         const useInput = (inputNode, useOptions) => {
             const formElementOptions = Object.assign({}, options, useOptions, {
-                onClear: () => store.errors.set([]),
+                onClear: () => store.errors.set(buildErrorsStore([])),
                 onValidate: () => validateValueStore(store.value)
             });
             if (!entry.formElements) {
@@ -1256,13 +1266,14 @@ const createValidation = (opts) => {
         const entry = entries.find(entry => (entry.store.value === value));
         if (entry) {
             const value = get_store_value(entry.store.value);
-            const errors = validate(value, prepareBaseParams(entry.params, options));
+            let errors = validate(value, prepareBaseParams(entry.params, options));
             if (Array.isArray(errors)) {
+                errors = buildErrorsStore(errors, prepareBaseParams(entry.params, options));
                 entry.store.errors.set(errors);
                 return errors;
             }
         }
-        return [];
+        return buildErrorsStore([]);
     };
     const validate$1 = (includeNoFormElements = false) => {
         const errors = entries.reduce((errors, entry) => {
@@ -1281,7 +1292,7 @@ const createValidation = (opts) => {
     const clearErrors = (includeNoFormElements = false) => {
         entries.forEach(entry => {
             if (entry.formElements || includeNoFormElements || options.includeAllEntries) {
-                entry.store.errors.set([]);
+                entry.store.errors.set(buildErrorsStore([]));
             }
         });
     };
@@ -6273,7 +6284,7 @@ function create_default_slot_1$4(ctx) {
 	const error1 = new Error$1({
 			props: {
 				errors: ctx.errors,
-				errorCode: "typeCheck",
+				errorCode: "type",
 				errorText: "Use valid email"
 			}
 		});
@@ -6459,7 +6470,7 @@ function instance$f($$self, $$props, $$invalidate) {
 });`;
 
 	const jsCode = `<input use:input bind:value={$value} />
-{#if $errors.includes('typeCheck')}Use valid email{/if}
+{#if $errors.includes('type')}Use valid email{/if}
 {#if $errors.includes('required')}This field is required{/if}`;
 
 	function input_1_input_handler() {
@@ -7560,7 +7571,7 @@ function create_default_slot_2$5(ctx) {
 	const error0 = new Error$1({
 			props: {
 				errors: ctx.errorsRequired,
-				errorCode: "typeCheck",
+				errorCode: "type",
 				errorText: "Use valid email"
 			}
 		});
@@ -7633,7 +7644,7 @@ function create_default_slot_1$7(ctx) {
 	const error = new Error$1({
 			props: {
 				errors: ctx.errors,
-				errorCode: "typeCheck",
+				errorCode: "type",
 				errorText: "Use valid email"
 			}
 		});
@@ -7841,11 +7852,11 @@ const [ errors, value, input ] = createEntry({
 });`;
 
 	const htmlCode = `<input use:inputRequired bind:value={$valueRequired} type="email" />
-{#if $errors.includes('typeCheck')}Use valid email{/if}
+{#if $errors.includes('type')}Use valid email{/if}
 {#if $errors.includes('required')}This field is required{/if}
 
 <input use:input bind:value={$value} type="email" />
-{#if $errors.includes('typeCheck')}Use valid email{/if}`;
+{#if $errors.includes('type')}Use valid email{/if}`;
 
 	function input_1_input_handler() {
 		$valueRequired = this.value;
@@ -10586,6 +10597,316 @@ class Without_inputs extends SvelteComponent {
 	}
 }
 
+/* src/docs/examples/custom-errors.svelte generated by Svelte v3.15.0 */
+
+const { Object: Object_1 } = globals;
+
+function get_each_context$2(ctx, list, i) {
+	const child_ctx = Object_1.create(ctx);
+	child_ctx.errorCode = list[i];
+	return child_ctx;
+}
+
+// (39:4) {#each Object.keys($errors) as errorCode}
+function create_each_block$2(ctx) {
+	let p;
+	let t0;
+	let t1_value = ctx.errorCode + "";
+	let t1;
+	let t2;
+	let t3_value = ctx.$errors[ctx.errorCode] + "";
+	let t3;
+
+	return {
+		c() {
+			p = element("p");
+			t0 = text("Problem with ");
+			t1 = text(t1_value);
+			t2 = text(": ");
+			t3 = text(t3_value);
+			set_style(p, "color", "#f00");
+		},
+		m(target, anchor) {
+			insert(target, p, anchor);
+			append(p, t0);
+			append(p, t1);
+			append(p, t2);
+			append(p, t3);
+		},
+		p(changed, ctx) {
+			if (changed.$errors && t1_value !== (t1_value = ctx.errorCode + "")) set_data(t1, t1_value);
+			if (changed.$errors && t3_value !== (t3_value = ctx.$errors[ctx.errorCode] + "")) set_data(t3, t3_value);
+		},
+		d(detaching) {
+			if (detaching) detach(p);
+		}
+	};
+}
+
+// (37:2) <Row>
+function create_default_slot_1$e(ctx) {
+	let input_1;
+	let input_action;
+	let t;
+	let each_1_anchor;
+	let dispose;
+	let each_value = Object.keys(ctx.$errors);
+	let each_blocks = [];
+
+	for (let i = 0; i < each_value.length; i += 1) {
+		each_blocks[i] = create_each_block$2(get_each_context$2(ctx, each_value, i));
+	}
+
+	return {
+		c() {
+			input_1 = element("input");
+			t = space();
+
+			for (let i = 0; i < each_blocks.length; i += 1) {
+				each_blocks[i].c();
+			}
+
+			each_1_anchor = empty();
+			attr(input_1, "class", "input-text");
+			attr(input_1, "placeholder", "type: 'string', min: 5, required: true");
+			dispose = listen(input_1, "input", ctx.input_1_input_handler);
+		},
+		m(target, anchor) {
+			insert(target, input_1, anchor);
+			set_input_value(input_1, ctx.$value);
+			input_action = ctx.input.call(null, input_1) || ({});
+			insert(target, t, anchor);
+
+			for (let i = 0; i < each_blocks.length; i += 1) {
+				each_blocks[i].m(target, anchor);
+			}
+
+			insert(target, each_1_anchor, anchor);
+		},
+		p(changed, ctx) {
+			if (changed.$value && input_1.value !== ctx.$value) {
+				set_input_value(input_1, ctx.$value);
+			}
+
+			if (changed.$errors || changed.Object) {
+				each_value = Object.keys(ctx.$errors);
+				let i;
+
+				for (i = 0; i < each_value.length; i += 1) {
+					const child_ctx = get_each_context$2(ctx, each_value, i);
+
+					if (each_blocks[i]) {
+						each_blocks[i].p(changed, child_ctx);
+					} else {
+						each_blocks[i] = create_each_block$2(child_ctx);
+						each_blocks[i].c();
+						each_blocks[i].m(each_1_anchor.parentNode, each_1_anchor);
+					}
+				}
+
+				for (; i < each_blocks.length; i += 1) {
+					each_blocks[i].d(1);
+				}
+
+				each_blocks.length = each_value.length;
+			}
+		},
+		d(detaching) {
+			if (detaching) detach(input_1);
+			if (input_action && is_function(input_action.destroy)) input_action.destroy();
+			if (detaching) detach(t);
+			destroy_each(each_blocks, detaching);
+			if (detaching) detach(each_1_anchor);
+			dispose();
+		}
+	};
+}
+
+// (21:0) <Form {createForm} title="Custom errors">
+function create_default_slot$h(ctx) {
+	let t0;
+	let t1;
+	let t2;
+	let current;
+
+	const code0 = new Code({
+			props: {
+				code: `const { createEntry, createForm } = createValidation({
+  validateOnEvents: { input: true },
+  useCustomErrorsStore: (errors, params) => {
+    return errors.reduce((result, ruleName) => {
+      result[ruleName] = params[ruleName];
+      return result;
+    }, {});
+  }
+});
+
+const [ errors, value, input ] = createEntry({ type: 'string', min: 5, required: true });`
+			}
+		});
+
+	const code1 = new Code({
+			props: {
+				code: `<input use:input bind:value={$value} />
+{#each Object.keys($errors) as errorCode}
+  Problem with {errorCode}: {$errors[errorCode]}
+{/each}`
+			}
+		});
+
+	const row = new Row({
+			props: {
+				$$slots: { default: [create_default_slot_1$e] },
+				$$scope: { ctx }
+			}
+		});
+
+	const button = new Button({ props: { type: "submit" } });
+
+	return {
+		c() {
+			create_component(code0.$$.fragment);
+			t0 = space();
+			create_component(code1.$$.fragment);
+			t1 = space();
+			create_component(row.$$.fragment);
+			t2 = space();
+			create_component(button.$$.fragment);
+		},
+		m(target, anchor) {
+			mount_component(code0, target, anchor);
+			insert(target, t0, anchor);
+			mount_component(code1, target, anchor);
+			insert(target, t1, anchor);
+			mount_component(row, target, anchor);
+			insert(target, t2, anchor);
+			mount_component(button, target, anchor);
+			current = true;
+		},
+		p(changed, ctx) {
+			const row_changes = {};
+
+			if (changed.$$scope || changed.$errors || changed.$value) {
+				row_changes.$$scope = { changed, ctx };
+			}
+
+			row.$set(row_changes);
+		},
+		i(local) {
+			if (current) return;
+			transition_in(code0.$$.fragment, local);
+			transition_in(code1.$$.fragment, local);
+			transition_in(row.$$.fragment, local);
+			transition_in(button.$$.fragment, local);
+			current = true;
+		},
+		o(local) {
+			transition_out(code0.$$.fragment, local);
+			transition_out(code1.$$.fragment, local);
+			transition_out(row.$$.fragment, local);
+			transition_out(button.$$.fragment, local);
+			current = false;
+		},
+		d(detaching) {
+			destroy_component(code0, detaching);
+			if (detaching) detach(t0);
+			destroy_component(code1, detaching);
+			if (detaching) detach(t1);
+			destroy_component(row, detaching);
+			if (detaching) detach(t2);
+			destroy_component(button, detaching);
+		}
+	};
+}
+
+function create_fragment$r(ctx) {
+	let current;
+
+	const form = new Form({
+			props: {
+				createForm: ctx.createForm,
+				title: "Custom errors",
+				$$slots: { default: [create_default_slot$h] },
+				$$scope: { ctx }
+			}
+		});
+
+	return {
+		c() {
+			create_component(form.$$.fragment);
+		},
+		m(target, anchor) {
+			mount_component(form, target, anchor);
+			current = true;
+		},
+		p(changed, ctx) {
+			const form_changes = {};
+
+			if (changed.$$scope || changed.$errors || changed.$value) {
+				form_changes.$$scope = { changed, ctx };
+			}
+
+			form.$set(form_changes);
+		},
+		i(local) {
+			if (current) return;
+			transition_in(form.$$.fragment, local);
+			current = true;
+		},
+		o(local) {
+			transition_out(form.$$.fragment, local);
+			current = false;
+		},
+		d(detaching) {
+			destroy_component(form, detaching);
+		}
+	};
+}
+
+function instance$r($$self, $$props, $$invalidate) {
+	let $value;
+	let $errors;
+
+	const { createEntry, createForm } = createValidation({
+		validateOnEvents: { input: true },
+		useCustomErrorsStore: (errors, params) => {
+			return errors.reduce(
+				(result, ruleName) => {
+					result[ruleName] = params[ruleName];
+					return result;
+				},
+				{}
+			);
+		}
+	});
+
+	const [errors, value, input] = createEntry({ type: "string", min: 5, required: true });
+	component_subscribe($$self, errors, value => $$invalidate("$errors", $errors = value));
+	component_subscribe($$self, value, value => $$invalidate("$value", $value = value));
+
+	function input_1_input_handler() {
+		$value = this.value;
+		value.set($value);
+	}
+
+	return {
+		createForm,
+		errors,
+		value,
+		input,
+		$value,
+		$errors,
+		input_1_input_handler
+	};
+}
+
+class Custom_errors extends SvelteComponent {
+	constructor(options) {
+		super();
+		init(this, options, instance$r, create_fragment$r, safe_not_equal, {});
+	}
+}
+
 /* src/docs/docs.svelte generated by Svelte v3.15.0 */
 
 function add_css$d() {
@@ -10595,7 +10916,7 @@ function add_css$d() {
 	append(document.head, style);
 }
 
-// (40:0) {#if !transitionActive}
+// (41:0) {#if !transitionActive}
 function create_if_block$a(ctx) {
 	let div;
 	let current_block_type_index;
@@ -10675,7 +10996,7 @@ function create_if_block$a(ctx) {
 	};
 }
 
-// (60:4) {:else}
+// (62:4) {:else}
 function create_else_block$7(ctx) {
 	let current;
 	const editor = new Builder({});
@@ -10703,7 +11024,7 @@ function create_else_block$7(ctx) {
 	};
 }
 
-// (46:4) {#if pageId === 0}
+// (47:4) {#if pageId === 0}
 function create_if_block_1$9(ctx) {
 	let t0;
 	let t1;
@@ -10717,6 +11038,7 @@ function create_if_block_1$9(ctx) {
 	let t9;
 	let t10;
 	let t11;
+	let t12;
 	let current;
 	const string = new String$1({});
 	const email = new Email({});
@@ -10731,6 +11053,7 @@ function create_if_block_1$9(ctx) {
 	const dynamicsteps = new Dynamic_steps({});
 	const arraysumofpoints = new Array_sum_of_points({});
 	const fieldconfirm = new Field_confirm({});
+	const customerrors = new Custom_errors({});
 
 	return {
 		c() {
@@ -10759,6 +11082,8 @@ function create_if_block_1$9(ctx) {
 			create_component(arraysumofpoints.$$.fragment);
 			t11 = space();
 			create_component(fieldconfirm.$$.fragment);
+			t12 = space();
+			create_component(customerrors.$$.fragment);
 		},
 		m(target, anchor) {
 			mount_component(string, target, anchor);
@@ -10786,6 +11111,8 @@ function create_if_block_1$9(ctx) {
 			mount_component(arraysumofpoints, target, anchor);
 			insert(target, t11, anchor);
 			mount_component(fieldconfirm, target, anchor);
+			insert(target, t12, anchor);
+			mount_component(customerrors, target, anchor);
 			current = true;
 		},
 		i(local) {
@@ -10803,6 +11130,7 @@ function create_if_block_1$9(ctx) {
 			transition_in(dynamicsteps.$$.fragment, local);
 			transition_in(arraysumofpoints.$$.fragment, local);
 			transition_in(fieldconfirm.$$.fragment, local);
+			transition_in(customerrors.$$.fragment, local);
 			current = true;
 		},
 		o(local) {
@@ -10819,6 +11147,7 @@ function create_if_block_1$9(ctx) {
 			transition_out(dynamicsteps.$$.fragment, local);
 			transition_out(arraysumofpoints.$$.fragment, local);
 			transition_out(fieldconfirm.$$.fragment, local);
+			transition_out(customerrors.$$.fragment, local);
 			current = false;
 		},
 		d(detaching) {
@@ -10847,11 +11176,13 @@ function create_if_block_1$9(ctx) {
 			destroy_component(arraysumofpoints, detaching);
 			if (detaching) detach(t11);
 			destroy_component(fieldconfirm, detaching);
+			if (detaching) detach(t12);
+			destroy_component(customerrors, detaching);
 		}
 	};
 }
 
-function create_fragment$r(ctx) {
+function create_fragment$s(ctx) {
 	let a;
 	let t1;
 	let div;
@@ -10976,7 +11307,7 @@ function create_fragment$r(ctx) {
 	};
 }
 
-function instance$r($$self, $$props, $$invalidate) {
+function instance$s($$self, $$props, $$invalidate) {
 	let barId = 0;
 	let pageId = barId;
 	let transitionActive = false;
@@ -11006,7 +11337,7 @@ class Docs extends SvelteComponent {
 	constructor(options) {
 		super();
 		if (!document.getElementById("svelte-1edyv9o-style")) add_css$d();
-		init(this, options, instance$r, create_fragment$r, safe_not_equal, {});
+		init(this, options, instance$s, create_fragment$s, safe_not_equal, {});
 	}
 }
 

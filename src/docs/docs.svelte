@@ -14,6 +14,7 @@
   import DynamicSteps from './examples/dynamic-steps.svelte';
   import UseWithParams from './examples/use-with-params.svelte';
   import WithoutInputs from './examples/without-inputs.svelte';
+  import CustomErrors from './examples/custom-errors.svelte';
 
   let barId = 0;
   let pageId = barId;
@@ -57,6 +58,7 @@
       <DynamicSteps />
       <ArraySumOfPoints />
       <FieldConfirm />
+      <CustomErrors />
     {:else}
       <Editor />
     {/if}

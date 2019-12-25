@@ -78,7 +78,8 @@ createSvelidation({
   listenInputEvents: 2,
   presence: 'optional',
   trim: false,
-  includeAllEntries: false
+  includeAllEntries: false,
+  useCustomErrorsStore: null
 });
 ```
 - `validateOnEvents: { [key: string]: boolean }`
@@ -106,6 +107,11 @@ createSvelidation({
 - `includeAllEntries: boolean`
   - By default validation works for entries that were assigned with inputs by `use` svelte directive. This option makes possible to validate ALL entries in validation
 
+- `useCustomErrorsStore(errorsArray, entryParams): errorsStore`
+  - optional method to make possible to use custom errorsStore structure. By default this is array of strings. This method can override default store with any you want
+  - `errorsArray` - default array of errors strings
+  - `entryParam` - ([check here](#createEntryParams))
+  - check `CUSTOM ERRORS` example on [demo page](http://yazonnile.github.io/svelidation/)
 
 `validateOnEvents`, `clearErrorsOnEvents`, `presence` and `trim` behavior could be overrided by any input for itself ([check here](#createEntry))
 
