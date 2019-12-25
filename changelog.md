@@ -1,5 +1,8 @@
 # Svelidation changelog
 
+# 1.2.1
+* rename `typeCheck` method to `type`
+
 # 1.1.1
 * add number own required rule
 

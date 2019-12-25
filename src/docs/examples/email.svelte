@@ -16,7 +16,7 @@
 });`;
 
   const jsCode = `<input use:input bind:value={$value} />
-{#if $errors.includes('typeCheck')}Use valid email{/if}
+{#if $errors.includes('type')}Use valid email{/if}
 {#if $errors.includes('required')}This field is required{/if}`;
 </script>
 
@@ -26,7 +26,7 @@
   <Row labelText="Type your email">
     <input use:input bind:value={$value} class="input-text" type="email" placeholder="type: 'email', required: true" />
     <Error {errors} errorCode="required" />
-    <Error {errors} errorCode="typeCheck" errorText="Use valid email" />
+    <Error {errors} errorCode="type" errorText="Use valid email" />
   </Row>
   <Button type="submit" />
 </Form>

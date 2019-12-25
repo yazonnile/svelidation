@@ -22,11 +22,11 @@ const [ errors, value, input ] = createEntry({
 });`;
 
   const htmlCode = `<input use:inputRequired bind:value={$valueRequired} type="email" />
-{#if $errors.includes('typeCheck')}Use valid email{/if}
+{#if $errors.includes('type')}Use valid email{/if}
 {#if $errors.includes('required')}This field is required{/if}
 
 <input use:input bind:value={$value} type="email" />
-{#if $errors.includes('typeCheck')}Use valid email{/if}`;
+{#if $errors.includes('type')}Use valid email{/if}`;
 </script>
 
 <Form {createForm} title="required" rule>
@@ -34,12 +34,12 @@ const [ errors, value, input ] = createEntry({
   <Code code={htmlCode} />
   <Row labelText="Type your email (required)">
     <input use:inputRequired bind:value={$valueRequired} class="input-text" type="email" placeholder="type: 'email', required: true" />
-    <Error errors={errorsRequired} errorCode="typeCheck" errorText="Use valid email" />
+    <Error errors={errorsRequired} errorCode="type" errorText="Use valid email" />
     <Error errors={errorsRequired} errorCode="required" />
   </Row>
   <Row labelText="Type your email (optional)">
     <input use:input bind:value={$value} class="input-text" type="email" placeholder="type: 'email'" />
-    <Error {errors} errorCode="typeCheck" errorText="Use valid email" />
+    <Error {errors} errorCode="type" errorText="Use valid email" />
   </Row>
   <Button type="submit" />
 </Form>

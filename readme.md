@@ -291,7 +291,7 @@ console.log(validate(true)); // [] - there in no rule like myRule, so no validat
   - `typeRules: { [key: string]: ruleFunction }`
     - `ruleFunction: (value, entryParams): boolean`
 
-Extend existing/add new type to validator. In case of creating new type, there is one clause. `typeRules` has to have method named `typeCheck`. This is a basic and required method for every type and it calls everytime we validate type. And if it return `false` - current entry validation stops with `typeCheck` error
+Extend existing/add new type to validator. In case of creating new type, there is one clause. `typeRules` has to have method named `type`. This is a basic and required method for every type and it calls everytime we validate type. And if it return `false` - current entry validation stops with `type` error
 ```js
 import createValidation, { ensureType } from 'svelidation';
 const { createEntry, validate, validateValueStore } = createValidation();
@@ -314,7 +314,7 @@ console.log(validateValueStore(stringValue)); // ['between5and10']
 
 // create new type with its own rules
 ensureType('myNewType', {
-  typeCheck: (value) => {
+  type: (value) => {
     return value === 'custom!!!';
   },
   anotherRule: (value, { anotherRule }) => {
@@ -446,7 +446,7 @@ addSpy(() => {}, { ruleName: 'min' }); // 4
 // 2, 3 and 4 will be called once
 ```
 
-Last thing about the spies. If you create a spy that will observe `typeCheck` method of any type - remember, that returning an error from that spy will stop current entry validation because `typeCheck` fails.
+Last thing about the spies. If you create a spy that will observe `type` method of any type - remember, that returning an error from that spy will stop current entry validation because `type` fails.
 
 To remove your spy - just call `removeSpyFunction` that returns `addSpy` method.
 

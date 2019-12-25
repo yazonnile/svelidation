@@ -215,7 +215,7 @@ describe('validator', () => {
       const typeSpy = getSpy();
       const ruleSpy = getSpy();
       addSpy(typeSpy, { type: 'string' });
-      addSpy(ruleSpy, { ruleName: 'typeCheck' });
+      addSpy(ruleSpy, { ruleName: 'type' });
       test();
       expect(typeSpy).toHaveBeenCalledTimes(4);
       expect(ruleSpy).toHaveBeenCalledTimes(5);
@@ -261,7 +261,7 @@ describe('validator', () => {
       test(0);
       expect(getType('my-string')).toBeUndefined();
       ensureType('my-string', {
-        typeCheck: 'string.typeCheck',
+        type: 'string.type',
         min: 'string.min'
       });
       test(0);
@@ -276,7 +276,7 @@ describe('validator', () => {
       test('any', 0);
       expect(getType('no-rude')).toBeUndefined();
       ensureType('no-rude', {
-        typeCheck: (value) => {
+        type: (value) => {
           return !value.match(/(cunt|fuck)/);
         }
       });

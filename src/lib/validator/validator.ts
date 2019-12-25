@@ -79,7 +79,7 @@ const getScope = ({ type, optional, ...rules }: SvelidationValidatorParams): Sve
     return {};
   }
 
-  return [...Object.keys(rules), 'typeCheck'].reduce((obj, ruleName) => {
+  return [...Object.keys(rules), 'type'].reduce((obj, ruleName) => {
     const rule = typeRules[ruleName] || getRule(ruleName);
     if (rule) {
       obj[ruleName] = rule;
@@ -111,10 +111,10 @@ const validate = (value: any, validateParams: SvelidationValidatorParams): strin
   const typeSpies = getSpies({ type });
   const scope = getScope(params);
 
-  // no typeCheck - no party
-  if (!isFunction(scope.typeCheck)) {
+  // no type - no party
+  if (!isFunction(scope.type)) {
     if (process.env.DEV) {
-      console.warn('svelidation: typeCheck method is absent for type', params.type);
+      console.warn('svelidation: type method is absent for type', params.type);
     }
     return [];
   }
@@ -126,9 +126,9 @@ const validate = (value: any, validateParams: SvelidationValidatorParams): strin
 
   const result = [];
 
-  // ensure typeCheck with first pick
-  const ruleNames = Object.keys(scope).filter(key => (key !== 'typeCheck'));
-  ruleNames.unshift('typeCheck');
+  // ensure type with first pick
+  const ruleNames = Object.keys(scope).filter(key => (key !== 'type'));
+  ruleNames.unshift('type');
 
   for (let i = 0; i < ruleNames.length; i++) {
     const typeRuleSpies = getSpies({ type, ruleName: ruleNames[i] });
@@ -155,7 +155,7 @@ const validate = (value: any, validateParams: SvelidationValidatorParams): strin
     }
 
     // stop validation with current errors in case of stop call
-    // or if there are errors on first (typeCheck) step
+    // or if there are errors on first (type) step
     if (stop || (i === 0 && errors.length)) {
       return errors;
     }

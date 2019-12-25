@@ -4,10 +4,10 @@ type SvelidationRule<Type = any, R = boolean> = {
   (value: Type, params?: {
     [key: string]: any
   }): R
-}
+} | string;
 
 type SvelidationType<Type = any> = {
-  typeCheck?: SvelidationRule<Type>;
+  type?: SvelidationRule<Type>;
   [key: string]: SvelidationRule<Type>
 }
 
@@ -55,9 +55,9 @@ const ensureType = <Type = any>(
   }, typeRules);
 
   if (!types[typeName]) {
-    if (!isFunction(typeRules.typeCheck)) {
+    if (!isFunction(typeRules.type)) {
       if (process.env.DEV) {
-        console.warn('svelidation: typeCheck method is required for new types', typeName);
+        console.warn('svelidation: type method is required for new types', typeName);
       }
       return;
     }
@@ -97,7 +97,7 @@ const resetRule = (ruleName?: string) => {
 const installType = {
   string: () => {
     ensureType<string>('string', {
-      typeCheck: (value) => (typeof value === 'string'),
+      type: (value) => (typeof value === 'string'),
       min: (value, { min }) => (value.length >= min),
       max: (value, { max }) => (value.length <= max),
       between: (value, { between }) => (value.length >= between[0] && value.length <= between[1])
@@ -106,7 +106,7 @@ const installType = {
 
   email: () => {
     ensureType<string>('email', {
-      typeCheck: (value) => (
+      type: (value) => (
         typeof value === 'string' && (
           value === '' || !!(String(value)).match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
         )
@@ -116,7 +116,7 @@ const installType = {
 
   number: () => {
     ensureType<number|string>('number', {
-      typeCheck: (value) => (
+      type: (value) => (
         typeof value === 'number' || (typeof value === 'string' && (value === '' || !isNaN(parseFloat(value))))
       ),
       required: value => !isNaN(typeof value === 'number' ? value : parseFloat(value as any)),
@@ -128,14 +128,14 @@ const installType = {
 
   boolean: () => {
     ensureType<boolean>('boolean', {
-      typeCheck: (value) => typeof value === 'boolean',
+      type: (value) => typeof value === 'boolean',
       required: (value) => value,
     });
   },
 
   array: () => {
     ensureType<any[]>('array', {
-      typeCheck: (value) => Array.isArray(value),
+      type: (value) => Array.isArray(value),
       required: (value) => value.length > 0,
       min: (value, { min }) => value.length >= min,
       max: (value, { max }) => value.length <= max,

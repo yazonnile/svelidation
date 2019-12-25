@@ -22,15 +22,15 @@ describe('types', () => {
       const arrayType = getType('array');
 
       expect(stringType).toBeDefined();
-      expect(Object.keys(stringType).sort()).toEqual(['typeCheck', 'min', 'max', 'between'].sort());
+      expect(Object.keys(stringType).sort()).toEqual(['type', 'min', 'max', 'between'].sort());
       expect(emailType).toBeDefined();
-      expect(Object.keys(emailType).sort()).toEqual(['typeCheck'].sort());
+      expect(Object.keys(emailType).sort()).toEqual(['type'].sort());
       expect(numberType).toBeDefined();
-      expect(Object.keys(numberType).sort()).toEqual(['typeCheck', 'required', 'min', 'max', 'between'].sort());
+      expect(Object.keys(numberType).sort()).toEqual(['type', 'required', 'min', 'max', 'between'].sort());
       expect(booleanType).toBeDefined();
-      expect(Object.keys(booleanType).sort()).toEqual(['typeCheck', 'required'].sort());
+      expect(Object.keys(booleanType).sort()).toEqual(['type', 'required'].sort());
       expect(arrayType).toBeDefined();
-      expect(Object.keys(arrayType).sort()).toEqual(['typeCheck', 'required', 'min', 'max', 'equal', 'includes'].sort());
+      expect(Object.keys(arrayType).sort()).toEqual(['type', 'required', 'min', 'max', 'equal', 'includes'].sort());
     });
 
     it('rules', () => {
@@ -46,12 +46,12 @@ describe('types', () => {
 
   describe('types', () => {
     describe('string', () => {
-      it('typeCheck', () => {
-        const { typeCheck } = getType('string');
-        expect(typeCheck('')).toBeTrue();
-        expect(typeCheck(undefined)).toBeFalse();
-        expect(typeCheck(null)).toBeFalse();
-        expect(typeCheck(' ')).toBeTrue();
+      it('type', () => {
+        const { type } = getType('string');
+        expect(type('')).toBeTrue();
+        expect(type(undefined)).toBeFalse();
+        expect(type(null)).toBeFalse();
+        expect(type(' ')).toBeTrue();
       });
 
       it('min', () => {
@@ -80,30 +80,30 @@ describe('types', () => {
     });
 
     describe('email', () => {
-      it('typeCheck', () => {
-        const { typeCheck } = getType('email');
-        expect(typeCheck('')).toBeTrue();
-        expect(typeCheck(undefined)).toBeFalse();
-        expect(typeCheck(null)).toBeFalse();
-        expect(typeCheck(' ')).toBeFalse();
-        expect(typeCheck('aaa@sss.com')).toBeTrue();
+      it('type', () => {
+        const { type } = getType('email');
+        expect(type('')).toBeTrue();
+        expect(type(undefined)).toBeFalse();
+        expect(type(null)).toBeFalse();
+        expect(type(' ')).toBeFalse();
+        expect(type('aaa@sss.com')).toBeTrue();
       });
     });
 
     describe('number', () => {
-      it('typeCheck', () => {
-        const { typeCheck } = getType('number');
-        expect(typeCheck('')).toBeTrue();
-        expect(typeCheck(undefined)).toBeFalse();
-        expect(typeCheck(null)).toBeFalse();
-        expect(typeCheck('null')).toBeFalse();
-        expect(typeCheck(' ')).toBeFalse();
-        expect(typeCheck('1')).toBeTrue();
-        expect(typeCheck('.1')).toBeTrue();
-        expect(typeCheck('1.1')).toBeTrue();
-        expect(typeCheck(1)).toBeTrue();
-        expect(typeCheck(.1)).toBeTrue();
-        expect(typeCheck(1.1)).toBeTrue();
+      it('type', () => {
+        const { type } = getType('number');
+        expect(type('')).toBeTrue();
+        expect(type(undefined)).toBeFalse();
+        expect(type(null)).toBeFalse();
+        expect(type('null')).toBeFalse();
+        expect(type(' ')).toBeFalse();
+        expect(type('1')).toBeTrue();
+        expect(type('.1')).toBeTrue();
+        expect(type('1.1')).toBeTrue();
+        expect(type(1)).toBeTrue();
+        expect(type(.1)).toBeTrue();
+        expect(type(1.1)).toBeTrue();
       });
 
       it('min', () => {
@@ -132,15 +132,15 @@ describe('types', () => {
     });
 
     describe('boolean', () => {
-      it('typeCheck', () => {
-        const { typeCheck } = getType('boolean');
-        expect(typeCheck('')).toBeFalse();
-        expect(typeCheck(undefined)).toBeFalse();
-        expect(typeCheck(null)).toBeFalse();
-        expect(typeCheck(' ')).toBeFalse();
-        expect(typeCheck(true)).toBeTrue();
-        expect(typeCheck(false)).toBeTrue();
-        expect(typeCheck({})).toBeFalse();
+      it('type', () => {
+        const { type } = getType('boolean');
+        expect(type('')).toBeFalse();
+        expect(type(undefined)).toBeFalse();
+        expect(type(null)).toBeFalse();
+        expect(type(' ')).toBeFalse();
+        expect(type(true)).toBeTrue();
+        expect(type(false)).toBeTrue();
+        expect(type({})).toBeFalse();
       });
 
       it('required', () => {
@@ -151,17 +151,17 @@ describe('types', () => {
     });
 
     describe('array', () => {
-      it('typeCheck', () => {
-        const { typeCheck } = getType('array');
-        expect(typeCheck('')).toBeFalse();
-        expect(typeCheck(undefined)).toBeFalse();
-        expect(typeCheck(null)).toBeFalse();
-        expect(typeCheck(' ')).toBeFalse();
-        expect(typeCheck(0)).toBeFalse();
-        expect(typeCheck(true)).toBeFalse();
-        expect(typeCheck(false)).toBeFalse();
-        expect(typeCheck({})).toBeFalse();
-        expect(typeCheck([])).toBeTrue();
+      it('type', () => {
+        const { type } = getType('array');
+        expect(type('')).toBeFalse();
+        expect(type(undefined)).toBeFalse();
+        expect(type(null)).toBeFalse();
+        expect(type(' ')).toBeFalse();
+        expect(type(0)).toBeFalse();
+        expect(type(true)).toBeFalse();
+        expect(type(false)).toBeFalse();
+        expect(type({})).toBeFalse();
+        expect(type([])).toBeTrue();
       });
 
       it('required', () => {
@@ -257,9 +257,9 @@ describe('types', () => {
       expect(getType('test')).toBeUndefined();
       ensureType('test', { magicMethod() { } });
       expect(getType('test')).toBeUndefined();
-      ensureType('test', { typeCheck() { } });
+      ensureType('test', { type() { } });
       expect(getType('test')).toBeDefined();
-      expect(getType('test').typeCheck).toBeDefined();
+      expect(getType('test').type).toBeDefined();
       ensureType('test', { magicMethod(value) { return value === 'magicMethod'} });
       expect(getType('test').magicMethod).toBeDefined();
       expect(getType('test').magicMethod('s')).toBeFalse();
@@ -271,11 +271,11 @@ describe('types', () => {
     });
 
     it('ensureType by extending', () => {
-      ensureType('test', { typeCheck: 'string.typeCheck' });
+      ensureType('test', { type: 'string.type' });
       expect(getType('test')).toBeDefined();
-      expect(getType('test').typeCheck === getType('string').typeCheck).toBeTrue();
+      expect(getType('test').type === getType('string').type).toBeTrue();
 
-      ensureType('test2', { typeCheck: 'nan.typeCheck' });
+      ensureType('test2', { type: 'nan.type' });
       expect(getType('test2')).toBeUndefined();
     });
 
