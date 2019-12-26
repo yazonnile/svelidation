@@ -342,15 +342,17 @@ console.log(validateValueStore(myValue)); // ['anotherRule', 'min']
 Work same as `resetRule`, but on the type level
 
 ~~omg :) I hope noone will need to use methods below~~
-### Ok, so what you are saying? Spies? O_o
+### Ok, so what are you saying? Spies? O_o
 
 Yes. Spies. Spy.
 
-By design, this is a function to observe validation process and get into it, if it needs.
+By design, this is a function to observe validation process and get into it.
 
-Spy can observe types, global rules, specific rule of type. Spy can observe everything! Literally. Just create a global spy and every validation rule, every type, everything will be in its hands.
+Spy can observe types, global rules, specific rule of specific type. Spy can observe everything! Literally. Just create a global spy and it will observe every validation. Every rule, every type, everything will be in its hands.
 
-You need to know one thing. Spy has god power, but it has to give this power to the next spy. And there will always be **next** spy, even if its not a spy, but rule.
+If you need to prevent something, or update value somehow - special spy is the place.
+
+You need to know just one thing. Spy has god power, but it has to give this power to the next spy. And there will always be **next** spy, even if its not your spy.
 
 So, lets dive into examples
 
@@ -382,7 +384,7 @@ validateValueStore(stringValue);
 // LOG: >> 'spying!'
 ```
 
-First of all, take a look at the line with `next(value)` call. This is VERY IMPORTANT LINE in spies paradigm. Remember? Spy has god power, but it has to give this power to next spy. This.
+First of all, take a look at the line with `next(value)` call. This is **VERY IMPORTANT LINE** in spies paradigm. Remember? Spy has god power, but it has to give this power to next spy. This.
 
 `next(value, params)` - is the function witch spy have to call with any value spy wants. This new value will be taken by next validation rules or another spies (until type validation ends). Almost same with the params. But params will be merged with original for next validators. So the value will replace the original one, params will be merged
 
@@ -432,27 +434,22 @@ addSpy(() => {}); // 1
 addSpy(() => {}, { type: 'string' }); // 2
 addSpy(() => {}, { type: 'string', ruleName: 'min' }); // 3
 addSpy(() => {}, { ruleName: 'min' }); // 4
+
 // run validation for a { type: 'string', min: 5 }
 // each spy will be called once
 
-addSpy(() => {}); // 1
-addSpy(() => {}, { type: 'string' }); // 2
-addSpy(() => {}, { type: 'string', ruleName: 'min' }); // 3
-addSpy(() => {}, { ruleName: 'min' }); // 4
 // run validation for a { type: 'string', min: 5 }, { type: 'string', max: 5 }
 // 3 and 4 will be called once.
 // 1 and 2 - twice, because we validate 2 entries (1st spy), and 2 strings (2nd spy)
 
-addSpy(() => {}); // 1
-addSpy(() => {}, { type: 'string' }); // 2
-addSpy(() => {}, { type: 'string', ruleName: 'min' }); // 3
-addSpy(() => {}, { ruleName: 'min' }); // 4
 // run validation for a { type: 'string', min: 5 }, { type: 'email', required: true }
 // 1 - twice, because we validate 2 entries
 // 2, 3 and 4 will be called once
 ```
 
-Last thing about the spies. If you create a spy that will observe `type` method of any type - remember, that returning an error from that spy will stop current entry validation because `type` fails.
+Last thing about the spies.
+
+If you create a spy that will observe `type` method of any type - remember, that returning an error from that spy will stop current entry validation because `type` method fails, so there is no point to continue validation
 
 To remove your spy - just call `removeSpyFunction` that returns `addSpy` method.
 
