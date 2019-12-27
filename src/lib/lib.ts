@@ -15,6 +15,7 @@ import isFunction from 'lib/is-function/is-function';
 import FormElement from 'lib/form-element/form-element';
 import prepareBaseParams from 'lib/prepare-base-params/prepare-base-params';
 import { validate as validateValueByParams } from 'lib/validator/validator';
+import { disableWarn } from 'lib/warn/warn';
 
 const setValidationPhase = (entries: SvelidationEntry[], phase: ListenInputEventsType) => {
   entries.forEach(({ formElements }) => {
@@ -41,8 +42,14 @@ const createValidation = (opts?: SvelidationOptions) => {
       focus: false,
       reset: true
     },
-    useCustomErrorsStore: null
+    useCustomErrorsStore: false,
+    getValues: false,
+    warningsEnabled: true
   }, opts);
+
+  if (!options.warningsEnabled) {
+    disableWarn();
+  }
 
   if (typeof options.validateOnEvents !== 'object' || options.validateOnEvents === null) {
     options.validateOnEvents = {};
@@ -52,8 +59,28 @@ const createValidation = (opts?: SvelidationOptions) => {
     options.clearErrorsOnEvents = {};
   }
 
+  const getValues = () => {
+    if (isFunction(options.getValues)) {
+      return options.getValues(entries.map(entry => {
+        return {
+          params: entry.params,
+          value: get(entry.store.value)
+        }
+      }));
+    }
+
+    return entries.reduce((result, entry) => {
+      if (entry.formElements || options.includeAllEntries) {
+        const { id } = entry.params;
+        result.set(id || entry.params, get(entry.store.value));
+      }
+
+      return result;
+    }, new Map());
+  };
+
   const buildErrorsStore = (errors, entryParams = null) => {
-    return typeof options.useCustomErrorsStore === 'function'
+    return isFunction(options.useCustomErrorsStore)
       ? options.useCustomErrorsStore(errors, entryParams)
       : errors;
   };
@@ -141,7 +168,7 @@ const createValidation = (opts?: SvelidationOptions) => {
       if (errors.length) {
         isFunction(fail) && fail(errors);
       } else {
-        isFunction(success) && success();
+        isFunction(success) && success(getValues());
       }
     };
 
@@ -206,6 +233,7 @@ const createValidation = (opts?: SvelidationOptions) => {
     validateValueStore,
     validate,
     clearErrors,
+    getValues
   }
 };
 

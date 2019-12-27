@@ -1,4 +1,5 @@
 import isFunction from 'lib/is-function/is-function';
+import warn from 'lib/warn/warn';
 
 type SvelidationRule<Type = any, R = boolean> = {
   (value: Type, params?: {
@@ -28,7 +29,7 @@ const ensureType = <Type = any>(
 ) => {
   if (typeof typeRules !== 'object') {
     if (process.env.DEV) {
-      console.warn('svelidation: rules should be an object', typeName);
+      warn('svelidation: rules should be an object', typeName);
     }
     return;
   }
@@ -57,7 +58,7 @@ const ensureType = <Type = any>(
   if (!types[typeName]) {
     if (!isFunction(typeRules.type)) {
       if (process.env.DEV) {
-        console.warn('svelidation: type method is required for new types', typeName);
+        warn('svelidation: type method is required for new types', typeName);
       }
       return;
     }
@@ -180,7 +181,7 @@ const installRule = {
 const ensureRule = (ruleName: string, rule: SvelidationRule) => {
   if (!isFunction(rule)) {
     if (process.env.DEV) {
-      console.warn('svelidation: ensureRule has to have second function argument', ruleName);
+      warn('svelidation: ensureRule has to have second function argument', ruleName);
     }
     return;
   }

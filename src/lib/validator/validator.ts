@@ -1,6 +1,7 @@
 import { getSpies, SvelidationSpy } from './spy/spy';
 import { SvelidationRule, SvelidationRulesStore, getType, getRule } from './types/types';
 import isFunction from 'lib/is-function/is-function';
+import warn from 'lib/warn/warn';
 
 export interface SvelidationValidatorParams {
   type: string;
@@ -85,7 +86,7 @@ const getScope = ({ type, optional, ...rules }: SvelidationValidatorParams): Sve
       obj[ruleName] = rule;
     } else {
       if (process.env.DEV) {
-        console.warn('svelidation: rule is not defined', ruleName);
+        warn('svelidation: rule is not defined', ruleName);
       }
     }
 
@@ -100,7 +101,7 @@ const skipValidation = (value: any, { optional, required = false }): boolean => 
 };
 
 const validate = (value: any, validateParams: SvelidationValidatorParams): string[]|void => {
-  let { trim = false, ...params } = validateParams;
+  let { trim = false, id, ...params } = validateParams;
 
   if (trim && typeof value === 'string') {
     value = (value as string).trim();
@@ -114,7 +115,7 @@ const validate = (value: any, validateParams: SvelidationValidatorParams): strin
   // no type - no party
   if (!isFunction(scope.type)) {
     if (process.env.DEV) {
-      console.warn('svelidation: type method is absent for type', params.type);
+      warn('svelidation: type method is absent for type', params.type);
     }
     return [];
   }

@@ -34,11 +34,18 @@
     }
   }));
 
-  let activeId = 'custom';
+  let activeId = 'default';
+  let success = false;
+
+  $: success = false, activeId;
+
+  const onSuccess = () => {
+    success = true;
+  };
 </script>
 
 <Slide id="default" bind:activeId>
-  <Form createForm={defaultCreateForm}>
+  <Form createForm={defaultCreateForm} createFormParams={{ onSuccess }}>
     <Entry entry={default0Entry} />
     <Entry entry={default1Entry} />
     <Entry entry={default2Entry} />
@@ -47,14 +54,18 @@
 </Slide>
 
 <Slide id="custom" bind:activeId>
-  <Form createForm={customCreateForm}>
-    <input type="text" use:custom0Input bind:value={$custom0Value} />
+  <Form createForm={customCreateForm} createFormParams={{ onSuccess }}>
+    <label><input type="text" use:custom0Input bind:value={$custom0Value} /></label>
     {#each Object.keys($custom0Errors) as ruleName}<p class="error">{ruleName} <span class="error-value">{$custom0Errors[ruleName].value}</span></p>{/each}
-    <input type="text" use:custom1Input bind:value={$custom1Value} />
+    <label><input type="text" use:custom1Input bind:value={$custom1Value} /></label>
     {#each Object.keys($custom1Errors) as ruleName}<p class="error">{ruleName} <span class="error-value">{$custom1Errors[ruleName].value}</span></p>{/each}
-    <input type="text" use:custom2Input bind:value={$custom2Value} />
+    <label><input type="text" use:custom2Input bind:value={$custom2Value} /></label>
     {#each Object.keys($custom2Errors) as ruleName}<p class="error">{ruleName} <span class="error-value">{$custom2Errors[ruleName].value}</span></p>{/each}
-    <input type="text" use:custom3Input bind:value={$custom3Value} />
+    <label><input type="text" use:custom3Input bind:value={$custom3Value} /></label>
     {#each Object.keys($custom3Errors) as ruleName}<p class="error">{ruleName} <span class="error-value">{$custom3Errors[ruleName].value}</span></p>{/each}
   </Form>
 </Slide>
+
+{#if success}
+  <span class="success">SUCCESS</span>
+{/if}

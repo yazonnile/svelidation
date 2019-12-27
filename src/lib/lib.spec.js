@@ -7,7 +7,7 @@ describe('lib', () => {
 
   it('constructor', () => {
     instance = createInstance();
-    const { createEntry, createEntries, createForm, validateValueStore, validate, clearErrors } = instance;
+    const { createEntry, createEntries, createForm, validateValueStore, validate, clearErrors, getValues } = instance;
 
     expect(createEntry).toBeDefined();
     expect(createEntries).toBeDefined();
@@ -15,6 +15,7 @@ describe('lib', () => {
     expect(validateValueStore).toBeDefined();
     expect(validate).toBeDefined();
     expect(clearErrors).toBeDefined();
+    expect(getValues).toBeDefined();
   });
 
   it('createEntry', () => {
@@ -116,6 +117,66 @@ describe('lib', () => {
       expect(get(entry2[0]).length).toBe(0);
       expect(entry1[0].set).toHaveBeenCalledTimes(2);
       expect(entry2[0].set).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('getValues', () => {
+    it('default', () => {
+      instance = createInstance({ includeAllEntries: true });
+      const { createEntries, getValues } = instance;
+      const entry1Params = { type: 'string', value: '1' };
+      const entry2Params = { type: 'string', value: '2' };
+
+      createEntries([entry1Params, entry2Params]);
+
+      let values = getValues();
+      let result = [];
+
+      for (let value of values.values()) {
+        result.push(value);
+      }
+
+      expect(result[0]).toBe('1');
+      expect(result[1]).toBe('2');
+    });
+    it('with ids', () => {
+      instance = createInstance({ includeAllEntries: true });
+      const { createEntries, getValues } = instance;
+
+      createEntries([
+        { type: 'string', value: 'text', id: 'login' },
+        { type: 'email', value: 'aa@aa.aa', id: 'email' }
+      ]);
+
+      let mapValues = getValues();
+      let values = Object.fromEntries(mapValues.entries());
+      expect(values.login).toBe('text');
+      expect(values.email).toBe('aa@aa.aa');
+      expect(mapValues.get('login')).toBe('text');
+      expect(mapValues.get('email')).toBe('aa@aa.aa');
+    });
+    it('with custom function', () => {
+      instance = createInstance({
+        includeAllEntries: true,
+        warningsEnabled: false,
+        getValues: (entries) => {
+          return entries.reduce((result, { value, params }) => {
+            result[params.MY_KEY] = value;
+            return result;
+          }, {});
+        }
+      });
+
+      const { createEntries, getValues } = instance;
+
+      createEntries([
+        { type: 'string', value: 'text', MY_KEY: 'login' },
+        { type: 'email', value: 'aa@aa.aa', MY_KEY: 'email' }
+      ]);
+
+      let values = getValues();
+      expect(values.login).toBe('text');
+      expect(values.email).toBe('aa@aa.aa');
     });
   });
 

@@ -10,6 +10,7 @@ export type ListenInputEventsType = ListenInputEventsEnum.afterValidation | List
 
 export interface SvelidationEntryParams {
   type: string;
+  id?: any;
   optional?: boolean;
   required?: boolean;
   min?: number;
@@ -32,7 +33,9 @@ export interface SvelidationOptions {
   presence?: SvelidationPresence.required | SvelidationPresence.optional,
   trim?: boolean,
   includeAllEntries?: boolean,
-  useCustomErrorsStore?: (errors: string[], entryParams?: SvelidationEntryParams) => any
+  useCustomErrorsStore?: (errors: string[], entryParams?: SvelidationEntryParams) => any,
+  getValues?: (entries: SvelidationPublicEntry[]) => any,
+  warningsEnabled?: boolean
 }
 
 export interface SvelidationFormElement {
@@ -62,6 +65,11 @@ export interface SvelidationEntry {
   formElements?: SvelidationFormElement[];
 }
 
+export interface SvelidationPublicEntry {
+  value: any;
+  params: SvelidationEntryParams;
+}
+
 export interface SvelidationUseFunctionReturn {
   destroy(): void;
 }
@@ -79,5 +87,5 @@ export type SvelidationCreateEntriesData = SvelidationEntryParams[] | Svelidatio
 export interface SvelidationFormEvents {
   onSubmit?(e: Event, errors: any): void;
   onFail?(errors: any): void;
-  onSuccess?(): void;
+  onSuccess?(values: any): void;
 }

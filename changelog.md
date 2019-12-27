@@ -1,5 +1,11 @@
 # Svelidation changelog
 
+# 1.3.0
+* added `getValues` api method
+* added `values` result into `onSuccess` form callback
+* added `warningsEnabled` option
+* cover custom errors store with additional e2e tests
+
 # 1.2.1
 * fix custom errors structure form validation events
 

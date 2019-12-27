@@ -1,4 +1,4 @@
-import { writable, get } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 
 var ListenInputEventsEnum;
 (function (ListenInputEventsEnum) {
@@ -333,7 +333,7 @@ const skipValidation = (value, { optional, required = false }) => {
     return valueIsAbsent && valueIsOptional;
 };
 const validate = (value, validateParams) => {
-    let { trim = false, ...params } = validateParams;
+    let { trim = false, id, ...params } = validateParams;
     if (trim && typeof value === 'string') {
         value = value.trim();
     }
@@ -407,16 +407,37 @@ const createValidation = (opts) => {
         clearErrorsOnEvents: {
             focus: false,
             reset: true
-        }
+        },
+        useCustomErrorsStore: false,
+        getValues: false,
+        warningsEnabled: true
     }, opts);
+    if (!options.warningsEnabled) ;
     if (typeof options.validateOnEvents !== 'object' || options.validateOnEvents === null) {
         options.validateOnEvents = {};
     }
     if (typeof options.clearErrorsOnEvents !== 'object' || options.clearErrorsOnEvents === null) {
         options.clearErrorsOnEvents = {};
     }
+    const getValues = () => {
+        if (isFunction(options.getValues)) {
+            return options.getValues(entries.map(entry => {
+                return {
+                    params: entry.params,
+                    value: get(entry.store.value)
+                };
+            }));
+        }
+        return entries.reduce((result, entry) => {
+            if (entry.formElements || options.includeAllEntries) {
+                const { id } = entry.params;
+                result.set(id || entry.params, get(entry.store.value));
+            }
+            return result;
+        }, new Map());
+    };
     const buildErrorsStore = (errors, entryParams = null) => {
-        return typeof options.useCustomErrorsStore === 'function'
+        return isFunction(options.useCustomErrorsStore)
             ? options.useCustomErrorsStore(errors, entryParams)
             : errors;
     };
@@ -493,7 +514,7 @@ const createValidation = (opts) => {
                 isFunction(fail) && fail(errors);
             }
             else {
-                isFunction(success) && success();
+                isFunction(success) && success(getValues());
             }
         };
         formNode.addEventListener('submit', onSubmit);
@@ -547,6 +568,7 @@ const createValidation = (opts) => {
         validateValueStore,
         validate: validate$1,
         clearErrors,
+        getValues
     };
 };
 

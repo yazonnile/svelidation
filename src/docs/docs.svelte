@@ -15,6 +15,8 @@
   import UseWithParams from './examples/use-with-params.svelte';
   import WithoutInputs from './examples/without-inputs.svelte';
   import CustomErrors from './examples/custom-errors.svelte';
+  import GetValues from './examples/get-values.svelte';
+  import GetValuesCustom from './examples/get-values-custom.svelte';
 
   let barId = 0;
   let pageId = barId;
@@ -59,6 +61,8 @@
       <ArraySumOfPoints />
       <FieldConfirm />
       <CustomErrors />
+      <GetValues />
+      <GetValuesCustom />
     {:else}
       <Editor />
     {/if}

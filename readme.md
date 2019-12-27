@@ -79,7 +79,9 @@ createSvelidation({
   presence: 'optional',
   trim: false,
   includeAllEntries: false,
-  useCustomErrorsStore: null
+  useCustomErrorsStore: false
+  warningsEnabled: true
+  getValues: false
 });
 ```
 - `validateOnEvents: { [key: string]: boolean }`
@@ -113,6 +115,18 @@ createSvelidation({
   - `entryParam` - ([check here](#createEntryParams))
   - check `CUSTOM ERRORS` example on [demo page](http://yazonnile.github.io/svelidation/)
 
+- `warningsEnabled: boolean`
+  - option that makes warnings in dev mode visible. `true` by default
+
+- `getValue(entries): values`
+  - optional method to build own values result
+  - default `getValue` implementation returns `Map` structure `Map{ [entryParams.id || entryParams]: value }`
+  - example#1 `{ type: 'string' }` `getValues` result will looks like this: `Map{ { type: 'string' }: '' }`
+  - example#2 `{ type: 'string', id: 'login'' }` `getValues` result will looks like this: `Map{ login: '' }`
+  - `entries` - array of entries params and values
+  - result of `getValues` will passed to onSuccess option for form ([check here](#createForm))
+  - check two `get values` examples on the [demo page](http://yazonnile.github.io/svelidation/)
+
 `validateOnEvents`, `clearErrorsOnEvents`, `presence` and `trim` behavior could be overrided by any input for itself ([check here](#createEntry))
 
 # validation level API
@@ -125,6 +139,7 @@ const {
   validateValueStore,
   validate,
   clearErrors,
+  getValues
 } = createSvelidation();
 ```
 
@@ -153,6 +168,7 @@ Check list of types/rules [here](#basic-types)
 {
   type, // required
   value, // initial value, required for some types of fields
+  id, // optional param for getValue method
 
   // other rules, like min/max/required...
 
@@ -207,7 +223,7 @@ An object with callbacks could be used as param in `use` function
 
 `onFail(errors[])` - on every failed validation (when `errors.length > 0`)
 
-`onSuccess()` - when there aren't any errors
+`onSuccess(values)` - when there aren't any errors. Get `values` ([check here](#options)) as result
 
 ### `clearErrors`
 Manually clear all errors stores
@@ -234,6 +250,9 @@ const [ emailErrorsStore, emailValueStore ] = createEntry({ type: 'email' });
 const errors = validateValueStore(emailValueStore); // array of string, not errorsStores!!!
 ```
 Returns errors store value
+
+### `getValues: values`
+[check here](#options)
 
 # advanced API
 ```js
