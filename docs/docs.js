@@ -1268,8 +1268,7 @@ const createValidation = (opts) => {
             const value = get_store_value(entry.store.value);
             let errors = validate(value, prepareBaseParams(entry.params, options));
             if (Array.isArray(errors)) {
-                errors = buildErrorsStore(errors, prepareBaseParams(entry.params, options));
-                entry.store.errors.set(errors);
+                entry.store.errors.set(buildErrorsStore(errors, prepareBaseParams(entry.params, options)));
                 return errors;
             }
         }
@@ -1280,7 +1279,7 @@ const createValidation = (opts) => {
             if (entry.formElements || includeNoFormElements || options.includeAllEntries) {
                 const storeErrors = validateValueStore(entry.store.value);
                 if (storeErrors.length) {
-                    errors.push({ [entry.params.type]: storeErrors });
+                    errors.push({ [entry.params.type]: buildErrorsStore(storeErrors, prepareBaseParams(entry.params, options)) });
                 }
             }
             return errors;

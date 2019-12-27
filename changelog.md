@@ -1,5 +1,8 @@
 # Svelidation changelog
 
+# 1.2.1
+* fix custom errors structure form validation events
+
 # 1.2.0
 * rename `typeCheck` method and errorsCode to `type`
 * added `useCustomErrorsStore` option

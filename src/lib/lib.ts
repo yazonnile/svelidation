@@ -40,7 +40,8 @@ const createValidation = (opts?: SvelidationOptions) => {
     clearErrorsOnEvents: {
       focus: false,
       reset: true
-    }
+    },
+    useCustomErrorsStore: null
   }, opts);
 
   if (typeof options.validateOnEvents !== 'object' || options.validateOnEvents === null) {
@@ -164,8 +165,7 @@ const createValidation = (opts?: SvelidationOptions) => {
       let errors = validateValueByParams(value, prepareBaseParams(entry.params, options));
 
       if (Array.isArray(errors)) {
-        errors = buildErrorsStore(errors, prepareBaseParams(entry.params, options));
-        entry.store.errors.set(errors);
+        entry.store.errors.set(buildErrorsStore(errors, prepareBaseParams(entry.params, options)));
         return errors;
       }
     }
@@ -178,7 +178,7 @@ const createValidation = (opts?: SvelidationOptions) => {
       if (entry.formElements || includeNoFormElements || options.includeAllEntries) {
         const storeErrors = validateValueStore(entry.store.value);
         if (storeErrors.length) {
-          errors.push({ [entry.params.type]: storeErrors });
+          errors.push({ [entry.params.type]: buildErrorsStore(storeErrors, prepareBaseParams(entry.params, options)) });
         }
       }
 
