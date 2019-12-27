@@ -118,9 +118,9 @@ createSvelidation({
 - `warningsEnabled: boolean`
   - option that makes warnings in dev mode visible. `true` by default
 
-- `getValue(entries): values`
+- `getValues(entries): values`
   - optional method to build own values result
-  - default `getValue` implementation returns `Map` structure `Map{ [entryParams.id || entryParams]: value }`
+  - default `getValues` implementation returns `Map` structure `Map{ [entryParams.id || entryParams]: value }`
   - example#1 `{ type: 'string' }` `getValues` result will looks like this: `Map{ { type: 'string' }: '' }`
   - example#2 `{ type: 'string', id: 'login'' }` `getValues` result will looks like this: `Map{ login: '' }`
   - `entries` - array of entries params and values
@@ -168,7 +168,7 @@ Check list of types/rules [here](#basic-types)
 {
   type, // required
   value, // initial value, required for some types of fields
-  id, // optional param for getValue method
+  id, // optional param for getValues method
 
   // other rules, like min/max/required...
 
