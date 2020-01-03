@@ -17,22 +17,24 @@ export interface SvelidationValidatorParams {
   [key: string]: any;
 }
 
-interface SvelidationRunWithSpies {(
-  params: {
-    value: any,
-    params: SvelidationValidatorParams,
-    rule: SvelidationRule,
-    ruleName: string,
-    spies: SvelidationSpy[]
-  }
-)}
+interface SvelidationRunWithSpies {
+  (
+    params: {
+      value: any;
+      params: SvelidationValidatorParams;
+      rule: SvelidationRule;
+      ruleName: string;
+      spies: SvelidationSpy[];
+    }
+  );
+}
 
 interface SvelidationRunWithSpiesResult {
-  errors?: string[],
-  stop?: boolean,
-  abort?: boolean,
-  nextValue?: any,
-  nextParams?: any
+  errors?: string[];
+  stop?: boolean;
+  abort?: boolean;
+  nextValue?: any;
+  nextParams?: any;
 }
 
 const runRuleWithSpies: SvelidationRunWithSpies = ({ value, params: initialParams, rule, ruleName, spies }): SvelidationRunWithSpiesResult => {
@@ -73,6 +75,7 @@ const runRuleWithSpies: SvelidationRunWithSpies = ({ value, params: initialParam
   return { errors, stop, nextValue, nextParams };
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getScope = ({ type, optional, ...rules }: SvelidationValidatorParams): SvelidationRulesStore => {
   const typeRules = getType(type);
 
@@ -101,6 +104,7 @@ const skipValidation = (value: any, { optional, required = false }): boolean => 
 };
 
 const validate = (value: any, validateParams: SvelidationValidatorParams): string[]|void => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars,prefer-const
   let { trim = false, id, ...params } = validateParams;
 
   if (trim && typeof value === 'string') {

@@ -6,7 +6,6 @@
 
   import Error from 'docs/ui/error.svelte';
   import Code from 'docs/ui/code.svelte';
-  import Button from 'docs/ui/button.svelte';
   import { getEntryHTML, getEntryJS, getEntryErrors } from 'docs/builder/lib/get-code/get-code';
 
   const { type } = params;

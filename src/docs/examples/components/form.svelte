@@ -6,8 +6,6 @@
   export let type = false;
   export let rule = false;
 
-  import Row from 'docs/examples/components/row.svelte';
-  import Button from 'docs/ui/button.svelte';
   import Widget from 'docs/ui/widget.svelte';
 </script>
 

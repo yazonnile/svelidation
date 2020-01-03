@@ -1,26 +1,28 @@
 import { SvelidationRule } from '../types/types';
 
-interface SvelidationSpy<T = any, R = boolean> {(
-  value: T,
-  params: {
-    type?: string,
-    ruleName?: string,
-    [key: string]: any
-  },
-  next: SvelidationRule<T, void>,
-  abort: () => void,
-): string[] | void}
+interface SvelidationSpy<T = any, R = boolean> {
+  (
+    value: T,
+    params: {
+      type?: string;
+      ruleName?: string;
+      [key: string]: any;
+    },
+    next: SvelidationRule<T, void>,
+    abort: () => void,
+  ): string[] | void;
+}
 
 interface SvelidationSpyStore {
-  [key: string]: SvelidationSpy[]
+  [key: string]: SvelidationSpy[];
 }
 
 type SvelidationSpyParams = {
-  type?: string,
-  ruleName?: string,
+  type?: string;
+  ruleName?: string;
 };
 
-let globals: SvelidationSpy[] = [];
+const globals: SvelidationSpy[] = [];
 let typeRules: {[key: string]: SvelidationSpyStore} = {};
 let types: SvelidationSpyStore = {};
 let rules: SvelidationSpyStore = {};
@@ -67,10 +69,12 @@ const getSpies = (params?): SvelidationSpy[] => {
   }
 };
 
-interface SvelidationRemoveSpy {(
-  spy: SvelidationSpy,
-  params?: SvelidationSpyParams
-): boolean}
+interface SvelidationRemoveSpy {
+  (
+    spy: SvelidationSpy,
+    params?: SvelidationSpyParams
+  ): boolean;
+}
 
 const removeSpy: SvelidationRemoveSpy = (spy, params) => {
   const list = getSpies(params);

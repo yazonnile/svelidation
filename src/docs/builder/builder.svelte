@@ -46,8 +46,7 @@
     formOptionsMode = false;
     formOptions = detail;
 
-    let newCode = getFormCode(formOptions);
-
+    const newCode = getFormCode(formOptions);
     if (newCode !== formCode) {
       formCode = newCode;
       const validation = createValidation({ ...formOptions });

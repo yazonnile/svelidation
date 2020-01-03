@@ -3,21 +3,21 @@ import warn from 'lib/warn/warn';
 
 type SvelidationRule<Type = any, R = boolean> = {
   (value: Type, params?: {
-    [key: string]: any
-  }): R
+    [key: string]: any;
+  }): R;
 };
 
 type SvelidationType<Type = any> = {
   type?: SvelidationRule<Type>;
-  [key: string]: SvelidationRule<Type>
+  [key: string]: SvelidationRule<Type>;
 }
 
 type SvelidationTypesStore<Type = any> = {
-  [key: string]: SvelidationType<Type>
+  [key: string]: SvelidationType<Type>;
 }
 
 type SvelidationRulesStore<Type = any> = {
-  [key: string]: SvelidationRule<Type>
+  [key: string]: SvelidationRule<Type>;
 }
 
 let types: SvelidationTypesStore | {} = {};

@@ -496,5 +496,5 @@ This is an easy one after `addSpy` :). It just removes all spies depends on para
 - [x] unit tests
 - [x] e2e tests
 - [x] builder demo
+- [x] eslint
 - [ ] add comments in the code
-- [ ] eslint

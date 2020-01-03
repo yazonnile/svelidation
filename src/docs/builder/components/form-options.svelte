@@ -5,7 +5,7 @@
   import Button from 'docs/ui/button.svelte';
   import { createEventDispatcher } from 'svelte';
 
-  let presence = {
+  const presence = {
     optional: formOptions.presence === 'optional',
     required: formOptions.presence === 'required'
   };

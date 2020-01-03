@@ -2,7 +2,6 @@
   import createValidation from 'lib/lib';
   import Error from 'docs/ui/error.svelte';
   import Form from 'docs/examples/components/form.svelte';
-  import Row from 'docs/examples/components/row.svelte';
   import Code from 'docs/ui/code.svelte';
   import Button from 'docs/ui/button.svelte';
 

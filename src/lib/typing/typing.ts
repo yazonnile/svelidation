@@ -30,12 +30,12 @@ export interface SvelidationOptions {
   validateOnEvents?: { [key: string]: boolean };
   clearErrorsOnEvents?: { [key: string]: boolean };
   listenInputEvents?: ListenInputEventsType;
-  presence?: SvelidationPresence.required | SvelidationPresence.optional,
-  trim?: boolean,
-  includeAllEntries?: boolean,
-  useCustomErrorsStore?: (errors: string[], entryParams?: SvelidationEntryParams) => any,
-  getValues?: (entries: SvelidationPublicEntry[]) => any,
-  warningsEnabled?: boolean
+  presence?: SvelidationPresence.required | SvelidationPresence.optional;
+  trim?: boolean;
+  includeAllEntries?: boolean;
+  useCustomErrorsStore?: (errors: string[], entryParams?: SvelidationEntryParams) => any;
+  getValues?: (entries: SvelidationPublicEntry[]) => any;
+  warningsEnabled?: boolean;
 }
 
 export interface SvelidationFormElement {
@@ -55,8 +55,8 @@ export interface SvelidationFormElementOptions extends SvelidationOptions {
 }
 
 export type SvelidationStoreType = {
-  errors: Writable<any>,
-  value: Writable<any>
+  errors: Writable<any>;
+  value: Writable<any>;
 };
 
 export interface SvelidationEntry {

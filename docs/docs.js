@@ -877,7 +877,7 @@ const prepareBaseParams = (entryParams, validationOptions) => {
     return output;
 };
 
-let globals$1 = [];
+const globals$1 = [];
 let typeRules = {};
 let types = {};
 let rules = {};
@@ -1069,6 +1069,7 @@ const runRuleWithSpies = ({ value, params: initialParams, rule, ruleName, spies 
     }
     return { errors, stop, nextValue, nextParams };
 };
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getScope = ({ type, optional, ...rules }) => {
     const typeRules = getType(type);
     if (!typeRules) {
@@ -1088,6 +1089,7 @@ const skipValidation = (value, { optional, required = false }) => {
     return valueIsAbsent && valueIsOptional;
 };
 const validate = (value, validateParams) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars,prefer-const
     let { trim = false, id, ...params } = validateParams;
     if (trim && typeof value === 'string') {
         value = value.trim();
@@ -1287,7 +1289,7 @@ const createValidation = (opts) => {
         const entry = entries.find(entry => (entry.store.value === value));
         if (entry) {
             const value = get_store_value(entry.store.value);
-            let errors = validate(value, prepareBaseParams(entry.params, options));
+            const errors = validate(value, prepareBaseParams(entry.params, options));
             if (Array.isArray(errors)) {
                 entry.store.errors.set(buildErrorsStore(errors, prepareBaseParams(entry.params, options)));
                 return errors;
@@ -1929,7 +1931,7 @@ function add_css$3() {
 	append(document.head, style);
 }
 
-// (81:0) {:else}
+// (80:0) {:else}
 function create_else_block$1(ctx) {
 	let div;
 	let select;
@@ -2106,7 +2108,7 @@ function create_else_block$1(ctx) {
 	};
 }
 
-// (78:0) {#if initialState}
+// (77:0) {#if initialState}
 function create_if_block$1(ctx) {
 	let t;
 	let current;
@@ -2169,7 +2171,7 @@ function create_if_block$1(ctx) {
 	};
 }
 
-// (91:4) {#if selectedType}
+// (90:4) {#if selectedType}
 function create_if_block_3(ctx) {
 	let div;
 	let current;
@@ -2219,7 +2221,7 @@ function create_if_block_3(ctx) {
 	};
 }
 
-// (93:8) <Button on:click={onChangeType}>
+// (92:8) <Button on:click={onChangeType}>
 function create_default_slot_3(ctx) {
 	let t;
 
@@ -2236,7 +2238,7 @@ function create_default_slot_3(ctx) {
 	};
 }
 
-// (98:2) {#if selectedType}
+// (97:2) {#if selectedType}
 function create_if_block_2$1(ctx) {
 	let div;
 	let updating_model;
@@ -2564,7 +2566,7 @@ function create_if_block_2$1(ctx) {
 	};
 }
 
-// (148:2) {#if selectedType}
+// (147:2) {#if selectedType}
 function create_if_block_1$1(ctx) {
 	let t;
 	let current;
@@ -2634,7 +2636,7 @@ function create_if_block_1$1(ctx) {
 	};
 }
 
-// (149:4) <Button on:click={onSave}>
+// (148:4) <Button on:click={onSave}>
 function create_default_slot_2(ctx) {
 	let t;
 
@@ -2651,7 +2653,7 @@ function create_default_slot_2(ctx) {
 	};
 }
 
-// (150:4) <Button on:click={onCancel}>
+// (149:4) <Button on:click={onCancel}>
 function create_default_slot_1(ctx) {
 	let t;
 
@@ -2668,7 +2670,7 @@ function create_default_slot_1(ctx) {
 	};
 }
 
-// (80:2) <Button on:click={() => (initialState = false)}>
+// (79:2) <Button on:click={() => (initialState = false)}>
 function create_default_slot(ctx) {
 	let t;
 
@@ -2791,6 +2793,11 @@ function instance$3($$self, $$props, $$invalidate) {
 
 	const dispatch = createEventDispatcher();
 
+	const onCancel = () => {
+		$$invalidate("initialState", initialState = true);
+		onChangeType();
+	};
+
 	const onSave = () => {
 		const result = Object.keys(selectedRules).reduce(
 			(result, ruleName) => {
@@ -2830,11 +2837,6 @@ function instance$3($$self, $$props, $$invalidate) {
 
 		dispatch("newField", result);
 		onCancel();
-	};
-
-	const onCancel = () => {
-		$$invalidate("initialState", initialState = true);
-		onChangeType();
 	};
 
 	let { $$slots = {}, $$scope } = $$props;
@@ -2894,8 +2896,8 @@ function instance$3($$self, $$props, $$invalidate) {
 		selectedType,
 		selectedRules,
 		onChangeType,
-		onSave,
 		onCancel,
+		onSave,
 		click_handler,
 		select_change_handler,
 		rule0_model_binding,
@@ -3402,7 +3404,7 @@ function get_each_context(ctx, list, i) {
 	return child_ctx;
 }
 
-// (36:6) {:else}
+// (35:6) {:else}
 function create_else_block$3(ctx) {
 	let input_1;
 	let input_action;
@@ -3433,7 +3435,7 @@ function create_else_block$3(ctx) {
 	};
 }
 
-// (34:33) 
+// (33:33) 
 function create_if_block_3$1(ctx) {
 	let input_1;
 	let input_action;
@@ -3464,7 +3466,7 @@ function create_if_block_3$1(ctx) {
 	};
 }
 
-// (32:6) {#if type === 'number'}
+// (31:6) {#if type === 'number'}
 function create_if_block_2$3(ctx) {
 	let input_1;
 	let input_1_updating = false;
@@ -3503,7 +3505,7 @@ function create_if_block_2$3(ctx) {
 	};
 }
 
-// (27:31) 
+// (26:31) 
 function create_if_block_1$3(ctx) {
 	let label0;
 	let input0;
@@ -3608,7 +3610,7 @@ function create_if_block_1$3(ctx) {
 	};
 }
 
-// (25:4) {#if type === 'boolean'}
+// (24:4) {#if type === 'boolean'}
 function create_if_block$3(ctx) {
 	let label;
 	let input_1;
@@ -3646,7 +3648,7 @@ function create_if_block$3(ctx) {
 	};
 }
 
-// (41:4) {#each $errors as errorCode}
+// (40:4) {#each $errors as errorCode}
 function create_each_block(ctx) {
 	let current;
 
@@ -4823,7 +4825,7 @@ function create_fragment$a(ctx) {
 function instance$a($$self, $$props, $$invalidate) {
 	let { formOptions } = $$props;
 
-	let presence = {
+	const presence = {
 		optional: formOptions.presence === "optional",
 		required: formOptions.presence === "required"
 	};
@@ -4942,7 +4944,7 @@ function get_each_context$1(ctx, list, i) {
 	return child_ctx;
 }
 
-// (74:6) {:else}
+// (73:6) {:else}
 function create_else_block$5(ctx) {
 	let div;
 	let t;
@@ -5008,7 +5010,7 @@ function create_else_block$5(ctx) {
 	};
 }
 
-// (68:6) {#if formOptionsMode}
+// (67:6) {#if formOptionsMode}
 function create_if_block_1$5(ctx) {
 	let current;
 	const formoptions = new Form_options({ props: { formOptions: ctx.formOptions } });
@@ -5043,7 +5045,7 @@ function create_if_block_1$5(ctx) {
 	};
 }
 
-// (78:8) <Button on:click={() => (formOptionsMode = true)}>
+// (77:8) <Button on:click={() => (formOptionsMode = true)}>
 function create_default_slot_5(ctx) {
 	let t;
 
@@ -5060,7 +5062,7 @@ function create_default_slot_5(ctx) {
 	};
 }
 
-// (84:8) <Field {params} {createEntry} {id} {validateValueStore}>
+// (83:8) <Field {params} {createEntry} {id} {validateValueStore}>
 function create_default_slot_4(ctx) {
 	let button;
 	let dispose;
@@ -5088,7 +5090,7 @@ function create_default_slot_4(ctx) {
 	};
 }
 
-// (82:4) {#each fields as { id, params }
+// (81:4) {#each fields as { id, params }
 function create_each_block$1(key_1, ctx) {
 	let div;
 	let current;
@@ -5147,7 +5149,7 @@ function create_each_block$1(key_1, ctx) {
 	};
 }
 
-// (92:8) {#if fields.length}
+// (91:8) {#if fields.length}
 function create_if_block$6(ctx) {
 	let current;
 
@@ -5182,7 +5184,7 @@ function create_if_block$6(ctx) {
 	};
 }
 
-// (93:10) <Button type="submit">
+// (92:10) <Button type="submit">
 function create_default_slot_3$1(ctx) {
 	let t;
 
@@ -5199,7 +5201,7 @@ function create_default_slot_3$1(ctx) {
 	};
 }
 
-// (91:6) <NewField on:newField={onNewField}>
+// (90:6) <NewField on:newField={onNewField}>
 function create_default_slot_2$1(ctx) {
 	let if_block_anchor;
 	let current;
@@ -5251,7 +5253,7 @@ function create_default_slot_2$1(ctx) {
 	};
 }
 
-// (65:2) <Reset n={formReset}>
+// (64:2) <Reset n={formReset}>
 function create_default_slot_1$2(ctx) {
 	let form;
 	let div0;
@@ -5401,7 +5403,7 @@ function create_default_slot_1$2(ctx) {
 	};
 }
 
-// (64:0) <Widget>
+// (63:0) <Widget>
 function create_default_slot$2(ctx) {
 	let current;
 
@@ -5523,11 +5525,12 @@ function instance$b($$self, $$props, $$invalidate) {
 	let formOptionsMode = false;
 	let formCode = getFormCode(formOptions);
 	let formReset = 0;
+	let { createEntry, createForm, validateValueStore } = createValidation(formOptions);
 
 	const onSave = ({ detail }) => {
 		$$invalidate("formOptionsMode", formOptionsMode = false);
 		$$invalidate("formOptions", formOptions = detail);
-		let newCode = getFormCode(formOptions);
+		const newCode = getFormCode(formOptions);
 
 		if (newCode !== formCode) {
 			$$invalidate("formCode", formCode = newCode);
@@ -5538,8 +5541,6 @@ function instance$b($$self, $$props, $$invalidate) {
 			$$invalidate("formReset", formReset++, formReset);
 		}
 	};
-
-	let { createEntry, createForm, validateValueStore } = createValidation(formOptions);
 
 	function submit_handler(event) {
 		bubble($$self, event);
@@ -5557,10 +5558,10 @@ function instance$b($$self, $$props, $$invalidate) {
 		formOptionsMode,
 		formCode,
 		formReset,
-		onSave,
 		createEntry,
 		createForm,
 		validateValueStore,
+		onSave,
 		submit_handler,
 		cancel_handler,
 		click_handler,
@@ -5672,7 +5673,7 @@ function add_css$b() {
 	append(document.head, style);
 }
 
-// (19:6) {#if subtitle}
+// (17:6) {#if subtitle}
 function create_if_block_2$4(ctx) {
 	let i;
 	let t;
@@ -5696,7 +5697,7 @@ function create_if_block_2$4(ctx) {
 	};
 }
 
-// (24:6) {#if type}
+// (22:6) {#if type}
 function create_if_block_1$6(ctx) {
 	let i;
 
@@ -5715,7 +5716,7 @@ function create_if_block_1$6(ctx) {
 	};
 }
 
-// (25:6) {#if rule}
+// (23:6) {#if rule}
 function create_if_block$7(ctx) {
 	let i;
 
@@ -5734,7 +5735,7 @@ function create_if_block$7(ctx) {
 	};
 }
 
-// (14:0) <Widget>
+// (12:0) <Widget>
 function create_default_slot$3(ctx) {
 	let form;
 	let h1;
@@ -9979,7 +9980,7 @@ function instance$o($$self, $$props, $$invalidate) {
 	component_subscribe($$self, step1Value, value => $$invalidate("$step1Value", $step1Value = value));
 	component_subscribe($$self, step2Value, value => $$invalidate("$step2Value", $step2Value = value));
 	let step = 0;
-	const onSuccess = e => $$invalidate("step", step++, step);
+	const onSuccess = () => $$invalidate("step", step++, step);
 
 	function input_input_handler() {
 		$step1Value = this.value;

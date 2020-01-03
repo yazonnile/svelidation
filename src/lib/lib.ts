@@ -189,7 +189,7 @@ const createValidation = (opts?: SvelidationOptions) => {
     const entry = entries.find(entry => (entry.store.value === value));
     if (entry) {
       const value = get(entry.store.value);
-      let errors = validateValueByParams(value, prepareBaseParams(entry.params, options));
+      const errors = validateValueByParams(value, prepareBaseParams(entry.params, options));
 
       if (Array.isArray(errors)) {
         entry.store.errors.set(buildErrorsStore(errors, prepareBaseParams(entry.params, options)));

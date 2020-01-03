@@ -17,7 +17,7 @@
 
   let step = 0;
 
-  const onSuccess = (e) => step++;
+  const onSuccess = () => step++;
 </script>
 
 <Form {createForm} createFormOpts={{ onSuccess }} title="Dynamic steps">

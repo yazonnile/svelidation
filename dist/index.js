@@ -76,7 +76,7 @@ const prepareBaseParams = (entryParams, validationOptions) => {
     return output;
 };
 
-let globals = [];
+const globals = [];
 let typeRules = {};
 let types = {};
 let rules = {};
@@ -314,6 +314,7 @@ const runRuleWithSpies = ({ value, params: initialParams, rule, ruleName, spies 
     }
     return { errors, stop, nextValue, nextParams };
 };
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getScope = ({ type, optional, ...rules }) => {
     const typeRules = getType(type);
     if (!typeRules) {
@@ -333,6 +334,7 @@ const skipValidation = (value, { optional, required = false }) => {
     return valueIsAbsent && valueIsOptional;
 };
 const validate = (value, validateParams) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars,prefer-const
     let { trim = false, id, ...params } = validateParams;
     if (trim && typeof value === 'string') {
         value = value.trim();
@@ -532,7 +534,7 @@ const createValidation = (opts) => {
         const entry = entries.find(entry => (entry.store.value === value));
         if (entry) {
             const value = get(entry.store.value);
-            let errors = validate(value, prepareBaseParams(entry.params, options));
+            const errors = validate(value, prepareBaseParams(entry.params, options));
             if (Array.isArray(errors)) {
                 entry.store.errors.set(buildErrorsStore(errors, prepareBaseParams(entry.params, options)));
                 return errors;
