@@ -1,4 +1,4 @@
-![Svelidation](https://svgshare.com/i/GUq.svg)
+![Svelidation](https://yazonnile.github.io/svelidation/logo.svg)
 
 Easily customizable library for `validation` scenarios in `svelte` components.
 Need to validate just a few simple inputs? Or need to build a huge form with dynamic steps? No problems. Svelidation was born for it!
