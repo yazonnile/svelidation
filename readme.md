@@ -123,7 +123,7 @@ const allErrors = validate(true);
 <details>
   <summary>How can I clear errors manually?</summary>
 
-  Use [clearErrors API](#validation-level-api)
+  Use [clearErrors API](#clearerrorsincludenoformelements-boolean)
 </details>
 <details>
   <summary>How do I know when validation fails?</summary>
@@ -155,7 +155,7 @@ const allErrors = validate(true);
 <details>
   <summary>How can I get all entries values not just after success validation?</summary>
 
-  Use [getValues API](#validation-level-api)
+  Use [getValues API](#getvaluesentries-values)
 </details>
 <details>
   <summary>How to hide warnings in the console?</summary>
@@ -165,7 +165,7 @@ const allErrors = validate(true);
 <details>
   <summary>How can I create my own validation rule or custom type?</summary>
 
-  Use [ensureRule/ensureType API](#advanced-api)
+  Use [ensureRule](#ensurerulerulename-string-rulefunction) / [ensureType](#ensuretypetypename-string-typerules) API
 </details>
 <details>
   <summary>Do I have an option to avoid set required: true to every field?</summary>
@@ -198,7 +198,7 @@ const allErrors = validate(true);
 </details>
 
 # basic types
-Combination of type/rules is using in [here](#entryParams)
+Combination of type/rules is using in [here](#entryparams)
 ## `string`
 check string length
   - `{ type: 'string', min: 3 }`
@@ -274,7 +274,7 @@ createSvelidation({
 - `useCustomErrorsStore(errorsArray, entryParams): errorsStore`
   - optional method to make possible to use custom errorsStore structure. By default this is array of strings. This method can override default store with any you want
   - `errorsArray` - default array of errors strings
-  - `entryParam` - ([check here](#entryParams))
+  - `entryParam` - ([check here](#entryparams))
   - check `CUSTOM ERRORS` example on [demo page](http://yazonnile.github.io/svelidation/)
 
 - `warningsEnabled: boolean`
@@ -286,10 +286,10 @@ createSvelidation({
   - example#1 `{ type: 'string' }` `getValues` result will looks like this: `Map{ { type: 'string' }: '' }`
   - example#2 `{ type: 'string', id: 'login' }` `getValues` result will looks like this: `Map{ login: '' }`
   - `entries` - array of entries params and values
-  - result of `getValues` will passed to onSuccess option for form in `createForm` API ([check here](#validation-level-api))
+  - result of `getValues` will passed to onSuccess option for form in `createForm` API ([check here](#createform))
   - check two `get values` examples on the [demo page](http://yazonnile.github.io/svelidation/)
 
-`validateOnEvents`, `clearErrorsOnEvents`, `presence` and `trim` behavior could be overrided by any input for itself in `createEntry` API ([check here](#validation-level-api))
+`validateOnEvents`, `clearErrorsOnEvents`, `presence` and `trim` behavior could be overrided by any input for itself in `createEntry` API ([check here](#createentryentryparams))
 
 # validation level API
 ```js
