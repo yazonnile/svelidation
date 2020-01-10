@@ -5,7 +5,7 @@ Need to validate just a few simple inputs? Or need to build a huge form with dyn
 
 ![NPM](https://img.shields.io/npm/l/svelidation) ![npm](https://img.shields.io/npm/v/svelidation)
 
-### Something doesn\'t work as expected? Any functionality is missing? Or, maybe, you have an idea/suggestion to make Svelidation better? Feel free to [create an issue](https://github.com/yazonnile/svelidation/issues/new) and describe your thoughts. Anything possible. Everything welcome!
+### Something doesn\'t work as expected? Any functionality is missing? Or, maybe, you have an idea/suggestion to make Svelidation better? Feel free to [create an issue](https://github.com/yazonnile/svelidation/issues/new) and describe your thoughts. Anything possible. Welcome!
 
 # Quick example
 ```js
