@@ -44,6 +44,23 @@ Check more examples on the [demo page](http://yazonnile.github.io/svelidation/)
   This is a specific Svelte reactive statements. [Check here details](https://svelte.dev/docs#3_$_marks_a_statement_as_reactive)
 </details>
 <details>
+  <summary>How can I use my own email regExp for validation?</summary>
+
+  Easy. Just update email type rule with [ensureType API](#ensuretypetypename-string-typerules)
+
+  ```javascript
+import createValidation, { ensureType } from 'svelidation';
+const { createEntry } = createValidation();
+
+// extend existing type with custom rule
+ensureType('email', {
+    type: (value) => {
+      return value.match(YOUR_EMAIL_REG_EXP);
+    }
+});
+```
+</details>
+<details>
   <summary>How can I create simple email+password form without all that complicated stuff?</summary>
 
   ```html
