@@ -5,6 +5,8 @@ Need to validate just a few simple inputs? Or need to build a huge form with dyn
 
 ![NPM](https://img.shields.io/npm/l/svelidation) ![npm](https://img.shields.io/npm/v/svelidation)
 
+### Something doesn\'t work as expected? Any functionality is missing? Or, maybe, you have an idea/suggestion to make Svelidation better? Feel free to [create an issue](https://github.com/yazonnile/svelidation/issues/new) and describe your thoughts. Anything possible. Everything welcome!
+
 # Quick example
 ```js
 import createSvelidation from 'svelidation';
@@ -20,7 +22,7 @@ const [ errorsStore, valueStore, useInput ] = createEntry({
 ```
 ```html
 <!-- 3. use it in template  -->
-<form use:createForm>
+<form use:createForm on:submit|preventDefault>
   <input type="text" use:useInput bind:value={$valueStore} />
 
   {#if $errorsStore.includes('required')}
@@ -35,8 +37,168 @@ Check more examples on the [demo page](http://yazonnile.github.io/svelidation/)
 # install
 `npm i -S svelidation`
 
+# FAQ
+<details>
+  <summary>What a dollar sign ($) means?</summary>
+
+  This is a specific Svelte reactive statements. [Check here details](https://svelte.dev/docs#3_$_marks_a_statement_as_reactive)
+</details>
+<details>
+  <summary>How can I create simple email+password form without all that complicated stuff?</summary>
+
+  ```html
+<script>
+    const { createForm, createEntry } = createSvelidation();
+
+    // create two validation entries
+    const [ emailErrors, emailValue, emailInput ] = createEntry({
+      type: 'email',
+      required: true
+    });
+    const [ passwordErrors, passwordValue, passwordInput ] = createEntry({
+      type: 'text',
+      required: true
+    });
+
+    // create success handler
+    const onSuccess = (values) => {
+      // send values with api
+    };
+</script>
+<form use:createForm={{ onSuccess }} on:submit|preventDefault>
+    <input type="email" use:emailInput bind:value={$emailValue} />
+    {#if $emailErrors.length}Field is invalid{/if}
+    <input type="password" use:passwordInput bind:value={$passwordValue} />
+    {#if $passwordErrors.length}Field is invalid{/if}
+    <button type="submit">submit</button>
+</form>
+  ```
+</details>
+<details>
+  <summary>How to activate validation just on form submit without any side-inputs-events?</summary>
+
+  The only thing you need to do - disable input events, because submit validation works by default
+  ```html
+<script>
+    const { createForm } = createSvelidation({ listenInputEvents: 0 });
+    // ...
+</script>
+<form use:createForm>
+    <!-- html -->
+</form>
+```
+</details>
+<details>
+  <summary>How to validate multi-steps form with different inputs on each step?</summary>
+
+  Nothing special to do here. Just create all inputs entries and bind it to inputs with `use` directive, and svelidation will validates only visible (created in DOM) inputs. Check [DYNAMIC STEPS example](https://yazonnile.github.io/svelidation/)
+</details>
+<details>
+  <summary>What if I don't have DOM? Can I validate pure data?</summary>
+
+  Yes. You have few options
+  1. Use `includeAllEntries` option
+  ```javascript
+const { validate, validateValueStore, createEntry } = createSvelidation({ includeAllEntries: true });
+const [ errors1, value1 ] = createEntry(...);
+const [ errors2, value2 ] = createEntry(...);
+
+// validate all created entries
+const allErrors = validate();
+
+// or validate specific entry value
+const firstEntryErrors = validateValueStore(value1);
+```
+
+  2. Use `true` as parameter in `validate` api
+  ```javascript
+const { validate } = createSvelidation();
+
+// ...create some entries
+
+// validate all created entries
+const allErrors = validate(true);
+```
+</details>
+<details>
+  <summary>How can I clear errors manually?</summary>
+
+  Use [clearErrors API](#validation-level-api)
+</details>
+<details>
+  <summary>How do I know when validation fails?</summary>
+
+  There is `onFail` options [here](#createform)
+  ```html
+<script>
+    const { createForm } = createSvelidation();
+
+    // ...
+
+    // create fail handler
+    const onFail = (errors) => {
+        //
+    };
+</script>
+<form use:createForm|preventDefault={{ onFail }}>
+
+</form>
+```
+</details>
+<details>
+  <summary>How to customize entry errors store?</summary>
+
+  Use [useCustomErrorsStore option](#options)
+
+  Check [CUSTOM ERRORS example](https://yazonnile.github.io/svelidation/)
+</details>
+<details>
+  <summary>How can I get all entries values not just after success validation?</summary>
+
+  Use [getValues API](#validation-level-api)
+</details>
+<details>
+  <summary>How to hide warnings in the console?</summary>
+
+  Use [warningsEnabled option](#options)
+</details>
+<details>
+  <summary>How can I create my own validation rule or custom type?</summary>
+
+  Use [ensureRule/ensureType API](#advanced-api)
+</details>
+<details>
+  <summary>Do I have an option to avoid set required: true to every field?</summary>
+
+  Yes. Use [presence: 'required' option](#options)
+</details>
+<details>
+  <summary>Is possible to avoid false positive validation of spaces-only-strings, but still to make users possible to use spaces at the start or end of their passwords (or another specific field)?</summary>
+
+  Yes. That is why [trim option](#options) was created.
+
+  If you set `trim: true`, validator will trim all values before check. **It will not change value itself**, but trim it for check purpose.
+
+  Then, you can set `trim: false` for specific field, to avoid trim.
+
+  ```javascript
+  const { createEntry } = createSvelidation({ trim: true }); // trim all values before validation
+  const passwordEntry = createEntry({
+    // ...options
+    trim: false // don`t trim password entry before validation
+  });
+  ```
+
+  And, of course, you are able to do an opposite. Leave `trim` options default (`false), and set `trim: true`for specific field
+</details>
+<details>
+  <summary>This lib can't do the things what I need</summary>
+
+  Not a problem! [Create an issue](https://github.com/yazonnile/svelidation/issues/new) and describe your needs. Will check this out
+</details>
+
 # basic types
-Combination of type/rules is using in [here](#createEntryParams)
+Combination of type/rules is using in [here](#entryParams)
 ## `string`
 check string length
   - `{ type: 'string', min: 3 }`
@@ -112,22 +274,22 @@ createSvelidation({
 - `useCustomErrorsStore(errorsArray, entryParams): errorsStore`
   - optional method to make possible to use custom errorsStore structure. By default this is array of strings. This method can override default store with any you want
   - `errorsArray` - default array of errors strings
-  - `entryParam` - ([check here](#createEntryParams))
+  - `entryParam` - ([check here](#entryParams))
   - check `CUSTOM ERRORS` example on [demo page](http://yazonnile.github.io/svelidation/)
 
 - `warningsEnabled: boolean`
   - option that makes warnings in dev mode visible. `true` by default
 
-- `getValues(entries): values`
+- `getValues(): values`
   - optional method to build own values result
   - default `getValues` implementation returns `Map` structure `Map{ [entryParams.id || entryParams]: value }`
   - example#1 `{ type: 'string' }` `getValues` result will looks like this: `Map{ { type: 'string' }: '' }`
   - example#2 `{ type: 'string', id: 'login' }` `getValues` result will looks like this: `Map{ login: '' }`
   - `entries` - array of entries params and values
-  - result of `getValues` will passed to onSuccess option for form ([check here](#createForm))
+  - result of `getValues` will passed to onSuccess option for form in `createForm` API ([check here](#validation-level-api))
   - check two `get values` examples on the [demo page](http://yazonnile.github.io/svelidation/)
 
-`validateOnEvents`, `clearErrorsOnEvents`, `presence` and `trim` behavior could be overrided by any input for itself ([check here](#createEntry))
+`validateOnEvents`, `clearErrorsOnEvents`, `presence` and `trim` behavior could be overrided by any input for itself in `createEntry` API ([check here](#validation-level-api))
 
 # validation level API
 ```js
@@ -143,10 +305,10 @@ const {
 } = createSvelidation();
 ```
 
-### `createEntry`
+### `createEntry(entryParams)`
 Create validation entry
 ```js
-const [ errorsStore, valueStore, inputFunctionForUse ] = createEntry(createEntryParams);
+const [ errorsStore, valueStore, inputFunctionForUse ] = createEntry(entryParams);
 ```
 
 `errorsStore`, `valueStore` used for bind errors and value stores in templates. One more time. THIS IS SVELTE STORES. You might see something like `errors[]` below in this readme - this is just a array with strings
@@ -160,11 +322,11 @@ const [ errorsStore, valueStore, inputFunctionForUse ] = createEntry(createEntry
 ```
 This is the place where `clearErrorsOnEvents` and `validateOnEvents` options could be overrided for specific input
 
-#### createEntryParams
+#### entryParams
 Check list of types/rules [here](#basic-types)
 
 ```js
-// createEntryParams
+// entryParams
 {
   type, // required
   value, // initial value, required for some types of fields
@@ -179,7 +341,7 @@ Check list of types/rules [here](#basic-types)
 ```
 
 
-### `createEntries`
+### `createEntries(entryParams[] | {[key: string]: entryParams})`
 Additional way to create a few entries at the time
 ```js
 const {
@@ -187,10 +349,10 @@ const {
   second: [secondErrorsStore, secondValueStore, secondInput]
 } = createEntries({
   first: {
-    // createEntryParams
+    // entryParams
   },
   second: {
-    // createEntryParams
+    // entryParams
   },
 })
 ```
@@ -200,9 +362,9 @@ const [
   [secondErrorsStore, secondValueStore, secondInput]
 ] = createEntries([
   {
-    // createEntryParams
+    // entryParams
   }, {
-    // createEntryParams
+    // entryParams
   },
 ])
 ```
@@ -225,25 +387,25 @@ An object with callbacks could be used as param in `use` function
 
 `onSuccess(values)` - when there aren't any errors. Get `values` ([check here](#options)) as result
 
-### `clearErrors`
+### `clearErrors(includeNoFormElements: boolean)`
 Manually clear all errors stores
 ```js
 clearErrors(includeNoFormElements = false);
 ```
-Only argument same as in [validate](#validate)
+Only argument same as in `validate`
 
-### `validate: allValidationErrors[]`
+### `validate(includeNoFormElements: boolean): allValidationErrors[]`
 Manually validate stores
 ```js
 const allErrors = validate(includeNoFormElements = false);
 ```
 Only argument makes possible to validate all created entries.
 
-Without this params validation will check inputs assigned to nodes only (`inputFunctionForUse` ([check here](#createEntry)))
+Without this param validation will check inputs assigned to nodes only (`inputFunctionForUse` - check `createEntry` API)
 
 Return array of all errors store values
 
-### `validateValueStore: errors[]`
+### `validateValueStore(valueStore): errors[]`
 Manually validate value store
 ```js
 const [ emailErrorsStore, emailValueStore ] = createEntry({ type: 'email' });
@@ -251,7 +413,7 @@ const errors = validateValueStore(emailValueStore); // array of string, not erro
 ```
 Returns errors store value
 
-### `getValues: values`
+### `getValues(entries): values`
 [check here](#options)
 
 # advanced API
@@ -359,6 +521,8 @@ console.log(validateValueStore(myValue)); // ['anotherRule', 'min']
 ```
 ### `resetType(typeName?: string)`
 Work same as `resetRule`, but on the type level
+
+-----------
 
 ~~omg :) I hope noone will need to use methods below~~
 ### Ok, so what are you saying? Spies? O_o
@@ -489,6 +653,7 @@ This is an easy one after `addSpy` :). It just removes all spies depends on para
 - `npm run e2e:dev` - dev server from `e2e/dist` folder with tests name in params
 - `npm run unit` - unit testing of `spec.js` files in `lib`
 - `npm run unit:dev` - dev server for unit testing
+- `npm run eslint` - lint source code
 
 # TODO
 - [x] demo examples

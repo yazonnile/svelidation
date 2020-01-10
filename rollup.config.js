@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { buildConfig, types } = require('./build');
 const production = !process.env.ROLLUP_WATCH;
 const libConfig = buildConfig(types.lib, { production });

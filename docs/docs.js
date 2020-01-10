@@ -1931,7 +1931,7 @@ function add_css$3() {
 	append(document.head, style);
 }
 
-// (80:0) {:else}
+// (81:0) {:else}
 function create_else_block$1(ctx) {
 	let div;
 	let select;
@@ -2108,7 +2108,7 @@ function create_else_block$1(ctx) {
 	};
 }
 
-// (77:0) {#if initialState}
+// (78:0) {#if initialState}
 function create_if_block$1(ctx) {
 	let t;
 	let current;
@@ -2171,7 +2171,7 @@ function create_if_block$1(ctx) {
 	};
 }
 
-// (90:4) {#if selectedType}
+// (91:4) {#if selectedType}
 function create_if_block_3(ctx) {
 	let div;
 	let current;
@@ -2221,7 +2221,7 @@ function create_if_block_3(ctx) {
 	};
 }
 
-// (92:8) <Button on:click={onChangeType}>
+// (93:8) <Button on:click={onChangeType}>
 function create_default_slot_3(ctx) {
 	let t;
 
@@ -2238,7 +2238,7 @@ function create_default_slot_3(ctx) {
 	};
 }
 
-// (97:2) {#if selectedType}
+// (98:2) {#if selectedType}
 function create_if_block_2$1(ctx) {
 	let div;
 	let updating_model;
@@ -2566,7 +2566,7 @@ function create_if_block_2$1(ctx) {
 	};
 }
 
-// (147:2) {#if selectedType}
+// (148:2) {#if selectedType}
 function create_if_block_1$1(ctx) {
 	let t;
 	let current;
@@ -2636,7 +2636,7 @@ function create_if_block_1$1(ctx) {
 	};
 }
 
-// (148:4) <Button on:click={onSave}>
+// (149:4) <Button on:click={onSave}>
 function create_default_slot_2(ctx) {
 	let t;
 
@@ -2653,7 +2653,7 @@ function create_default_slot_2(ctx) {
 	};
 }
 
-// (149:4) <Button on:click={onCancel}>
+// (150:4) <Button on:click={onCancel}>
 function create_default_slot_1(ctx) {
 	let t;
 
@@ -2670,7 +2670,7 @@ function create_default_slot_1(ctx) {
 	};
 }
 
-// (79:2) <Button on:click={() => (initialState = false)}>
+// (80:2) <Button on:click={() => (initialState = false)}>
 function create_default_slot(ctx) {
 	let t;
 
@@ -2793,11 +2793,6 @@ function instance$3($$self, $$props, $$invalidate) {
 
 	const dispatch = createEventDispatcher();
 
-	const onCancel = () => {
-		$$invalidate("initialState", initialState = true);
-		onChangeType();
-	};
-
 	const onSave = () => {
 		const result = Object.keys(selectedRules).reduce(
 			(result, ruleName) => {
@@ -2837,6 +2832,11 @@ function instance$3($$self, $$props, $$invalidate) {
 
 		dispatch("newField", result);
 		onCancel();
+	};
+
+	const onCancel = () => {
+		$$invalidate("initialState", initialState = true);
+		onChangeType();
 	};
 
 	let { $$slots = {}, $$scope } = $$props;
@@ -2896,8 +2896,8 @@ function instance$3($$self, $$props, $$invalidate) {
 		selectedType,
 		selectedRules,
 		onChangeType,
-		onCancel,
 		onSave,
+		onCancel,
 		click_handler,
 		select_change_handler,
 		rule0_model_binding,
@@ -5525,7 +5525,6 @@ function instance$b($$self, $$props, $$invalidate) {
 	let formOptionsMode = false;
 	let formCode = getFormCode(formOptions);
 	let formReset = 0;
-	let { createEntry, createForm, validateValueStore } = createValidation(formOptions);
 
 	const onSave = ({ detail }) => {
 		$$invalidate("formOptionsMode", formOptionsMode = false);
@@ -5541,6 +5540,8 @@ function instance$b($$self, $$props, $$invalidate) {
 			$$invalidate("formReset", formReset++, formReset);
 		}
 	};
+
+	let { createEntry, createForm, validateValueStore } = createValidation(formOptions);
 
 	function submit_handler(event) {
 		bubble($$self, event);
@@ -5558,10 +5559,10 @@ function instance$b($$self, $$props, $$invalidate) {
 		formOptionsMode,
 		formCode,
 		formReset,
+		onSave,
 		createEntry,
 		createForm,
 		validateValueStore,
-		onSave,
 		submit_handler,
 		cancel_handler,
 		click_handler,
@@ -8135,11 +8136,12 @@ class Match extends SvelteComponent {
 function create_default_slot_1$9(ctx) {
 	let input_1;
 	let input_action;
-	let t;
+	let t0;
+	let t1;
 	let current;
 	let dispose;
 
-	const error = new Error$1({
+	const error0 = new Error$1({
 			props: {
 				errors: ctx.errors,
 				errorCode: "equal",
@@ -8147,11 +8149,20 @@ function create_default_slot_1$9(ctx) {
 			}
 		});
 
+	const error1 = new Error$1({
+			props: {
+				errors: ctx.errors,
+				errorCode: "required"
+			}
+		});
+
 	return {
 		c() {
 			input_1 = element("input");
-			t = space();
-			create_component(error.$$.fragment);
+			t0 = space();
+			create_component(error0.$$.fragment);
+			t1 = space();
+			create_component(error1.$$.fragment);
 			attr(input_1, "class", "input-text");
 			attr(input_1, "type", "text");
 			attr(input_1, "placeholder", "type: 'string', equal: 'qwerty'");
@@ -8161,8 +8172,10 @@ function create_default_slot_1$9(ctx) {
 			insert(target, input_1, anchor);
 			set_input_value(input_1, ctx.$value);
 			input_action = ctx.input.call(null, input_1) || ({});
-			insert(target, t, anchor);
-			mount_component(error, target, anchor);
+			insert(target, t0, anchor);
+			mount_component(error0, target, anchor);
+			insert(target, t1, anchor);
+			mount_component(error1, target, anchor);
 			current = true;
 		},
 		p(changed, ctx) {
@@ -8172,24 +8185,28 @@ function create_default_slot_1$9(ctx) {
 		},
 		i(local) {
 			if (current) return;
-			transition_in(error.$$.fragment, local);
+			transition_in(error0.$$.fragment, local);
+			transition_in(error1.$$.fragment, local);
 			current = true;
 		},
 		o(local) {
-			transition_out(error.$$.fragment, local);
+			transition_out(error0.$$.fragment, local);
+			transition_out(error1.$$.fragment, local);
 			current = false;
 		},
 		d(detaching) {
 			if (detaching) detach(input_1);
 			if (input_action && is_function(input_action.destroy)) input_action.destroy();
-			if (detaching) detach(t);
-			destroy_component(error, detaching);
+			if (detaching) detach(t0);
+			destroy_component(error0, detaching);
+			if (detaching) detach(t1);
+			destroy_component(error1, detaching);
 			dispose();
 		}
 	};
 }
 
-// (22:0) <Form {createForm} title="equal" rule>
+// (23:0) <Form {createForm} title="equal" rule>
 function create_default_slot$b(ctx) {
 	let t0;
 	let t1;
@@ -8312,15 +8329,22 @@ function create_fragment$l(ctx) {
 function instance$l($$self, $$props, $$invalidate) {
 	let $value;
 	const { createEntry, createForm } = createValidation({ validateOnEvents: { input: true } });
-	const [errors, value, input] = createEntry({ type: "string", equal: "qwerty" });
+
+	const [errors, value, input] = createEntry({
+		type: "string",
+		equal: "qwerty",
+		required: true
+	});
+
 	component_subscribe($$self, value, value => $$invalidate("$value", $value = value));
 
 	const jsCode = `const [ errors, value, input ] = createEntry({
-  type: 'string', equal: 'qwerty'
+  type: 'string', equal: 'qwerty', required: true
 });`;
 
 	const htmlCode = `<input use:input bind:value={$value} />
-{#if $errors.includes('equal')}Should be equal to 'qwerty'{/if}`;
+{#if $errors.includes('equal')}Should be equal to 'qwerty'{/if}
+{#if $errors.includes('required')}This field is required{/if}`;
 
 	function input_1_input_handler() {
 		$value = this.value;
