@@ -206,7 +206,7 @@ const allErrors = validate(true);
   });
   ```
 
-  And, of course, you are able to do an opposite. Leave `trim` options default (`false), and set `trim: true`for specific field
+  And, of course, you are able to do an opposite. Leave `trim` options default (`false`), and set `trim: true`for specific field
 </details>
 <details>
   <summary>This lib can't do the things what I need</summary>
